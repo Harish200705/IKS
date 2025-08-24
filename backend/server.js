@@ -42,53 +42,76 @@ const SheepGoatDisease = mongoose.model('SheepGoatDisease', diseaseSchema, 'Shee
 
 // Routes
 
-// Search diseases by name or symptoms with collection filter
+// Search diseases by name or symptoms with collection filter and language support
 app.get('/api/search', async (req, res) => {
   try {
-    const { query, collection } = req.query;
+    const { query, collection, language } = req.query;
     
     if (!query) {
       return res.status(400).json({ message: 'Query parameter is required' });
     }
 
     const searchRegex = new RegExp(query, 'i');
-    let DiseaseModel = CowBuffaloDisease; // default
+    let collectionsToSearch = [];
     
-    // Select the appropriate model based on collection
+    // Determine which collections to search based on category and language
     switch(collection) {
       case 'cowAndBuffalo':
-        DiseaseModel = CowBuffaloDisease;
+        collectionsToSearch = ['cowAndBuffalo'];
         break;
       case 'PoultryBirds':
-        DiseaseModel = PoultryBirdsDisease;
-        break;
-      case 'PoultryBirdsTamil':
-        DiseaseModel = PoultryBirdsTamilDisease;
+        // For poultry, search both English and Tamil collections
+        collectionsToSearch = ['PoultryBirds', 'PoultryBirdsTamil'];
         break;
       case 'SheepGoat':
-        DiseaseModel = SheepGoatDisease;
+        collectionsToSearch = ['SheepGoat'];
         break;
       default:
-        DiseaseModel = CowBuffaloDisease;
+        collectionsToSearch = ['cowAndBuffalo'];
     }
     
-    const diseases = await DiseaseModel.find({
-      $or: [
-        { "Disease Name": searchRegex },
-        { "Symptoms": searchRegex }
-      ]
-    });
+    let allResults = [];
     
-    // Map the results to include only the needed fields
-    const mappedDiseases = diseases.map(disease => ({
-      _id: disease._id,
-      "Disease Name": disease["Disease Name"],
-      "Symptoms": disease["Symptoms"],
-      collection: collection || 'cowAndBuffalo'
-    }));
+    // Search in all relevant collections
+    for (const coll of collectionsToSearch) {
+      let DiseaseModel;
+      switch(coll) {
+        case 'cowAndBuffalo':
+          DiseaseModel = CowBuffaloDisease;
+          break;
+        case 'PoultryBirds':
+          DiseaseModel = PoultryBirdsDisease;
+          break;
+        case 'PoultryBirdsTamil':
+          DiseaseModel = PoultryBirdsTamilDisease;
+          break;
+        case 'SheepGoat':
+          DiseaseModel = SheepGoatDisease;
+          break;
+        default:
+          continue;
+      }
+      
+      const diseases = await DiseaseModel.find({
+        $or: [
+          { "Disease Name": searchRegex },
+          { "Symptoms": searchRegex }
+        ]
+      });
+      
+      // Map the results to include collection info
+      const mappedDiseases = diseases.map(disease => ({
+        _id: disease._id,
+        "Disease Name": disease["Disease Name"],
+        "Symptoms": disease["Symptoms"],
+        collection: coll
+      }));
+      
+      allResults = allResults.concat(mappedDiseases);
+    }
 
-    console.log(`Search results for "${query}" in ${collection}:`, mappedDiseases.length);
-    res.json(mappedDiseases);
+    console.log(`Search results for "${query}" in ${collection} (${collectionsToSearch.join(', ')}):`, allResults.length);
+    res.json(allResults);
   } catch (error) {
     console.error('Search error:', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -101,6 +124,8 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     const { id, collection } = req.params;
     let DiseaseModel = CowBuffaloDisease; // default
     
+    console.log(`Fetching disease ${id} from collection ${collection}`);
+    
     // Select the appropriate model based on collection
     switch(collection) {
       case 'cowAndBuffalo':
@@ -119,16 +144,26 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
         DiseaseModel = CowBuffaloDisease;
     }
     
-    const disease = await DiseaseModel.findById(id);
+    // Find disease by ID - using manual search since ObjectId conversion has issues
+    let disease = null;
+    
+    try {
+      const allDiseases = await DiseaseModel.find({});
+      disease = allDiseases.find(d => d._id.toString() === id);
+    } catch (err) {
+      console.log('Disease search failed:', err.message);
+    }
     
     if (!disease) {
+      console.log(`Disease ${id} not found in collection ${collection}`);
       return res.status(404).json({ message: 'Disease not found' });
     }
 
+    console.log(`Found disease: ${disease["Disease Name"]}`);
     res.json(disease);
   } catch (error) {
     console.error('Get disease error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
