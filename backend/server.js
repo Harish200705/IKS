@@ -32,24 +32,47 @@ const diseaseSchema = new mongoose.Schema({
   "Ingredients": { type: String, required: true },
   "Preparation Method": { type: String, required: true },
   "Dosage": { type: String, required: true }
-}, { collection: 'cowAndBuffalo' }); // Explicitly specify collection name
+});
 
-const Disease = mongoose.model('Disease', diseaseSchema);
+// Create models for different collections
+const CowBuffaloDisease = mongoose.model('CowBuffaloDisease', diseaseSchema, 'cowAndBuffalo');
+const PoultryBirdsDisease = mongoose.model('PoultryBirdsDisease', diseaseSchema, 'PoultryBirds');
+const PoultryBirdsTamilDisease = mongoose.model('PoultryBirdsTamilDisease', diseaseSchema, 'PoultryBirdsTamil');
+const SheepGoatDisease = mongoose.model('SheepGoatDisease', diseaseSchema, 'SheepGoat');
 
 // Routes
 
-// Search diseases by name or symptoms
+// Search diseases by name or symptoms with collection filter
 app.get('/api/search', async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query, collection } = req.query;
     
     if (!query) {
       return res.status(400).json({ message: 'Query parameter is required' });
     }
 
     const searchRegex = new RegExp(query, 'i');
+    let DiseaseModel = CowBuffaloDisease; // default
     
-    const diseases = await Disease.find({
+    // Select the appropriate model based on collection
+    switch(collection) {
+      case 'cowAndBuffalo':
+        DiseaseModel = CowBuffaloDisease;
+        break;
+      case 'PoultryBirds':
+        DiseaseModel = PoultryBirdsDisease;
+        break;
+      case 'PoultryBirdsTamil':
+        DiseaseModel = PoultryBirdsTamilDisease;
+        break;
+      case 'SheepGoat':
+        DiseaseModel = SheepGoatDisease;
+        break;
+      default:
+        DiseaseModel = CowBuffaloDisease;
+    }
+    
+    const diseases = await DiseaseModel.find({
       $or: [
         { "Disease Name": searchRegex },
         { "Symptoms": searchRegex }
@@ -60,10 +83,11 @@ app.get('/api/search', async (req, res) => {
     const mappedDiseases = diseases.map(disease => ({
       _id: disease._id,
       "Disease Name": disease["Disease Name"],
-      "Symptoms": disease["Symptoms"]
+      "Symptoms": disease["Symptoms"],
+      collection: collection || 'cowAndBuffalo'
     }));
 
-    console.log(`Search results for "${query}":`, mappedDiseases.length);
+    console.log(`Search results for "${query}" in ${collection}:`, mappedDiseases.length);
     res.json(mappedDiseases);
   } catch (error) {
     console.error('Search error:', error);
@@ -71,12 +95,31 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// Get disease by ID
-app.get('/api/disease/:id', async (req, res) => {
+// Get disease by ID with collection
+app.get('/api/disease/:collection/:id', async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, collection } = req.params;
+    let DiseaseModel = CowBuffaloDisease; // default
     
-    const disease = await Disease.findById(id);
+    // Select the appropriate model based on collection
+    switch(collection) {
+      case 'cowAndBuffalo':
+        DiseaseModel = CowBuffaloDisease;
+        break;
+      case 'PoultryBirds':
+        DiseaseModel = PoultryBirdsDisease;
+        break;
+      case 'PoultryBirdsTamil':
+        DiseaseModel = PoultryBirdsTamilDisease;
+        break;
+      case 'SheepGoat':
+        DiseaseModel = SheepGoatDisease;
+        break;
+      default:
+        DiseaseModel = CowBuffaloDisease;
+    }
+    
+    const disease = await DiseaseModel.findById(id);
     
     if (!disease) {
       return res.status(404).json({ message: 'Disease not found' });
@@ -89,19 +132,41 @@ app.get('/api/disease/:id', async (req, res) => {
   }
 });
 
-// Get all diseases (for initial load)
-app.get('/api/diseases', async (req, res) => {
+// Get all diseases for a specific collection
+app.get('/api/diseases/:collection', async (req, res) => {
   try {
-    const diseases = await Disease.find();
+    const { collection } = req.params;
+    let DiseaseModel = CowBuffaloDisease; // default
+    
+    // Select the appropriate model based on collection
+    switch(collection) {
+      case 'cowAndBuffalo':
+        DiseaseModel = CowBuffaloDisease;
+        break;
+      case 'PoultryBirds':
+        DiseaseModel = PoultryBirdsDisease;
+        break;
+      case 'PoultryBirdsTamil':
+        DiseaseModel = PoultryBirdsTamilDisease;
+        break;
+      case 'SheepGoat':
+        DiseaseModel = SheepGoatDisease;
+        break;
+      default:
+        DiseaseModel = CowBuffaloDisease;
+    }
+    
+    const diseases = await DiseaseModel.find();
     
     // Map the results to include only the needed fields
     const mappedDiseases = diseases.map(disease => ({
       _id: disease._id,
       "Disease Name": disease["Disease Name"],
-      "Symptoms": disease["Symptoms"]
+      "Symptoms": disease["Symptoms"],
+      collection: collection
     }));
     
-    console.log(`Retrieved ${mappedDiseases.length} diseases from database`);
+    console.log(`Retrieved ${mappedDiseases.length} diseases from ${collection} collection`);
     res.json(mappedDiseases);
   } catch (error) {
     console.error('Get all diseases error:', error);
@@ -109,21 +174,26 @@ app.get('/api/diseases', async (req, res) => {
   }
 });
 
-// Test endpoint to check database connection and data
+// Test endpoint to check database connection and data for all collections
 app.get('/api/test', async (req, res) => {
   try {
-    const count = await Disease.countDocuments();
-    const sampleDisease = await Disease.findOne();
+    const cowBuffaloCount = await CowBuffaloDisease.countDocuments();
+    const poultryCount = await PoultryBirdsDisease.countDocuments();
+    const poultryTamilCount = await PoultryBirdsTamilDisease.countDocuments();
+    const sheepGoatCount = await SheepGoatDisease.countDocuments();
+    
+    const totalCount = cowBuffaloCount + poultryCount + poultryTamilCount + sheepGoatCount;
     
     res.json({
       message: 'Database connection successful',
-      totalDiseases: count,
-      sampleDisease: sampleDisease ? {
-        id: sampleDisease._id,
-        name: sampleDisease["Disease Name"]
-      } : null,
-      database: 'Diseases',
-      collection: 'cowAndBuffalo'
+      collections: {
+        cowAndBuffalo: cowBuffaloCount,
+        PoultryBirds: poultryCount,
+        PoultryBirdsTamil: poultryTamilCount,
+        SheepGoat: sheepGoatCount
+      },
+      totalDiseases: totalCount,
+      database: 'Diseases'
     });
   } catch (error) {
     console.error('Test endpoint error:', error);
