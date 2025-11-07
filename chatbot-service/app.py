@@ -61,11 +61,23 @@ def initialize_model():
     global embedder, q_embeddings
     
     print(f"🔄 Loading Sentence Transformer model: {MODEL_NAME}...")
-    embedder = SentenceTransformer(MODEL_NAME)
+    # Use CPU to save memory (can switch to GPU if available and needed)
+    embedder = SentenceTransformer(MODEL_NAME, device='cpu')
     print("✅ Model loaded")
     
     print("🔄 Encoding dataset questions...")
-    q_embeddings = embedder.encode(questions, convert_to_tensor=True)
+    # Encode in batches to save memory
+    batch_size = 100
+    embeddings_list = []
+    for i in range(0, len(questions), batch_size):
+        batch = questions[i:i+batch_size]
+        batch_embeddings = embedder.encode(batch, convert_to_tensor=False, show_progress_bar=False)
+        embeddings_list.append(batch_embeddings)
+        print(f"   Encoded {min(i+batch_size, len(questions))}/{len(questions)} questions...")
+    
+    # Combine all embeddings
+    import numpy as np
+    q_embeddings = torch.from_numpy(np.vstack(embeddings_list))
     print(f"✅ Encoded {len(questions)} questions")
     
     return True
@@ -119,8 +131,8 @@ def chat():
                 "status": "error"
             }), 500
         
-        # Encode user query
-        query_emb = embedder.encode(user_q, convert_to_tensor=True)
+        # Encode user query (use CPU to save memory)
+        query_emb = embedder.encode(user_q, convert_to_tensor=True, device='cpu')
         
         # Calculate similarity scores
         cos_scores = util.cos_sim(query_emb, q_embeddings)[0]
