@@ -4,7 +4,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import CategorySelector from './CategorySelector';
 import { detectLanguage } from '../utils/languageDetection';
 import axios from 'axios';
-import API_BASE_URL from '../config/api';
 
 const Home = () => {
   const { t, currentLanguage, changeLanguage } = useLanguage();
@@ -15,6 +14,8 @@ const Home = () => {
   const [filter, setFilter] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('cowAndBuffalo');
   const [detectedLanguage, setDetectedLanguage] = useState('en');
+
+  const API_BASE_URL = 'http://localhost:5001/api';
 
   // Re-search when language changes (if there's an active search)
   useEffect(() => {
@@ -27,19 +28,7 @@ const Home = () => {
   const hasContent = (field) => {
     if (!field) return false;
     if (typeof field === 'string') return field.trim() !== '';
-    if (Array.isArray(field)) {
-      if (field.length === 0) return false;
-      // Check if it's an array of objects (like Treatments)
-      if (typeof field[0] === 'object' && field[0] !== null) {
-        return field.some(item => item && typeof item === 'object');
-      }
-      // Check if it's an array of strings - check for any non-empty string
-      return field.some(item => {
-        if (item === null || item === undefined) return false;
-        if (typeof item === 'string') return item.trim() !== '';
-        return true; // For other types, consider it has content
-      });
-    }
+    if (Array.isArray(field)) return field.length > 0 && field.some(item => item && item.trim() !== '');
     return true;
   };
 
@@ -233,7 +222,41 @@ const Home = () => {
               </h2>
             )}
 
-            {/* Removed search prompt and browse images section */}
+            {!searchQuery && (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
+                <p>{t('searchToStart')}</p>
+                <div style={{ marginTop: '2rem' }}>
+                  <h3 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Browse Diseases with Images</h3>
+                  <Link 
+                    to="/category/imagesheepandgoat" 
+                    className="browse-images-btn"
+                    style={{
+                      display: 'inline-block',
+                      padding: '12px 24px',
+                      backgroundColor: '#16a34a',
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: '8px',
+                      fontWeight: '600',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '0 2px 10px rgba(22, 163, 74, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#15803d';
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 4px 15px rgba(22, 163, 74, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#16a34a';
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 2px 10px rgba(22, 163, 74, 0.3)';
+                    }}
+                  >
+                    🖼️ View Herbal Masala Bolus Images
+                  </Link>
+                </div>
+              </div>
+            )}
 
             {searchQuery && filteredDiseases.length === 0 && (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>

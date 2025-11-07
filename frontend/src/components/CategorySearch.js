@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
-import API_BASE_URL from '../config/api';
 
 const CategorySearch = () => {
   const { category } = useParams();
@@ -13,23 +12,13 @@ const CategorySearch = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
 
+  const API_BASE_URL = 'http://localhost:5001/api';
+
   // Helper function to check if a field has content
   const hasContent = (field) => {
     if (!field) return false;
     if (typeof field === 'string') return field.trim() !== '';
-    if (Array.isArray(field)) {
-      if (field.length === 0) return false;
-      // Check if it's an array of objects (like Treatments)
-      if (typeof field[0] === 'object' && field[0] !== null) {
-        return field.some(item => item && typeof item === 'object');
-      }
-      // Check if it's an array of strings - check for any non-empty string
-      return field.some(item => {
-        if (item === null || item === undefined) return false;
-        if (typeof item === 'string') return item.trim() !== '';
-        return true; // For other types, consider it has content
-      });
-    }
+    if (Array.isArray(field)) return field.length > 0 && field.some(item => item && item.trim() !== '');
     return true;
   };
 

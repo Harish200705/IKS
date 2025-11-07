@@ -9,20 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // Middleware
-// Configure CORS for production
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
-      ? process.env.FRONTEND_URL.split(',')
-      : ['https://veterinary-frontend.onrender.com']
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection - Updated to use correct database and collection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS';
+const MONGODB_URI = 'mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS';
 
 mongoose.connect(MONGODB_URI)
   .then(() => {
@@ -35,41 +26,33 @@ mongoose.connect(MONGODB_URI)
   });
 
 // Disease Schema - Updated to match the existing collection structure
-// Use Mixed type for fields that can be strings or arrays
 const diseaseSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.Mixed, required: false }, // Handle both ObjectId and string _id
   "Disease Name": { type: String, required: false },
   "Disease name": { type: String, required: false }, // Alternative field name
   "disease_name": { type: String, required: false }, // Alternative field name for new format
-  "Symptoms": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array
-  "Causes": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array
-  "Treatment Name": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array
+  "Symptoms": { type: String, required: true },
+  "Causes": { type: String, required: true },
+  "Treatment Name": { type: String, required: false }, // Individual treatment fields
   "treatment_description": { type: String, required: false }, // Alternative field name for new format
-  "Ingredients": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array (or array of arrays)
-  "Preparation Method": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array
-  "Dosage": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be string or array
+  "Ingredients": { type: String, required: false },
+  "Preparation Method": { type: String, required: false },
+  "Dosage": { type: String, required: false },
   "Treatments": { type: [mongoose.Schema.Types.Mixed], required: false }, // Array of treatment objects
   "images": { type: [mongoose.Schema.Types.Mixed], required: false } // Array of image objects
-}, { 
-  _id: false, // Disable automatic _id generation
-  strict: false // Allow fields not defined in schema
-}); // Disable automatic _id generation
+}, { _id: false }); // Disable automatic _id generation
 
 // Create models for different collections
 const CowBuffaloDisease = mongoose.model('CowBuffaloDisease', diseaseSchema, 'cowAndBuffalo');
 const CowBuffaloTamilDisease = mongoose.model('CowBuffaloTamilDisease', diseaseSchema, 'cowAndBuffaloTamil');
-const CowBuffaloHindiDisease = mongoose.model('CowBuffaloHindiDisease', diseaseSchema, 'cowAndBuffaloHindi');
-const CowBuffaloMalayalamDisease = mongoose.model('CowBuffaloMalayalamDisease', diseaseSchema, 'cowAndBuffaloMalayalam');
 
 const PoultryBirdsDisease = mongoose.model('PoultryBirdsDisease', diseaseSchema, 'PoultryBirds');
 const PoultryBirdsHindiDisease = mongoose.model('PoultryBirdsHindiDisease', diseaseSchema, 'PoultryBirdsHindi');
 const PoultryBirdsTamilDisease = mongoose.model('PoultryBirdsTamilDisease', diseaseSchema, 'PoultryBirdsTamil');
-const PoultryBirdsMalayalamDisease = mongoose.model('PoultryBirdsMalayalamDisease', diseaseSchema, 'PoultryBirdsMalayalam');
 
 const SheepGoatDisease = mongoose.model('SheepGoatDisease', diseaseSchema, 'SheepGoat');
 const SheepGoatHindiDisease = mongoose.model('SheepGoatHindiDisease', diseaseSchema, 'SheepGoatHindi');
 const SheepGoatTamilDisease = mongoose.model('SheepGoatTamilDisease', diseaseSchema, 'SheepGoatTamil');
-const SheepGoatMalayalamDisease = mongoose.model('SheepGoatMalayalamDisease', diseaseSchema, 'SheepGoatMalayalam');
 const SheepGoatImagesDisease = mongoose.model('SheepGoatImagesDisease', diseaseSchema, 'imagesheepandgoat');
 
 // Routes
@@ -140,12 +123,8 @@ app.get('/api/search', async (req, res) => {
       case 'cowAndBuffalo':
         if (searchLanguage === 'ta') {
           collectionsToSearch = ['cowAndBuffaloTamil'];
-        } else if (searchLanguage === 'hi') {
-          collectionsToSearch = ['cowAndBuffaloHindi'];
-        } else if (searchLanguage === 'ml') {
-          collectionsToSearch = ['cowAndBuffaloMalayalam'];
         } else {
-          collectionsToSearch = ['cowAndBuffalo'];
+          collectionsToSearch = ['cowAndBuffalo']; // English only for cowAndBuffalo
         }
         break;
       case 'PoultryBirds':
@@ -153,8 +132,6 @@ app.get('/api/search', async (req, res) => {
           collectionsToSearch = ['PoultryBirdsTamil'];
         } else if (searchLanguage === 'hi') {
           collectionsToSearch = ['PoultryBirdsHindi'];
-        } else if (searchLanguage === 'ml') {
-          collectionsToSearch = ['PoultryBirdsMalayalam'];
         } else {
           collectionsToSearch = ['PoultryBirds'];
         }
@@ -164,8 +141,6 @@ app.get('/api/search', async (req, res) => {
           collectionsToSearch = ['SheepGoatTamil'];
         } else if (searchLanguage === 'hi') {
           collectionsToSearch = ['SheepGoatHindi'];
-        } else if (searchLanguage === 'ml') {
-          collectionsToSearch = ['SheepGoatMalayalam'];
         } else {
           collectionsToSearch = ['SheepGoat'];
         }
@@ -189,12 +164,6 @@ app.get('/api/search', async (req, res) => {
         case 'cowAndBuffaloTamil':
           DiseaseModel = CowBuffaloTamilDisease;
           break;
-        case 'cowAndBuffaloHindi':
-          DiseaseModel = CowBuffaloHindiDisease;
-          break;
-        case 'cowAndBuffaloMalayalam':
-          DiseaseModel = CowBuffaloMalayalamDisease;
-          break;
         case 'PoultryBirds':
           DiseaseModel = PoultryBirdsDisease;
           break;
@@ -204,9 +173,6 @@ app.get('/api/search', async (req, res) => {
         case 'PoultryBirdsTamil':
           DiseaseModel = PoultryBirdsTamilDisease;
           break;
-        case 'PoultryBirdsMalayalam':
-          DiseaseModel = PoultryBirdsMalayalamDisease;
-          break;
         case 'SheepGoat':
           DiseaseModel = SheepGoatDisease;
           break;
@@ -215,9 +181,6 @@ app.get('/api/search', async (req, res) => {
           break;
         case 'SheepGoatTamil':
           DiseaseModel = SheepGoatTamilDisease;
-          break;
-        case 'SheepGoatMalayalam':
-          DiseaseModel = SheepGoatMalayalamDisease;
           break;
         case 'imagesheepandgoat':
           DiseaseModel = SheepGoatImagesDisease;
@@ -229,8 +192,7 @@ app.get('/api/search', async (req, res) => {
       try {
         // Use raw MongoDB driver for collections with string _id fields
         let diseases;
-        if (coll === 'SheepGoatHindi' || coll === 'PoultryBirdsHindi' || 
-            coll === 'SheepGoatMalayalam' || coll === 'PoultryBirdsMalayalam') {
+        if (coll === 'SheepGoatHindi' || coll === 'PoultryBirdsHindi') {
           const db = mongoose.connection.db;
           diseases = await db.collection(coll).find({
             $or: [
@@ -272,13 +234,13 @@ app.get('/api/search', async (req, res) => {
             if (disease["Treatments"] && Array.isArray(disease["Treatments"])) {
               // For collections with Treatments array (like PoultryBirdsHindi)
               diseaseData["Treatments"] = disease["Treatments"];
+            } else {
+              // For collections with individual treatment fields
+              if (disease["Treatment Name"]) diseaseData["Treatment Name"] = disease["Treatment Name"];
+              if (disease["Ingredients"]) diseaseData["Ingredients"] = disease["Ingredients"];
+              if (disease["Preparation Method"]) diseaseData["Preparation Method"] = disease["Preparation Method"];
+              if (disease["Dosage"]) diseaseData["Dosage"] = disease["Dosage"];
             }
-            
-            // Always preserve treatment fields (can be arrays or strings)
-            if (disease["Treatment Name"]) diseaseData["Treatment Name"] = disease["Treatment Name"];
-            if (disease["Ingredients"]) diseaseData["Ingredients"] = disease["Ingredients"];
-            if (disease["Preparation Method"]) diseaseData["Preparation Method"] = disease["Preparation Method"];
-            if (disease["Dosage"]) diseaseData["Dosage"] = disease["Dosage"];
             
             // Add other fields if they exist
             if (disease["Causes"]) diseaseData["Causes"] = disease["Causes"];
@@ -329,12 +291,6 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       case 'cowAndBuffaloTamil':
         DiseaseModel = CowBuffaloTamilDisease;
         break;
-      case 'cowAndBuffaloHindi':
-        DiseaseModel = CowBuffaloHindiDisease;
-        break;
-      case 'cowAndBuffaloMalayalam':
-        DiseaseModel = CowBuffaloMalayalamDisease;
-        break;
       case 'PoultryBirds':
         DiseaseModel = PoultryBirdsDisease;
         break;
@@ -344,9 +300,6 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       case 'PoultryBirdsTamil':
         DiseaseModel = PoultryBirdsTamilDisease;
         break;
-      case 'PoultryBirdsMalayalam':
-        DiseaseModel = PoultryBirdsMalayalamDisease;
-        break;
       case 'SheepGoat':
         DiseaseModel = SheepGoatDisease;
         break;
@@ -355,9 +308,6 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
         break;
       case 'SheepGoatTamil':
         DiseaseModel = SheepGoatTamilDisease;
-        break;
-      case 'SheepGoatMalayalam':
-        DiseaseModel = SheepGoatMalayalamDisease;
         break;
       case 'imagesheepandgoat':
         DiseaseModel = SheepGoatImagesDisease;
@@ -376,8 +326,7 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     
     try {
       // Use raw MongoDB driver for collections with string _id fields
-      if (collection === 'SheepGoatHindi' || collection === 'PoultryBirdsHindi' || 
-          collection === 'SheepGoatMalayalam' || collection === 'PoultryBirdsMalayalam') {
+      if (collection === 'SheepGoatHindi' || collection === 'PoultryBirdsHindi') {
         console.log(`Using raw MongoDB driver for collection: ${collection}`);
         const db = mongoose.connection.db;
         const allDiseases = await db.collection(collection).find({}).toArray();
@@ -394,56 +343,21 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
         });
       } else {
         console.log(`Using Mongoose model: ${DiseaseModel.modelName}`);
+        const allDiseases = await DiseaseModel.find({});
+        console.log(`Found ${allDiseases.length} diseases using Mongoose model`);
         
-        // Try to find by ID first (more efficient)
-        try {
-          // Try ObjectId conversion first
-          if (mongoose.Types.ObjectId.isValid(id)) {
-            disease = await DiseaseModel.findById(id);
-            if (disease) {
-              console.log(`Found disease using findById with ObjectId`);
-            }
+        // Handle both regular ObjectIds, string IDs, and temporary IDs
+        disease = allDiseases.find(d => {
+          if (d._id) {
+            // Handle both ObjectId and string _id types
+            const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
+            console.log(`Mongoose comparing: ${diseaseId} === ${id} ? ${diseaseId === id}`);
+            return diseaseId === id;
           }
-          
-          // If not found, search all diseases
-          if (!disease) {
-            const allDiseases = await DiseaseModel.find({});
-            console.log(`Found ${allDiseases.length} diseases using Mongoose model`);
-            
-            // Handle both regular ObjectIds, string IDs, and temporary IDs
-            disease = allDiseases.find(d => {
-              if (d._id) {
-                // Handle both ObjectId and string _id types
-                const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
-                console.log(`Mongoose comparing: ${diseaseId} === ${id} ? ${diseaseId === id}`);
-                return diseaseId === id;
-              }
-              // For diseases without _id, try to match by disease name
-              console.log(`Disease has no _id field`);
-              return false;
-            });
-          }
-          
-          // Log raw document fields if found
-          if (disease) {
-            const rawDoc = disease.toObject ? disease.toObject() : disease;
-            console.log('Raw disease document keys:', Object.keys(rawDoc));
-            console.log('Raw Treatment Name:', rawDoc["Treatment Name"], 'Type:', typeof rawDoc["Treatment Name"], 'Is Array:', Array.isArray(rawDoc["Treatment Name"]));
-            console.log('Raw Ingredients:', rawDoc["Ingredients"], 'Type:', typeof rawDoc["Ingredients"], 'Is Array:', Array.isArray(rawDoc["Ingredients"]));
-            console.log('Raw Preparation Method:', rawDoc["Preparation Method"], 'Type:', typeof rawDoc["Preparation Method"], 'Is Array:', Array.isArray(rawDoc["Preparation Method"]));
-            console.log('Raw Dosage:', rawDoc["Dosage"], 'Type:', typeof rawDoc["Dosage"], 'Is Array:', Array.isArray(rawDoc["Dosage"]));
-          }
-        } catch (findError) {
-          console.log('Error in findById, trying find:', findError.message);
-          const allDiseases = await DiseaseModel.find({});
-          disease = allDiseases.find(d => {
-            if (d._id) {
-              const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
-              return diseaseId === id;
-            }
-            return false;
-          });
-        }
+          // For diseases without _id, try to match by disease name
+          console.log(`Disease has no _id field`);
+          return false;
+        });
       }
     } catch (err) {
       console.log('Disease search failed:', err.message);
@@ -464,41 +378,8 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     console.log(`✅ Found disease: ${displayName}`);
     console.log(`Disease ID: ${disease._id}`);
     console.log(`Disease type: ${typeof disease._id}`);
-    
-    // Log array fields to verify they're being sent correctly
-    console.log(`Treatment Name type: ${Array.isArray(disease["Treatment Name"]) ? 'Array' : typeof disease["Treatment Name"]}`);
-    console.log(`Treatment Name length: ${Array.isArray(disease["Treatment Name"]) ? disease["Treatment Name"].length : 'N/A'}`);
-    console.log(`Ingredients type: ${Array.isArray(disease["Ingredients"]) ? 'Array' : typeof disease["Ingredients"]}`);
-    console.log(`Ingredients length: ${Array.isArray(disease["Ingredients"]) ? disease["Ingredients"].length : 'N/A'}`);
-    console.log(`Preparation Method type: ${Array.isArray(disease["Preparation Method"]) ? 'Array' : typeof disease["Preparation Method"]}`);
-    console.log(`Preparation Method length: ${Array.isArray(disease["Preparation Method"]) ? disease["Preparation Method"].length : 'N/A'}`);
-    console.log(`Dosage type: ${Array.isArray(disease["Dosage"]) ? 'Array' : typeof disease["Dosage"]}`);
-    console.log(`Dosage length: ${Array.isArray(disease["Dosage"]) ? disease["Dosage"].length : 'N/A'}`);
-    
     console.log(`\n=== DISEASE DETAIL REQUEST END (200) ===`);
-    
-    // Ensure arrays are properly formatted (convert Mongoose documents to plain objects if needed)
-    // For raw MongoDB results, it's already a plain object, so arrays are preserved
-    // For Mongoose results, convert to plain object to preserve arrays
-    let diseaseResponse;
-    if (disease.toObject) {
-      diseaseResponse = disease.toObject();
-    } else {
-      // For raw MongoDB results, ensure all fields including arrays are preserved
-      diseaseResponse = JSON.parse(JSON.stringify(disease));
-    }
-    
-    // Log to verify arrays are preserved
-    console.log('Response - Treatment Name type:', Array.isArray(diseaseResponse["Treatment Name"]) ? 'Array' : typeof diseaseResponse["Treatment Name"]);
-    console.log('Response - Ingredients type:', Array.isArray(diseaseResponse["Ingredients"]) ? 'Array' : typeof diseaseResponse["Ingredients"]);
-    if (Array.isArray(diseaseResponse["Ingredients"])) {
-      console.log('Response - Ingredients is array of arrays:', diseaseResponse["Ingredients"].map(item => Array.isArray(item)));
-      console.log('Response - Ingredients lengths:', diseaseResponse["Ingredients"].map(item => Array.isArray(item) ? item.length : 'N/A'));
-    }
-    console.log('Response - Preparation Method type:', Array.isArray(diseaseResponse["Preparation Method"]) ? 'Array' : typeof diseaseResponse["Preparation Method"]);
-    console.log('Response - Dosage type:', Array.isArray(diseaseResponse["Dosage"]) ? 'Array' : typeof diseaseResponse["Dosage"]);
-    
-    res.json(diseaseResponse);
+    res.json(disease);
   } catch (error) {
     console.error('\n=== DISEASE DETAIL ERROR ===');
     console.error('Error message:', error.message);
@@ -525,12 +406,6 @@ app.get('/api/diseases/:collection', async (req, res) => {
       case 'cowAndBuffaloTamil':
         DiseaseModel = CowBuffaloTamilDisease;
         break;
-      case 'cowAndBuffaloHindi':
-        DiseaseModel = CowBuffaloHindiDisease;
-        break;
-      case 'cowAndBuffaloMalayalam':
-        DiseaseModel = CowBuffaloMalayalamDisease;
-        break;
       case 'PoultryBirds':
         DiseaseModel = PoultryBirdsDisease;
         break;
@@ -540,9 +415,6 @@ app.get('/api/diseases/:collection', async (req, res) => {
       case 'PoultryBirdsTamil':
         DiseaseModel = PoultryBirdsTamilDisease;
         break;
-      case 'PoultryBirdsMalayalam':
-        DiseaseModel = PoultryBirdsMalayalamDisease;
-        break;
       case 'SheepGoat':
         DiseaseModel = SheepGoatDisease;
         break;
@@ -551,9 +423,6 @@ app.get('/api/diseases/:collection', async (req, res) => {
         break;
       case 'SheepGoatTamil':
         DiseaseModel = SheepGoatTamilDisease;
-        break;
-      case 'SheepGoatMalayalam':
-        DiseaseModel = SheepGoatMalayalamDisease;
         break;
       default:
         DiseaseModel = CowBuffaloDisease;
@@ -582,38 +451,30 @@ app.get('/api/test', async (req, res) => {
   try {
     const cowBuffaloCount = await CowBuffaloDisease.countDocuments();
     const cowBuffaloTamilCount = await CowBuffaloTamilDisease.countDocuments();
-    const cowBuffaloHindiCount = await CowBuffaloHindiDisease.countDocuments();
-    const cowBuffaloMalayalamCount = await CowBuffaloMalayalamDisease.countDocuments();
     
     const poultryCount = await PoultryBirdsDisease.countDocuments();
     const poultryHindiCount = await PoultryBirdsHindiDisease.countDocuments();
     const poultryTamilCount = await PoultryBirdsTamilDisease.countDocuments();
-    const poultryMalayalamCount = await PoultryBirdsMalayalamDisease.countDocuments();
     
     const sheepGoatCount = await SheepGoatDisease.countDocuments();
     const sheepGoatHindiCount = await SheepGoatHindiDisease.countDocuments();
     const sheepGoatTamilCount = await SheepGoatTamilDisease.countDocuments();
-    const sheepGoatMalayalamCount = await SheepGoatMalayalamDisease.countDocuments();
     
-    const totalCount = cowBuffaloCount + cowBuffaloTamilCount + cowBuffaloHindiCount + cowBuffaloMalayalamCount + 
-                      poultryCount + poultryHindiCount + poultryTamilCount + poultryMalayalamCount + 
-                      sheepGoatCount + sheepGoatHindiCount + sheepGoatTamilCount + sheepGoatMalayalamCount;
+    const totalCount = cowBuffaloCount + cowBuffaloTamilCount + 
+                      poultryCount + poultryHindiCount + poultryTamilCount + 
+                      sheepGoatCount + sheepGoatHindiCount + sheepGoatTamilCount;
     
     res.json({
       message: 'Database connection successful',
       collections: {
         cowAndBuffalo: cowBuffaloCount,
         cowAndBuffaloTamil: cowBuffaloTamilCount,
-        cowAndBuffaloHindi: cowBuffaloHindiCount,
-        cowAndBuffaloMalayalam: cowBuffaloMalayalamCount,
         PoultryBirds: poultryCount,
         PoultryBirdsHindi: poultryHindiCount,
         PoultryBirdsTamil: poultryTamilCount,
-        PoultryBirdsMalayalam: poultryMalayalamCount,
         SheepGoat: sheepGoatCount,
         SheepGoatHindi: sheepGoatHindiCount,
-        SheepGoatTamil: sheepGoatTamilCount,
-        SheepGoatMalayalam: sheepGoatMalayalamCount
+        SheepGoatTamil: sheepGoatTamilCount
       },
       totalDiseases: totalCount,
       database: 'Diseases'
@@ -744,17 +605,15 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
         targetCollection = collection.replace('Hindi', '');
       } else if (collection.endsWith('Tamil')) {
         targetCollection = collection.replace('Tamil', '');
-      } else if (collection.endsWith('Malayalam')) {
-        targetCollection = collection.replace('Malayalam', '');
       } else {
         // Already English collection
         targetCollection = collection;
       }
     } else {
       // For other languages, add language suffix
-      if (collection.endsWith('Hindi') || collection.endsWith('Tamil') || collection.endsWith('Malayalam')) {
+      if (collection.endsWith('Hindi') || collection.endsWith('Tamil')) {
         // Replace existing language suffix
-        targetCollection = collection.replace(/Hindi|Tamil|Malayalam$/, '') + targetSuffix;
+        targetCollection = collection.replace(/Hindi|Tamil$/, '') + targetSuffix;
       } else {
         // Add language suffix to English collection
         targetCollection = collection + targetSuffix;
@@ -767,29 +626,12 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
     let disease = null;
     
     // Handle different collection types
-    if (targetCollection === 'cowAndBuffalo' || targetCollection === 'cowAndBuffaloTamil' || 
-        targetCollection === 'cowAndBuffaloHindi' || targetCollection === 'cowAndBuffaloMalayalam') {
-      // Use Mongoose models for cowAndBuffalo collections
-      let Model;
-      switch(targetCollection) {
-        case 'cowAndBuffalo':
-          Model = CowBuffaloDisease;
-          break;
-        case 'cowAndBuffaloTamil':
-          Model = CowBuffaloTamilDisease;
-          break;
-        case 'cowAndBuffaloHindi':
-          Model = CowBuffaloHindiDisease;
-          break;
-        case 'cowAndBuffaloMalayalam':
-          Model = CowBuffaloMalayalamDisease;
-          break;
-        default:
-          Model = CowBuffaloDisease;
-      }
+    if (targetCollection === 'cowAndBuffalo' || targetCollection === 'cowAndBuffaloTamil') {
+      // Use Mongoose models for these collections
+      const Model = targetCollection === 'cowAndBuffalo' ? CowBuffaloDisease : CowBuffaloTamilDisease;
       disease = await Model.findById(id);
-    } else if (targetCollection.includes('Hindi') || targetCollection.includes('Tamil') || targetCollection.includes('Malayalam')) {
-      // Use raw MongoDB driver for Hindi/Tamil/Malayalam collections (except cowAndBuffalo variants)
+    } else if (targetCollection.includes('Hindi') || targetCollection.includes('Tamil')) {
+      // Use raw MongoDB driver for Hindi/Tamil collections
       const rawDisease = await mongoose.connection.db.collection(targetCollection).findOne({ _id: id });
       if (rawDisease) {
         disease = rawDisease;
@@ -811,20 +653,11 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
       });
     }
     
-    // Convert Mongoose document to plain object to preserve arrays (do this early for all cases)
-    let diseaseData;
-    if (disease.toObject) {
-      diseaseData = disease.toObject();
-    } else {
-      // For raw MongoDB results, ensure all fields including arrays are preserved
-      diseaseData = JSON.parse(JSON.stringify(disease));
-    }
-    
     // Check if we found the disease in the same collection (no translation available)
     // This happens when the target language collection is the same as the source collection
     if (targetCollection === collection) {
       return res.status(200).json({
-        ...diseaseData,
+        ...disease,
         collection: targetCollection,
         language: targetLanguage,
         translated: false,
@@ -833,9 +666,9 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
     }
     
     // Also check if we're returning content from the original collection when we should be looking elsewhere
-    if (diseaseData.collection === collection && targetCollection !== collection) {
+    if (disease.collection === collection && targetCollection !== collection) {
       return res.status(200).json({
-        ...diseaseData,
+        ...disease,
         collection: collection,
         language: targetLanguage,
         translated: false,
@@ -844,26 +677,18 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
     }
     
     // Format the response similar to the disease detail endpoint
-    // (diseaseData already converted above)
-    const displayName = diseaseData["Disease Name"] || diseaseData["Disease name"] || diseaseData["disease name"];
-    
-    // Log to verify arrays are preserved
-    console.log('Translation Response - Treatment Name type:', Array.isArray(diseaseData["Treatment Name"]) ? 'Array' : typeof diseaseData["Treatment Name"]);
-    console.log('Translation Response - Ingredients type:', Array.isArray(diseaseData["Ingredients"]) ? 'Array' : typeof diseaseData["Ingredients"]);
-    if (Array.isArray(diseaseData["Ingredients"])) {
-      console.log('Translation Response - Ingredients is array of arrays:', diseaseData["Ingredients"].map(item => Array.isArray(item)));
-    }
+    const displayName = disease["Disease Name"] || disease["Disease name"];
     
     const response = {
-      _id: diseaseData._id,
+      _id: disease._id,
       "Disease Name": displayName,
-      "Symptoms": diseaseData["Symptoms"],
-      "Causes": diseaseData["Causes"],
-      "Treatment Name": diseaseData["Treatment Name"],
-      "Ingredients": diseaseData["Ingredients"],
-      "Preparation Method": diseaseData["Preparation Method"],
-      "Dosage": diseaseData["Dosage"],
-      "Treatments": diseaseData["Treatments"], // For collections with array format
+      "Symptoms": disease["Symptoms"],
+      "Causes": disease["Causes"],
+      "Treatment Name": disease["Treatment Name"],
+      "Ingredients": disease["Ingredients"],
+      "Preparation Method": disease["Preparation Method"],
+      "Dosage": disease["Dosage"],
+      "Treatments": disease["Treatments"], // For collections with array format
       collection: targetCollection,
       language: targetLanguage,
       translated: true

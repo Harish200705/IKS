@@ -56,13 +56,16 @@ const Chatbot = () => {
         language: currentLanguage
       });
 
+      // Handle different response formats from chatbot API
+      const responseText = response.data.response || response.data.message || response.data.answer || 'No response received';
+      const source = response.data.source || response.data.detected_disease || 'chatbot';
+      
       const botMessage = {
         id: Date.now() + 1,
-        text: response.data.message,
+        text: responseText,
         sender: 'bot',
         timestamp: new Date().toISOString(),
-        source: response.data.source,
-        suggestedQuestions: response.data.suggestedQuestions || []
+        source: source
       };
 
       setMessages(prev => [...prev, botMessage]);
@@ -88,13 +91,7 @@ const Chatbot = () => {
     }
   };
 
-  const handleSuggestedQuestion = (question) => {
-    setInputMessage(question);
-    // Auto-send the suggested question
-    setTimeout(() => {
-      sendMessage();
-    }, 100);
-  };
+  // Removed handleSuggestedQuestion - suggested questions feature removed
 
   const clearChat = () => {
     setMessages([]);
@@ -162,7 +159,7 @@ const Chatbot = () => {
               <div key={message.id} className={`message ${message.sender}`}>
                 <div className="message-content">
                   <div className="message-text" dangerouslySetInnerHTML={{ 
-                    __html: message.text
+                    __html: (message.text || '')
                       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                       .replace(/\*(.*?)\*/g, '<em>$1</em>')
                       .replace(/\n/g, '<br>')
@@ -174,24 +171,6 @@ const Chatbot = () => {
                         message.source
                       }
                     </small>
-                  )}
-                  
-                  {/* Suggested Questions */}
-                  {message.suggestedQuestions && message.suggestedQuestions.length > 0 && message.sender === 'bot' && (
-                    <div className="suggested-questions">
-                      <div className="suggested-questions-label">
-                        {t('suggestedQuestions') || 'Suggested questions:'}
-                      </div>
-                      {message.suggestedQuestions.map((question, index) => (
-                        <button
-                          key={index}
-                          className="suggested-question-btn"
-                          onClick={() => handleSuggestedQuestion(question)}
-                        >
-                          {question}
-                        </button>
-                      ))}
-                    </div>
                   )}
                 </div>
                 <div className="message-time">

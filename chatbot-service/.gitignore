@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Model files (if you add them)
+*.pkl
+*.h5
+*.pt
+*.pth
+*.model
+models/
+*.bin
+
+# Data files (keep your JSON file, but ignore large files)
+*.csv
+# data/processed_template_qa.json  # Uncomment if file is too large for GitHub
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+

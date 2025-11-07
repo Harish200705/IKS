@@ -2,14 +2,14 @@ const axios = require('axios');
 
 // Chatbot configuration
 const CHATBOT_CONFIG = {
-  // Option 1: If you deploy your model as an API
-  API_URL: process.env.CHATBOT_API_URL || 'https://reclosable-atomistically-tashina.ngrok-free.dev/chat',
+  // Option 1: If you deploy your model as an API (Render deployment)
+  API_URL: process.env.CHATBOT_API_URL || 'http://localhost:5002/chat',
   
   // Option 2: If you use Google Colab with ngrok
-  COLAB_URL: process.env.COLAB_URL || 'https://reclosable-atomistically-tashina.ngrok-free.dev/chat',
+  COLAB_URL: process.env.COLAB_URL || 'http://localhost:5002/chat',
   
   // Option 3: If you use a cloud service
-  CLOUD_URL: process.env.CLOUD_CHATBOT_URL || 'https://reclosable-atomistically-tashina.ngrok-free.dev/chat',
+  CLOUD_URL: process.env.CLOUD_CHATBOT_URL || 'http://localhost:5002/chat',
   
   // Fallback responses
   FALLBACK_RESPONSES: {
@@ -29,14 +29,29 @@ class ChatbotService {
   // Test connection to chatbot service
   async testConnection() {
     try {
-      const testMessage = { message: "test" };
+      // First try health endpoint
+      const healthUrl = CHATBOT_CONFIG.API_URL.replace('/chat', '/health');
+      try {
+        const healthResponse = await axios.get(healthUrl, { timeout: 5000 });
+        if (healthResponse.status === 200) {
+          this.isAvailable = true;
+          console.log('Chatbot service: Connected (health check passed)');
+          return;
+        }
+      } catch (healthError) {
+        // Health endpoint might not exist, try chat endpoint
+      }
+      
+      // Try chat endpoint with test message
+      const testMessage = { message: "test", language: "en" };
       const response = await axios.post(CHATBOT_CONFIG.API_URL, testMessage, {
-        timeout: 5000
+        timeout: 10000
       });
       this.isAvailable = response.status === 200;
       console.log('Chatbot service:', this.isAvailable ? 'Connected' : 'Not available');
     } catch (error) {
       console.log('Chatbot service: Not available');
+      console.log('Error:', error.message);
       this.isAvailable = false;
     }
   }
@@ -64,9 +79,10 @@ class ChatbotService {
       console.log(`Timestamp: ${new Date().toISOString()}`);
 
       const response = await axios.post(CHATBOT_CONFIG.API_URL, {
-        message: userMessage
+        message: userMessage,
+        language: language
       }, {
-        timeout: 10000,
+        timeout: 30000,  // Increased timeout for model loading
         headers: {
           'Content-Type': 'application/json'
         }
@@ -84,12 +100,24 @@ class ChatbotService {
       let suggestedQuestions = [];
       
       // Prefer a primary answer text if present across possible shapes
+      // Your chatbot returns: { response, detected_disease, matched_question, similarity_score }
       const primaryAnswerText = (response.data && (
+        response.data.response ||  // Your chatbot format
         response.data.answer ||
         (Array.isArray(response.data.answers) && response.data.answers[0] && response.data.answers[0].answer) ||
-        response.data.message ||
-        response.data.response
+        response.data.message
       )) || '';
+      
+      // Extract additional info from your chatbot response
+      if (response.data.detected_disease) {
+        detectedDisease = response.data.detected_disease;
+      }
+      if (response.data.matched_question) {
+        matchedQuestion = response.data.matched_question;
+      }
+      if (response.data.similarity_score !== undefined) {
+        confidence = (response.data.similarity_score * 100).toFixed(1);
+      }
       
       if (response.data.answers && response.data.answers.length > 0) {
         const answer = response.data.answers[0];
@@ -104,22 +132,36 @@ class ChatbotService {
         // Generate suggested questions based on the detected disease
         suggestedQuestions = this.generateSuggestedQuestions(detectedDisease, language);
         
-      } else if (response.data.detected_disease) {
-        detectedDisease = response.data.detected_disease;
-        // Show detected disease prominently, followed by the best available answer text
-        const answerText = primaryAnswerText || 'No specific information found.';
-        formattedResponse = `**${response.data.detected_disease}**\n\n${answerText}`;
+      } else if (response.data.detected_disease || response.data.response) {
+        // Handle your chatbot's response format: { response, detected_disease, matched_question, similarity_score }
+        if (response.data.detected_disease) {
+          detectedDisease = response.data.detected_disease;
+        }
         if (response.data.matched_question) {
           matchedQuestion = response.data.matched_question;
-          formattedResponse += `\n\nMatched question: ${response.data.matched_question}`;
         }
-        if (response.data.similarity_score) {
+        if (response.data.similarity_score !== undefined) {
           confidence = (response.data.similarity_score * 100).toFixed(1);
+        }
+        
+        // Format the response
+        const answerText = primaryAnswerText || 'No specific information found.';
+        if (detectedDisease) {
+          formattedResponse = `**${detectedDisease}**\n\n${answerText}`;
+        } else {
+          formattedResponse = answerText;
+        }
+        
+        if (confidence) {
           formattedResponse += `\n\n*Confidence: ${confidence}%*`;
         }
         
         // Generate suggested questions based on the detected disease
-        suggestedQuestions = this.generateSuggestedQuestions(detectedDisease, language);
+        if (detectedDisease) {
+          suggestedQuestions = this.generateSuggestedQuestions(detectedDisease, language);
+        } else {
+          suggestedQuestions = this.generateGenericQuestions(language);
+        }
         
       } else {
         formattedResponse = primaryAnswerText || 'No specific information found.';
