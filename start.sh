@@ -2,8 +2,8 @@
 
 echo "🚀 Starting Veterinary Website..."
 
-# Start backend server
-echo "📡 Starting backend server..."
+# Start Node backend server (server.js)
+echo "📡 Starting Node backend server (server.js)..."
 cd backend
 npm run dev &
 BACKEND_PID=$!
@@ -21,11 +21,12 @@ cd ../frontend
 npm start &
 FRONTEND_PID=$!
 
-echo "✅ Both servers are starting..."
-echo "📱 Frontend: http://localhost:3000"
-echo "🔧 Backend: http://localhost:5001"
+echo "✅ All services are starting..."
+echo "📱 Frontend (CRA): http://localhost:3000"
+echo "🔧 Node Backend (Express): http://localhost:5001"
 echo ""
 echo "Press Ctrl+C to stop both servers"
 
-# Wait for user to stop
+# Gracefully stop all on exit
+trap "echo '🛑 Stopping services...'; kill $FRONTEND_PID $BACKEND_PID 2>/dev/null" INT TERM
 wait

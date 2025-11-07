@@ -6,6 +6,8 @@ import Header from './components/Header';
 import Home from './components/Home';
 import DiseaseDetail from './components/DiseaseDetail';
 import CategorySearch from './components/CategorySearch';
+import Chatbot from './components/Chatbot';
+import './components/Chatbot.css';
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
               <Route path="/disease/:collection/:id" element={<DiseaseDetail />} />
             </Routes>
           </main>
+          <Chatbot />
         </div>
       </Router>
     </LanguageProvider>

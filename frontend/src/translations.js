@@ -32,6 +32,7 @@ export const translations = {
     symptoms: "Symptoms",
     causes: "Causes",
     treatment: "Treatment",
+    treatments: "Treatments",
     treatmentName: "Treatment Name",
     ingredients: "Ingredients",
     preparationMethod: "Preparation Method",
@@ -51,7 +52,19 @@ export const translations = {
     tamil: "Tamil",
     telugu: "Telugu",
     malayalam: "Malayalam",
-    kannada: "Kannada"
+    kannada: "Kannada",
+    
+    // Chatbot
+    chatbotTitle: "Veterinary Assistant",
+    chatbotWelcome: "Hello! I can help you with questions about animal diseases and treatments. What would you like to know?",
+    chatbotPlaceholder: "Ask about animal diseases...",
+    chatbotOnline: "AI Assistant Online",
+    chatbotOffline: "AI Assistant Offline - Using fallback responses",
+    chatbotError: "Sorry, I encountered an error. Please try again.",
+    clearChat: "Clear chat",
+    closeChat: "Close chat",
+    fallbackResponse: "Fallback response",
+    suggestedQuestions: "Suggested questions:"
   },
   
   ta: {
@@ -87,6 +100,7 @@ export const translations = {
     symptoms: "அறிகுறிகள்",
     causes: "காரணங்கள்",
     treatment: "சிகிச்சை",
+    treatments: "சிகிச்சைகள்",
     treatmentName: "சிகிச்சை பெயர்",
     ingredients: "பொருட்கள்",
     preparationMethod: "தயாரிப்பு முறை",
@@ -142,6 +156,7 @@ export const translations = {
     symptoms: "లక്షణాలు",
     causes: "కారణాలు",
     treatment: "చికిత్స",
+    treatments: "చికిత్సలు",
     treatmentName: "చికిత్స పేరు",
     ingredients: "పదార్థాలు",
     preparationMethod: "తయారీ పద్ధతి",
@@ -197,6 +212,7 @@ export const translations = {
     symptoms: "ലക്ഷണങ്ങൾ",
     causes: "കാരണങ്ങൾ",
     treatment: "ചികിത്സ",
+    treatments: "ചികിത്സകൾ",
     treatmentName: "ചികിത്സയുടെ പേര്",
     ingredients: "ഘടകങ്ങൾ",
     preparationMethod: "തയ്യാറാക്കൽ രീതി",
@@ -252,6 +268,7 @@ export const translations = {
     symptoms: "ಲಕ്ಷಣಗಳು",
     causes: "ಕಾರಣಗಳು",
     treatment: "ಚಿಕಿತ್ಸೆ",
+    treatments: "ಚಿಕಿತ್ಸೆಗಳು",
     treatmentName: "ಚಿಕಿತ್ಸೆಯ ಹೆಸರು",
     ingredients: "ಘಟಕಾಂಶಗಳು",
     preparationMethod: "ತಯಾರಿಕೆ ವಿಧಾನ",
@@ -272,5 +289,73 @@ export const translations = {
     telugu: "ತೆಲುಗು",
     malayalam: "ಮಲಯಾಳಂ",
     kannada: "ಕನ್ನಡ"
+  },
+  
+  hi: {
+    // Header
+    logo: "वेटकेयर प्रो",
+    home: "होम",
+    
+    // Search
+    searchTitle: "पशु रोग खोजें",
+    searchSubtitle: "रोग के नाम या लक्षणों से खोजें और विस्तृत उपचार जानकारी प्राप्त करें",
+    searchPlaceholder: "रोग या लक्षण खोजें...",
+    searchButton: "खोजें",
+    
+    // Categories
+    categories: "पशु श्रेणियां",
+    cowBuffalo: "गाय और भैंस",
+    poultry: "मुर्गी",
+    sheepGoat: "भेड़ और बकरी",
+    
+    // Filters
+    all: "सभी",
+    diseaseName: "रोग का नाम",
+    symptoms: "लक्षण",
+    
+    // Results
+    searchResults: "खोज परिणाम",
+    diseasesFound: "रोग मिले",
+    noResults: "मिलते-जुलते रोग नहीं मिले",
+    tryDifferent: "अलग खोज शब्द आज़माएं",
+    searchToStart: "शुरू करने के लिए रोग का नाम या लक्षण खोजें",
+    
+    // Disease Details
+    symptoms: "लक्षण",
+    causes: "कारण",
+    treatment: "उपचार",
+    treatments: "उपचार",
+    treatmentName: "उपचार का नाम",
+    ingredients: "सामग्री",
+    preparationMethod: "तैयारी की विधि",
+    dosage: "खुराक",
+    backToSearch: "खोज पर वापस जाएं",
+    
+    // Loading and Errors
+    loading: "लोड हो रहा है...",
+    searching: "रोग खोज रहे हैं...",
+    loadingDetails: "रोग विवरण लोड हो रहे हैं...",
+    error: "त्रुटि",
+    tryAgain: "कृपया बाद में पुनः प्रयास करें",
+    
+    // Language
+    language: "भाषा",
+    english: "अंग्रेजी",
+    tamil: "तमिल",
+    telugu: "तेलुगु",
+    malayalam: "मलयालम",
+    kannada: "कन्नड़",
+    
+    // Chatbot
+    chatbotTitle: "पशु चिकित्सा सहायक",
+    chatbotWelcome: "नमस्ते! मैं पशु रोगों और उपचार के बारे में आपकी मदद कर सकता हूं। आप क्या जानना चाहते हैं?",
+    chatbotPlaceholder: "पशु रोगों के बारे में पूछें...",
+    chatbotOnline: "AI सहायक ऑनलाइन",
+    chatbotOffline: "AI सहायक ऑफलाइन - फॉलबैक प्रतिक्रियाओं का उपयोग कर रहे हैं",
+    chatbotError: "क्षमा करें, मुझे एक त्रुटि का सामना करना पड़ा। कृपया पुनः प्रयास करें।",
+    clearChat: "चैट साफ़ करें",
+    closeChat: "चैट बंद करें",
+    fallbackResponse: "फॉलबैक प्रतिक्रिया",
+    suggestedQuestions: "सुझाए गए प्रश्न:"
   }
 };

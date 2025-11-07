@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page - AI Health Assistant Widget</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .note {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Health Assistant Widget</h1>
+        
+        <div class="instructions">
+            <h3>How to Use:</h3>
+            <p>Click the circular chat icon in the bottom-right corner to open the AI Health Assistant. You can ask questions about animal diseases and treatments.</p>
+        </div>
+        
+        <h3>Features Implemented:</h3>
+        <ul class="feature-list">
+            <li>Circular chatbot icon fixed to bottom-right corner</li>
+            <li>Floating chat window with smooth animations</li>
+            <li>Header: "AI Health Assistant"</li>
+            <li>Scrollable conversation area</li>
+            <li>Text input with Send button</li>
+            <li>Modern CSS with rounded corners and shadows</li>
+            <li>Responsive design for mobile devices</li>
+            <li>In-memory caching for instant responses</li>
+            <li>localStorage persistence across page reloads</li>
+            <li>Message normalization (whitespace/punctuation insensitive)</li>
+            <li>Duplicate request prevention</li>
+            <li>API integration with specified endpoint</li>
+            <li>Error handling with retry functionality</li>
+            <li>Typing indicator while waiting for responses</li>
+            <li>Visual "cached" badge for cached responses</li>
+            <li>Auto-scroll to newest messages</li>
+            <li>Cache size limit (200 entries)</li>
+        </ul>
+        
+        <div class="note">
+            <strong>Note:</strong> If you encounter CORS errors, the server needs to have <code>flask_cors.CORS(app)</code> enabled to allow cross-origin requests.
+        </div>
+        
+        <h3>Sample Questions to Try:</h3>
+        <ul>
+            <li>"What are the symptoms of fever in animals?"</li>
+            <li>"How to treat diarrhea in calves?"</li>
+            <li>"What causes watery eyes in animals?"</li>
+            <li>"Prevention methods for animal diseases"</li>
+        </ul>
+    </div>
+    
+    <!-- Include the chatbot widget -->
+    <script>
+        // Load the chatbot widget
+        fetch('chatbot-widget.html')
+            .then(response => response.text())
+            .then(html => {
+                // Extract the widget content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const widget = doc.querySelector('.chatbot-widget');
+                if (widget) {
+                    document.body.appendChild(widget);
+                    // Re-initialize the widget
+                    if (typeof ChatbotWidget !== 'undefined') {
+                        new ChatbotWidget();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading chatbot widget:', error);
+                // Fallback: create a simple link to the widget
+                const link = document.createElement('a');
+                link.href = 'chatbot-widget.html';
+                link.textContent = 'Open Chatbot Widget';
+                link.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #667eea; color: white; padding: 15px; border-radius: 8px; text-decoration: none; z-index: 10000;';
+                document.body.appendChild(link);
+            });
+    </script>
+</body>
+</html>

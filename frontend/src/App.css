@@ -478,3 +478,174 @@ body {
 .category-name {
   font-weight: 600;
 }
+
+/* Treatment Items Styling */
+.treatment-item {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.treatment-item:last-child {
+  margin-bottom: 0;
+}
+
+.treatment-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #16a34a;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.treatment-detail {
+  margin-bottom: 1rem;
+}
+
+.treatment-detail:last-child {
+  margin-bottom: 0;
+}
+
+.treatment-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.treatment-content {
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Image Gallery Styles */
+.image-gallery {
+  margin: 1rem 0;
+}
+
+.main-image-container {
+  position: relative;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image {
+  max-width: 100%;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.image-error {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #ddd;
+}
+
+.image-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.thumbnail.active {
+  border-color: #16a34a;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.image-info {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.image-counter {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.image-name {
+  font-style: italic;
+  color: #888;
+}
+
+/* Responsive image gallery */
+@media (max-width: 768px) {
+  .main-image-container {
+    min-height: 250px;
+  }
+  
+  .main-image {
+    max-height: 300px;
+  }
+  
+  .thumbnail {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .image-thumbnails {
+    gap: 0.25rem;
+  }
+}
+
+/* Disease card enhancements */
+.disease-treatment {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.image-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(22, 163, 74, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.disease-card {
+  position: relative;
+}

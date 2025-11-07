@@ -1,0 +1,36 @@
+# Render Blueprint Configuration
+# This file allows you to deploy multiple services at once
+
+services:
+  # Backend API Service
+  - type: web
+    name: veterinary-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: veterinary-backend
+          property: port
+
+  # Frontend Static Site
+  - type: web
+    name: veterinary-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: veterinary-backend
+          property: host
+          transform: https://${host}/api
+

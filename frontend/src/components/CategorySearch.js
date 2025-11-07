@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const CategorySearch = () => {
   const { category } = useParams();
@@ -12,7 +13,79 @@ const CategorySearch = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
 
-  const API_BASE_URL = 'http://localhost:5001/api';
+  // Helper function to check if a field has content
+  const hasContent = (field) => {
+    if (!field) return false;
+    if (typeof field === 'string') return field.trim() !== '';
+    if (Array.isArray(field)) {
+      if (field.length === 0) return false;
+      // Check if it's an array of objects (like Treatments)
+      if (typeof field[0] === 'object' && field[0] !== null) {
+        return field.some(item => item && typeof item === 'object');
+      }
+      // Check if it's an array of strings - check for any non-empty string
+      return field.some(item => {
+        if (item === null || item === undefined) return false;
+        if (typeof item === 'string') return item.trim() !== '';
+        return true; // For other types, consider it has content
+      });
+    }
+    return true;
+  };
+
+  // Real-time search function
+  const performSearch = async (query, categoryParam, filterType) => {
+    if (!query.trim()) {
+      setDiseases([]);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`${API_BASE_URL}/search?query=${encodeURIComponent(query)}&collection=${categoryParam}&language=${currentLanguage}`);
+      
+      // Remove duplicates based on disease name (case-insensitive)
+      const uniqueDiseases = response.data.filter((disease, index, self) => {
+        const diseaseName = disease["Disease Name"]?.toLowerCase().trim();
+        if (!diseaseName) return true; // Keep diseases without names
+        
+        return index === self.findIndex(d => {
+          const otherDiseaseName = d["Disease Name"]?.toLowerCase().trim();
+          return otherDiseaseName === diseaseName;
+        });
+      });
+      
+      setDiseases(uniqueDiseases);
+    } catch (err) {
+      setError('Search failed. Please try again.');
+      console.error('Search error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        performSearch(searchQuery, category, filter);
+      } else {
+        setDiseases([]);
+      }
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, category, filter]);
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    // Don't reset search query - let the useEffect handle the search
+  };
 
   const getCategoryName = (categoryId) => {
     switch(categoryId) {
@@ -22,43 +95,46 @@ const CategorySearch = () => {
         return t('poultry');
       case 'SheepGoat':
         return t('sheepGoat');
+      case 'imagesheepandgoat':
+        return 'Diseases with Images';
       default:
         return categoryId;
     }
   };
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) {
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(`${API_BASE_URL}/search?query=${encodeURIComponent(searchQuery)}&collection=${category}&language=${currentLanguage}`);
-      setDiseases(response.data);
-    } catch (err) {
-      setError('Search failed. Please try again.');
-      console.error('Search error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
-
   const filteredDiseases = diseases.filter(disease => {
-    if (filter === 'all') return true;
+    if (!searchQuery.trim()) return false;
+    
+    const query = searchQuery.toLowerCase();
+    
+    if (filter === 'all') {
+      // Search across all fields
+      const searchableFields = [
+        disease["Disease Name"],
+        disease["Symptoms"],
+        disease["Causes"],
+        disease["Treatment Name"],
+        disease["Ingredients"],
+        disease["Preparation Method"],
+        disease["Dosage"]
+      ].filter(hasContent);
+      
+      return searchableFields.some(field => 
+        field.toLowerCase().includes(query)
+      );
+    }
+    
     if (filter === 'name') {
-      return disease["Disease Name"].toLowerCase().includes(searchQuery.toLowerCase());
+      return hasContent(disease["Disease Name"]) && 
+             disease["Disease Name"].toLowerCase().includes(query);
     }
+    
     if (filter === 'symptoms') {
-      return disease["Symptoms"].toLowerCase().includes(searchQuery.toLowerCase());
+      return hasContent(disease["Symptoms"]) && 
+             disease["Symptoms"].toLowerCase().includes(query);
     }
-    return true;
+    
+    return false;
   });
 
   return (
@@ -69,18 +145,15 @@ const CategorySearch = () => {
           {t('searchSubtitle')}
         </p>
         
-        <form onSubmit={handleSearch} className="search-container">
+        <div className="search-container">
           <input
             type="text"
             className="search-input"
             placeholder={t('searchPlaceholder')}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchInputChange}
           />
-          <button type="submit" className="search-button">
-            {t('searchButton')}
-          </button>
-        </form>
+        </div>
 
         <div className="filter-section">
           <button
@@ -143,20 +216,40 @@ const CategorySearch = () => {
 
             {searchQuery && filteredDiseases.length > 0 && (
               <div className="disease-grid">
-                {filteredDiseases.map((disease) => (
-                  <Link
-                    key={disease._id}
-                    to={`/disease/${disease.collection}/${disease._id}`}
-                    className="disease-card"
-                  >
-                    <h3 className="disease-name">{disease["Disease Name"]}</h3>
-                    <p className="disease-symptoms">
-                      {disease["Symptoms"].length > 100
-                        ? `${disease["Symptoms"].substring(0, 100)}...`
-                        : disease["Symptoms"]}
-                    </p>
-                  </Link>
-                ))}
+                {filteredDiseases.map((disease) => {
+                  const diseaseName = disease["Disease Name"] || disease["Disease name"] || disease.disease_name;
+                  const symptoms = disease["Symptoms"];
+                  const treatmentDescription = disease.treatment_description || disease["Treatment Name"];
+                  
+                  return hasContent(diseaseName) && (
+                    <Link
+                      key={disease._id}
+                      to={`/disease/${disease.collection}/${disease._id}`}
+                      className="disease-card"
+                    >
+                      <h3 className="disease-name">{diseaseName}</h3>
+                      {hasContent(symptoms) && (
+                        <p className="disease-symptoms">
+                          {symptoms.length > 100
+                            ? `${symptoms.substring(0, 100)}...`
+                            : symptoms}
+                        </p>
+                      )}
+                      {hasContent(treatmentDescription) && (
+                        <p className="disease-treatment">
+                          <strong>Treatment:</strong> {treatmentDescription.length > 80
+                            ? `${treatmentDescription.substring(0, 80)}...`
+                            : treatmentDescription}
+                        </p>
+                      )}
+                      {disease.images && disease.images.length > 0 && (
+                        <div className="image-indicator">
+                          🖼️ {disease.images.length} image{disease.images.length > 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </>
