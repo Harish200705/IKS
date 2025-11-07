@@ -172,24 +172,8 @@ def index():
 # =====================
 
 if __name__ == "__main__":
-    # Try different ports if 5000 is in use
+    # Get port from environment (Render sets this automatically)
     port = int(os.environ.get("PORT", 5000))
-    
-    # If port 5000 is in use, try 5001, 5002, etc.
-    import socket
-    original_port = port
-    for attempt in range(5):
-        test_port = original_port + attempt
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
-        result = sock.connect_ex(('127.0.0.1', test_port))
-        sock.close()
-        if result != 0:  # Port is available (connection failed = port free)
-            port = test_port
-            break
-    
-    if port != original_port:
-        print(f"⚠️  Port {original_port} is in use, using port {port} instead")
     
     print(f"🚀 Starting Chatbot API on port {port}")
     print(f"📡 Health check: http://localhost:{port}/health")
