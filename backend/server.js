@@ -13,17 +13,37 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection - Updated to use correct database and collection
-const MONGODB_URI = 'mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS';
 
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB Atlas successfully!');
+// Connect to MongoDB with retry logic
+const connectMongoDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+      socketTimeoutMS: 45000, // 45 seconds socket timeout
+      retryWrites: true,
+      w: 'majority'
+    });
+    console.log('✅ Connected to MongoDB Atlas successfully!');
     console.log('Database: Diseases');
     console.log('Collection: cowAndBuffalo');
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });
+    return true;
+  } catch (error) {
+    console.error('\n❌ MongoDB connection error:', error.message);
+    console.error('Error code:', error.code);
+    console.error('\n💡 To fix this:');
+    console.error('   1. Go to: https://cloud.mongodb.com');
+    console.error('   2. Select your cluster');
+    console.error('   3. Click "Network Access" → "Add IP Address"');
+    console.error('   4. Click "Allow Access from Anywhere" (0.0.0.0/0)');
+    console.error('   5. Wait 1-2 minutes, then restart server');
+    console.error('\n⚠️  Server will continue but database operations may fail\n');
+    return false;
+  }
+};
+
+// Attempt connection
+connectMongoDB();
 
 // Disease Schema - Updated to match the existing collection structure
 const diseaseSchema = new mongoose.Schema({
@@ -45,17 +65,91 @@ const diseaseSchema = new mongoose.Schema({
 // Create models for different collections
 const CowBuffaloDisease = mongoose.model('CowBuffaloDisease', diseaseSchema, 'cowAndBuffalo');
 const CowBuffaloTamilDisease = mongoose.model('CowBuffaloTamilDisease', diseaseSchema, 'cowAndBuffaloTamil');
+const CowBuffaloHindiDisease = mongoose.model('CowBuffaloHindiDisease', diseaseSchema, 'cowAndBuffaloHindi');
+const CowBuffaloMalayalamDisease = mongoose.model('CowBuffaloMalayalamDisease', diseaseSchema, 'cowAndBuffaloMalayalam');
 
 const PoultryBirdsDisease = mongoose.model('PoultryBirdsDisease', diseaseSchema, 'PoultryBirds');
 const PoultryBirdsHindiDisease = mongoose.model('PoultryBirdsHindiDisease', diseaseSchema, 'PoultryBirdsHindi');
 const PoultryBirdsTamilDisease = mongoose.model('PoultryBirdsTamilDisease', diseaseSchema, 'PoultryBirdsTamil');
+const PoultryBirdsMalayalamDisease = mongoose.model('PoultryBirdsMalayalamDisease', diseaseSchema, 'PoultryBirdsMalayalam');
 
 const SheepGoatDisease = mongoose.model('SheepGoatDisease', diseaseSchema, 'SheepGoat');
 const SheepGoatHindiDisease = mongoose.model('SheepGoatHindiDisease', diseaseSchema, 'SheepGoatHindi');
 const SheepGoatTamilDisease = mongoose.model('SheepGoatTamilDisease', diseaseSchema, 'SheepGoatTamil');
+const SheepGoatMalayalamDisease = mongoose.model('SheepGoatMalayalamDisease', diseaseSchema, 'SheepGoatMalayalam');
 const SheepGoatImagesDisease = mongoose.model('SheepGoatImagesDisease', diseaseSchema, 'imagesheepandgoat');
 
 // Routes
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'Backend is running',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Test search endpoint - returns sample data and tests search
+app.get('/api/test-search', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    if (!db) {
+      return res.status(503).json({ error: 'MongoDB not connected' });
+    }
+    
+    // Get collection names
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(c => c.name);
+    
+    // Try to get sample documents from multiple collections
+    const testResults = {};
+    
+    for (const collName of ['cowAndBuffalo', 'PoultryBirds', 'SheepGoat']) {
+      try {
+        const sampleDoc = await db.collection(collName).findOne({});
+        if (sampleDoc) {
+          testResults[collName] = {
+            hasData: true,
+            count: await db.collection(collName).countDocuments(),
+            diseaseName: sampleDoc["Disease Name"] || sampleDoc["Disease name"] || sampleDoc["disease_name"] || 'N/A',
+            fields: Object.keys(sampleDoc),
+            sampleFields: {
+              "Disease Name": sampleDoc["Disease Name"],
+              "Disease name": sampleDoc["Disease name"],
+              "disease_name": sampleDoc["disease_name"],
+              "Symptoms": sampleDoc["Symptoms"] ? (typeof sampleDoc["Symptoms"] === 'string' ? sampleDoc["Symptoms"].substring(0, 50) : 'Array/Object') : null
+            }
+          };
+          
+          // Test a simple search
+          const testSearch = await db.collection(collName).find({
+            $or: [
+              { "Disease Name": /a/i },
+              { "Disease name": /a/i },
+              { "disease_name": /a/i }
+            ]
+          }).limit(3).toArray();
+          testResults[collName].testSearchResults = testSearch.length;
+        } else {
+          testResults[collName] = { hasData: false, count: 0 };
+        }
+      } catch (e) {
+        testResults[collName] = { error: e.message };
+      }
+    }
+    
+    res.json({
+      status: 'ok',
+      collections: collectionNames,
+      testResults: testResults,
+      mongodbState: mongoose.connection.readyState
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message, stack: error.stack });
+  }
+});
 
 // Language detection utility
 const detectLanguage = (text) => {
@@ -97,24 +191,41 @@ const detectLanguage = (text) => {
 
 // Search diseases by name or symptoms with collection filter and language support
 app.get('/api/search', async (req, res) => {
+  const searchStartTime = Date.now();
+  
   try {
     const { query, collection, language } = req.query;
     
     // Debug logging
-    console.log('Raw query params:', req.query);
-    console.log('Raw URL:', req.url);
+    console.log('\n🔍 === SEARCH REQUEST ===');
+    console.log('   Raw query params:', req.query);
+    console.log('   Raw URL:', req.url);
+    console.log('   Timestamp:', new Date().toISOString());
     
-    if (!query) {
+    if (!query || !query.trim()) {
+      console.log('   ❌ Empty query received\n');
+      return res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    // Clean and validate query
+    const cleanQuery = query.trim();
+    if (cleanQuery.length < 1) {
+      console.log('   ❌ Empty query received\n');
       return res.status(400).json({ message: 'Query parameter is required' });
     }
 
     // Detect language from search query
-    const detectedLanguage = detectLanguage(query);
+    const detectedLanguage = detectLanguage(cleanQuery);
     const searchLanguage = language || detectedLanguage;
     
-    console.log(`Query: "${query}", Detected language: ${detectedLanguage}, Search language: ${searchLanguage}`);
+    console.log(`   Query: "${cleanQuery}"`);
+    console.log(`   Detected language: ${detectedLanguage}`);
+    console.log(`   Search language: ${searchLanguage}`);
+    console.log(`   Category: ${collection || 'all'}`);
     
-    const searchRegex = new RegExp(query, 'i');
+    // Escape special regex characters to prevent errors
+    const escapedQuery = cleanQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapedQuery, 'i');
     let collectionsToSearch = [];
     
     // Determine which collections to search based on category and detected language
@@ -123,8 +234,12 @@ app.get('/api/search', async (req, res) => {
       case 'cowAndBuffalo':
         if (searchLanguage === 'ta') {
           collectionsToSearch = ['cowAndBuffaloTamil'];
+        } else if (searchLanguage === 'hi') {
+          collectionsToSearch = ['cowAndBuffaloHindi'];
+        } else if (searchLanguage === 'ml') {
+          collectionsToSearch = ['cowAndBuffaloMalayalam'];
         } else {
-          collectionsToSearch = ['cowAndBuffalo']; // English only for cowAndBuffalo
+          collectionsToSearch = ['cowAndBuffalo']; // English
         }
         break;
       case 'PoultryBirds':
@@ -132,6 +247,8 @@ app.get('/api/search', async (req, res) => {
           collectionsToSearch = ['PoultryBirdsTamil'];
         } else if (searchLanguage === 'hi') {
           collectionsToSearch = ['PoultryBirdsHindi'];
+        } else if (searchLanguage === 'ml') {
+          collectionsToSearch = ['PoultryBirdsMalayalam'];
         } else {
           collectionsToSearch = ['PoultryBirds'];
         }
@@ -141,6 +258,8 @@ app.get('/api/search', async (req, res) => {
           collectionsToSearch = ['SheepGoatTamil'];
         } else if (searchLanguage === 'hi') {
           collectionsToSearch = ['SheepGoatHindi'];
+        } else if (searchLanguage === 'ml') {
+          collectionsToSearch = ['SheepGoatMalayalam'];
         } else {
           collectionsToSearch = ['SheepGoat'];
         }
@@ -149,7 +268,8 @@ app.get('/api/search', async (req, res) => {
         collectionsToSearch = ['imagesheepandgoat'];
         break;
       default:
-        collectionsToSearch = ['cowAndBuffalo'];
+        // Search all collections if no specific category
+        collectionsToSearch = ['cowAndBuffalo', 'PoultryBirds', 'SheepGoat', 'cowAndBuffaloTamil', 'PoultryBirdsTamil', 'SheepGoatTamil', 'PoultryBirdsHindi', 'SheepGoatHindi', 'cowAndBuffaloHindi', 'PoultryBirdsMalayalam', 'SheepGoatMalayalam', 'cowAndBuffaloMalayalam'];
     }
     
     let allResults = [];
@@ -164,6 +284,12 @@ app.get('/api/search', async (req, res) => {
         case 'cowAndBuffaloTamil':
           DiseaseModel = CowBuffaloTamilDisease;
           break;
+        case 'cowAndBuffaloHindi':
+          DiseaseModel = CowBuffaloHindiDisease;
+          break;
+        case 'cowAndBuffaloMalayalam':
+          DiseaseModel = CowBuffaloMalayalamDisease;
+          break;
         case 'PoultryBirds':
           DiseaseModel = PoultryBirdsDisease;
           break;
@@ -172,6 +298,9 @@ app.get('/api/search', async (req, res) => {
           break;
         case 'PoultryBirdsTamil':
           DiseaseModel = PoultryBirdsTamilDisease;
+          break;
+        case 'PoultryBirdsMalayalam':
+          DiseaseModel = PoultryBirdsMalayalamDisease;
           break;
         case 'SheepGoat':
           DiseaseModel = SheepGoatDisease;
@@ -182,6 +311,9 @@ app.get('/api/search', async (req, res) => {
         case 'SheepGoatTamil':
           DiseaseModel = SheepGoatTamilDisease;
           break;
+        case 'SheepGoatMalayalam':
+          DiseaseModel = SheepGoatMalayalamDisease;
+          break;
         case 'imagesheepandgoat':
           DiseaseModel = SheepGoatImagesDisease;
           break;
@@ -190,81 +322,186 @@ app.get('/api/search', async (req, res) => {
       }
       
       try {
+        const collectionStartTime = Date.now();
+        
         // Use raw MongoDB driver for collections with string _id fields
         let diseases;
-        if (coll === 'SheepGoatHindi' || coll === 'PoultryBirdsHindi') {
+        const collectionsWithStringId = ['SheepGoatHindi', 'PoultryBirdsHindi', 'SheepGoatMalayalam', 'PoultryBirdsMalayalam', 'cowAndBuffaloHindi', 'cowAndBuffaloMalayalam'];
+        
+        if (collectionsWithStringId.includes(coll)) {
           const db = mongoose.connection.db;
-          diseases = await db.collection(coll).find({
+          if (!db) {
+            console.log(`   ⚠️  MongoDB connection not ready for collection: ${coll}`);
+            continue;
+          }
+          // Try multiple search patterns - use text search for better matching
+          const searchQuery = {
             $or: [
-              { "Disease Name": searchRegex },
-              { "Disease name": searchRegex },
-              { "Symptoms": searchRegex }
+              { "Disease Name": { $regex: escapedQuery, $options: 'i' } },
+              { "Disease name": { $regex: escapedQuery, $options: 'i' } },
+              { "disease_name": { $regex: escapedQuery, $options: 'i' } },
+              { "Symptoms": { $regex: escapedQuery, $options: 'i' } },
+              { "symptoms": { $regex: escapedQuery, $options: 'i' } }
             ]
-          }).toArray();
+          };
+          
+          diseases = await db.collection(coll).find(searchQuery).limit(50).toArray();
+          
+          // If no results, try a broader search (any field contains the query)
+          if (diseases.length === 0 && cleanQuery.length >= 2) {
+            diseases = await db.collection(coll).find({
+              $text: { $search: cleanQuery }
+            }).limit(50).toArray();
+          }
+          
+          // If still no results, try searching in all string fields
+          if (diseases.length === 0) {
+            const allDocs = await db.collection(coll).find({}).limit(100).toArray();
+            diseases = allDocs.filter(doc => {
+              const docStr = JSON.stringify(doc).toLowerCase();
+              return docStr.includes(cleanQuery.toLowerCase());
+            }).slice(0, 50);
+          }
         } else {
-          diseases = await DiseaseModel.find({
+          // Try multiple search patterns with Mongoose
+          const searchQuery = {
             $or: [
-              { "Disease Name": searchRegex },
-              { "Disease name": searchRegex },
-              { "Symptoms": searchRegex }
+              { "Disease Name": { $regex: escapedQuery, $options: 'i' } },
+              { "Disease name": { $regex: escapedQuery, $options: 'i' } },
+              { "disease_name": { $regex: escapedQuery, $options: 'i' } },
+              { "Symptoms": { $regex: escapedQuery, $options: 'i' } },
+              { "symptoms": { $regex: escapedQuery, $options: 'i' } }
             ]
-          });
+          };
+          
+          diseases = await DiseaseModel.find(searchQuery).limit(50);
+          
+          // If no results, try getting all and filtering
+          if (diseases.length === 0) {
+            const allDiseases = await DiseaseModel.find({}).limit(100);
+            diseases = allDiseases.filter(disease => {
+              const diseaseObj = disease.toObject ? disease.toObject() : disease;
+              const diseaseStr = JSON.stringify(diseaseObj).toLowerCase();
+              return diseaseStr.includes(cleanQuery.toLowerCase());
+            }).slice(0, 50);
+          }
+        }
+        
+        const collectionTime = Date.now() - collectionStartTime;
+        if (diseases.length > 0) {
+          console.log(`   📊 ${coll}: Found ${diseases.length} results (${collectionTime}ms)`);
+          // Log first result for debugging
+          const firstResult = diseases[0];
+          const firstDiseaseName = firstResult["Disease Name"] || firstResult["Disease name"] || firstResult["disease_name"] || 'Unknown';
+          console.log(`      First result: "${firstDiseaseName}"`);
+        } else {
+          console.log(`   ⚠️  ${coll}: No results found (${collectionTime}ms)`);
+          // Try to get total count to see if collection has data
+          try {
+            const db = mongoose.connection.db;
+            if (db) {
+              const totalCount = await db.collection(coll).countDocuments();
+              console.log(`      Collection has ${totalCount} total documents`);
+              if (totalCount > 0) {
+                const sampleDoc = await db.collection(coll).findOne({});
+                if (sampleDoc) {
+                  const sampleName = sampleDoc["Disease Name"] || sampleDoc["Disease name"] || sampleDoc["disease_name"] || 'N/A';
+                  console.log(`      Sample document: "${sampleName}"`);
+                  console.log(`      Available fields: ${Object.keys(sampleDoc).join(', ')}`);
+                }
+              }
+            }
+          } catch (e) {
+            // Ignore errors in debug logging
+          }
         }
         
         // Map the results to include collection info and remove duplicates
         const diseaseMap = new Map();
         diseases.forEach(disease => {
-          // Handle both field name variations
-          const diseaseName = (disease["Disease Name"] || disease["Disease name"])?.toLowerCase().trim();
-          if (diseaseName && !diseaseMap.has(diseaseName)) {
-            // Handle cases where _id might be undefined
-            const diseaseId = disease._id ? (typeof disease._id === 'string' ? disease._id : disease._id.toString()) : `temp_${Date.now()}_${Math.random()}`;
-            const displayName = disease["Disease Name"] || disease["Disease name"];
-            console.log(`Disease found: ${displayName}, ID: ${diseaseId}, Original ID: ${disease._id}`);
-            // Handle different data structures for different collections
-            const diseaseData = {
-              _id: diseaseId,
-              "Disease Name": displayName,
-              "Symptoms": disease["Symptoms"],
-              collection: coll,
-              detectedLanguage: searchLanguage
-            };
+          // Handle all field name variations
+          const diseaseName = (disease["Disease Name"] || disease["Disease name"] || disease["disease_name"] || '').toString().toLowerCase().trim();
+          
+          // Only add if we have a disease name
+          if (diseaseName && diseaseName.length > 0) {
+            // Use disease name as key, but allow duplicates if they're from different collections
+            const mapKey = `${diseaseName}_${coll}`;
             
-            // Add treatment data based on collection structure
-            if (disease["Treatments"] && Array.isArray(disease["Treatments"])) {
-              // For collections with Treatments array (like PoultryBirdsHindi)
-              diseaseData["Treatments"] = disease["Treatments"];
-            } else {
-              // For collections with individual treatment fields
-              if (disease["Treatment Name"]) diseaseData["Treatment Name"] = disease["Treatment Name"];
-              if (disease["Ingredients"]) diseaseData["Ingredients"] = disease["Ingredients"];
-              if (disease["Preparation Method"]) diseaseData["Preparation Method"] = disease["Preparation Method"];
-              if (disease["Dosage"]) diseaseData["Dosage"] = disease["Dosage"];
+            if (!diseaseMap.has(mapKey)) {
+              // Handle cases where _id might be undefined
+              const diseaseId = disease._id ? (typeof disease._id === 'string' ? disease._id : disease._id.toString()) : `temp_${Date.now()}_${Math.random()}`;
+              const displayName = disease["Disease Name"] || disease["Disease name"] || disease["disease_name"] || 'Unknown Disease';
+              
+              // Handle different data structures for different collections
+              const diseaseData = {
+                _id: diseaseId,
+                "Disease Name": displayName,
+                "Symptoms": disease["Symptoms"] || disease["symptoms"] || '',
+                collection: coll,
+                detectedLanguage: searchLanguage
+              };
+              
+              // Add treatment data based on collection structure
+              if (disease["Treatments"] && Array.isArray(disease["Treatments"])) {
+                diseaseData["Treatments"] = disease["Treatments"];
+              } else {
+                if (disease["Treatment Name"]) diseaseData["Treatment Name"] = disease["Treatment Name"];
+                if (disease["Ingredients"]) diseaseData["Ingredients"] = disease["Ingredients"];
+                if (disease["Preparation Method"]) diseaseData["Preparation Method"] = disease["Preparation Method"];
+                if (disease["Dosage"]) diseaseData["Dosage"] = disease["Dosage"];
+              }
+              
+              // Add other fields if they exist
+              if (disease["Causes"]) diseaseData["Causes"] = disease["Causes"];
+              
+              diseaseMap.set(mapKey, diseaseData);
             }
-            
-            // Add other fields if they exist
-            if (disease["Causes"]) diseaseData["Causes"] = disease["Causes"];
-            
-            diseaseMap.set(diseaseName, diseaseData);
           }
         });
         
         allResults = allResults.concat(Array.from(diseaseMap.values()));
       } catch (modelError) {
-        console.log(`Collection ${coll} not found or empty, skipping...`);
+        console.log(`   ⚠️  Collection ${coll} error: ${modelError.message}`);
         continue;
       }
     }
 
-    console.log(`Search results for "${query}" in ${collection} (${collectionsToSearch.join(', ')}) - Detected language: ${searchLanguage}:`, allResults.length);
+    const totalTime = Date.now() - searchStartTime;
+    console.log(`\n✅ Search completed for "${cleanQuery}"`);
+    console.log(`   Category: ${collection || 'all'}`);
+    console.log(`   Language: ${searchLanguage}`);
+    console.log(`   Collections searched: ${collectionsToSearch.join(', ')}`);
+    console.log(`   Results found: ${allResults.length}`);
+    console.log(`   Total time: ${totalTime}ms`);
+    
+    if (allResults.length === 0) {
+      console.log(`\n⚠️  No results found for: "${cleanQuery}"`);
+      console.log(`   Searched in: ${collectionsToSearch.join(', ')}`);
+      console.log(`   Suggestions:`);
+      console.log(`   - Check spelling`);
+      console.log(`   - Try different keywords`);
+      console.log(`   - Try searching in different category`);
+      console.log(`   - Try searching in different language\n`);
+    } else {
+      console.log(`   ✅ Returning ${allResults.length} results\n`);
+    }
+    
     res.json({
       results: allResults,
       detectedLanguage: searchLanguage,
       searchedCollections: collectionsToSearch
     });
   } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('\n❌ Search error:', error);
+    console.error('   Query:', query);
+    console.error('   Collection:', collection);
+    console.error('   Error details:', error.message);
+    console.error('   Stack:', error.stack);
+    console.error('');
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -924,8 +1161,13 @@ app.get('/api/diseases-with-images/:collection', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Database: Diseases`);
-  console.log(`Collection: cowAndBuffalo`);
-  console.log(`Chatbot service: ${chatbotService.isAvailable ? 'Available' : 'Not configured'}`);
+  console.log(`\n🚀 Server is running on port ${PORT}`);
+  console.log(`📊 Database: Diseases`);
+  console.log(`📁 Collection: cowAndBuffalo`);
+  console.log(`🤖 Chatbot service: ${chatbotService ? (chatbotService.isAvailable ? '✅ Available' : '⚠️  Not available (check CHATBOT_API_URL)') : '❌ Not loaded'}`);
+  if (chatbotService && !chatbotService.isAvailable) {
+    console.log(`💡 Chatbot URL: ${process.env.CHATBOT_API_URL || 'http://localhost:5002/chat'}`);
+    console.log(`💡 To enable: Set CHATBOT_API_URL environment variable`);
+  }
+  console.log(`\n`);
 });
