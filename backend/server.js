@@ -578,6 +578,8 @@ const handleSearch = async (req, res) => {
               const diseaseId = disease._id ? (typeof disease._id === 'string' ? disease._id : disease._id.toString()) : `temp_${Date.now()}_${Math.random()}`;
               const displayName = disease["Disease Name"] || disease["Disease name"] || disease["disease_name"] || 'Unknown Disease';
               
+              console.log(`[SEARCH] Processing disease: "${displayName}" with ID: ${diseaseId}`);
+              
               // Handle different data structures for different collections
               const diseaseData = {
                 _id: diseaseId,
@@ -587,20 +589,35 @@ const handleSearch = async (req, res) => {
                 detectedLanguage: searchLanguage
               };
               
-              // Add treatment data based on collection structure
+              // Add treatment data based on collection structure - preserve arrays
               if (disease["Treatments"] && Array.isArray(disease["Treatments"])) {
                 diseaseData["Treatments"] = disease["Treatments"];
+                console.log(`[SEARCH] Added Treatments array with ${disease["Treatments"].length} items`);
               } else {
-                if (disease["Treatment Name"]) diseaseData["Treatment Name"] = disease["Treatment Name"];
-                if (disease["Ingredients"]) diseaseData["Ingredients"] = disease["Ingredients"];
-                if (disease["Preparation Method"]) diseaseData["Preparation Method"] = disease["Preparation Method"];
-                if (disease["Dosage"]) diseaseData["Dosage"] = disease["Dosage"];
+                // Preserve arrays for treatment fields
+                if (disease["Treatment Name"]) {
+                  diseaseData["Treatment Name"] = disease["Treatment Name"];
+                  console.log(`[SEARCH] Treatment Name type: ${Array.isArray(disease["Treatment Name"]) ? 'Array' : typeof disease["Treatment Name"]}`);
+                }
+                if (disease["Ingredients"]) {
+                  diseaseData["Ingredients"] = disease["Ingredients"];
+                  console.log(`[SEARCH] Ingredients type: ${Array.isArray(disease["Ingredients"]) ? 'Array' : typeof disease["Ingredients"]}`);
+                }
+                if (disease["Preparation Method"]) {
+                  diseaseData["Preparation Method"] = disease["Preparation Method"];
+                  console.log(`[SEARCH] Preparation Method type: ${Array.isArray(disease["Preparation Method"]) ? 'Array' : typeof disease["Preparation Method"]}`);
+                }
+                if (disease["Dosage"]) {
+                  diseaseData["Dosage"] = disease["Dosage"];
+                  console.log(`[SEARCH] Dosage type: ${Array.isArray(disease["Dosage"]) ? 'Array' : typeof disease["Dosage"]}`);
+                }
               }
               
               // Add other fields if they exist
               if (disease["Causes"]) diseaseData["Causes"] = disease["Causes"];
               
               diseaseMap.set(mapKey, diseaseData);
+              console.log(`[SEARCH] Added disease to results: "${displayName}"`);
             }
           }
         });
@@ -753,20 +770,45 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     const collectionsWithStringId = ['SheepGoatHindi', 'PoultryBirdsHindi', 'SheepGoatMalayalam', 'PoultryBirdsMalayalam', 'cowAndBuffaloHindi', 'cowAndBuffaloMalayalam'];
     
     if (collectionsWithStringId.includes(collection)) {
-        console.log(`Using raw MongoDB driver for collection: ${collection}`);
+        console.log(`[DISEASE] Using raw MongoDB driver for collection: ${collection}`);
         const db = mongoose.connection.db;
-        const allDiseases = await db.collection(collection).find({}).toArray();
-        console.log(`Found ${allDiseases.length} total diseases in collection`);
+        if (!db) {
+          console.error(`[ERROR] MongoDB db object not available for collection: ${collection}`);
+          return res.status(503).json({ message: 'Database connection unavailable' });
+        }
         
-        disease = allDiseases.find(d => {
-          if (d._id) {
-            // Handle both ObjectId and string _id types
-            const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
-            console.log(`Comparing: ${diseaseId} === ${id} ? ${diseaseId === id}`);
-            return diseaseId === id;
-          }
-          return false;
-        });
+        console.log(`[DISEASE] Searching for ID: ${id} (type: ${typeof id})`);
+        
+        // Try direct find first (faster)
+        disease = await db.collection(collection).findOne({ _id: id });
+        
+        if (!disease) {
+          // If direct find fails, try searching all documents (for string ID matching)
+          console.log(`[DISEASE] Direct find failed, trying full collection search...`);
+          const allDiseases = await db.collection(collection).find({}).toArray();
+          console.log(`[DISEASE] Found ${allDiseases.length} total diseases in collection`);
+          
+          disease = allDiseases.find(d => {
+            if (d._id) {
+              // Handle both ObjectId and string _id types
+              const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
+              const match = diseaseId === id || diseaseId === String(id);
+              if (match) {
+                console.log(`[DISEASE] Found match: ${diseaseId} === ${id}`);
+              }
+              return match;
+            }
+            return false;
+          });
+        } else {
+          console.log(`[DISEASE] Found disease using direct find`);
+        }
+        
+        if (disease) {
+          console.log(`[DISEASE] Disease found: ${disease["Disease Name"] || disease["Disease name"] || 'Unknown'}`);
+        } else {
+          console.error(`[ERROR] Disease not found with ID: ${id} in collection: ${collection}`);
+        }
       } else {
         console.log(`Using Mongoose model: ${DiseaseModel.modelName}`);
         const allDiseases = await DiseaseModel.find({});
@@ -799,13 +841,34 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       return res.status(404).json({ message: 'Disease not found' });
     }
 
+    // Convert to plain object and ensure proper formatting
+    let diseaseData;
+    if (disease.toObject) {
+      diseaseData = disease.toObject();
+      console.log(`[DISEASE] Converted Mongoose document to plain object`);
+    } else {
+      // For raw MongoDB documents, ensure it's a proper object
+      diseaseData = JSON.parse(JSON.stringify(disease));
+      console.log(`[DISEASE] Converted raw MongoDB document to plain object`);
+    }
+    
+    // Ensure _id is properly formatted
+    if (diseaseData._id) {
+      diseaseData._id = typeof diseaseData._id === 'string' ? diseaseData._id : diseaseData._id.toString();
+    }
+    
     // Handle both field name variations for display
-    const displayName = disease["Disease Name"] || disease["Disease name"];
+    const displayName = diseaseData["Disease Name"] || diseaseData["Disease name"] || diseaseData["disease_name"] || 'Unknown';
     console.log(`✅ Found disease: ${displayName}`);
-    console.log(`Disease ID: ${disease._id}`);
-    console.log(`Disease type: ${typeof disease._id}`);
+    console.log(`[DISEASE] Disease ID: ${diseaseData._id} (type: ${typeof diseaseData._id})`);
+    console.log(`[DISEASE] Has Symptoms: ${!!diseaseData["Symptoms"]}`);
+    console.log(`[DISEASE] Has Treatment Name: ${!!diseaseData["Treatment Name"]}`);
+    console.log(`[DISEASE] Has Ingredients: ${!!diseaseData["Ingredients"]}`);
+    console.log(`[DISEASE] Treatment Name type: ${Array.isArray(diseaseData["Treatment Name"]) ? 'Array' : typeof diseaseData["Treatment Name"]}`);
+    console.log(`[DISEASE] Ingredients type: ${Array.isArray(diseaseData["Ingredients"]) ? 'Array' : typeof diseaseData["Ingredients"]}`);
     console.log(`\n=== DISEASE DETAIL REQUEST END (200) ===`);
-    res.json(disease);
+    
+    res.json(diseaseData);
   } catch (error) {
     console.error('\n=== DISEASE DETAIL ERROR ===');
     console.error('Error message:', error.message);
