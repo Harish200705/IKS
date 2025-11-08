@@ -50,6 +50,15 @@ def load_dataset():
     answers = [item["answer"] for item in data]
     diseases = [item.get("disease", "Unknown") for item in data]
     
+    # Reduce dataset size for free tier (512MB limit)
+    # Set MAX_DATASET_SIZE environment variable to override, or set to 0 to use all
+    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2500"))  # Default to 2500 for free tier
+    if max_size > 0 and len(questions) > max_size:
+        print(f"⚠️  Reducing dataset from {len(questions)} to {max_size} items to save memory")
+        questions = questions[:max_size]
+        answers = answers[:max_size]
+        diseases = diseases[:max_size]
+    
     print(f"✅ Loaded {len(questions)} Q&A pairs")
     return True
 
