@@ -495,20 +495,15 @@ const handleSearch = async (req, res) => {
           
           diseases = await db.collection(coll).find(searchQuery).limit(50).toArray();
           
-          // If no results, try a broader search (any field contains the query)
-          if (diseases.length === 0 && cleanQuery.length >= 2) {
-            diseases = await db.collection(coll).find({
-              $text: { $search: cleanQuery }
-            }).limit(50).toArray();
-          }
-          
-          // If still no results, try searching in all string fields
+          // If still no results, try searching in all string fields (fallback)
           if (diseases.length === 0) {
+            console.log(`[SEARCH] No results with regex, trying full document search for ${coll}...`);
             const allDocs = await db.collection(coll).find({}).limit(100).toArray();
             diseases = allDocs.filter(doc => {
               const docStr = JSON.stringify(doc).toLowerCase();
               return docStr.includes(cleanQuery.toLowerCase());
             }).slice(0, 50);
+            console.log(`[SEARCH] Full document search found ${diseases.length} results for ${coll}`);
           }
         } else {
           // Try multiple search patterns with Mongoose
@@ -708,6 +703,12 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       case 'cowAndBuffaloTamil':
         DiseaseModel = CowBuffaloTamilDisease;
         break;
+      case 'cowAndBuffaloHindi':
+        DiseaseModel = CowBuffaloHindiDisease;
+        break;
+      case 'cowAndBuffaloMalayalam':
+        DiseaseModel = CowBuffaloMalayalamDisease;
+        break;
       case 'PoultryBirds':
         DiseaseModel = PoultryBirdsDisease;
         break;
@@ -717,6 +718,9 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       case 'PoultryBirdsTamil':
         DiseaseModel = PoultryBirdsTamilDisease;
         break;
+      case 'PoultryBirdsMalayalam':
+        DiseaseModel = PoultryBirdsMalayalamDisease;
+        break;
       case 'SheepGoat':
         DiseaseModel = SheepGoatDisease;
         break;
@@ -725,6 +729,9 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
         break;
       case 'SheepGoatTamil':
         DiseaseModel = SheepGoatTamilDisease;
+        break;
+      case 'SheepGoatMalayalam':
+        DiseaseModel = SheepGoatMalayalamDisease;
         break;
       case 'imagesheepandgoat':
         DiseaseModel = SheepGoatImagesDisease;
@@ -742,8 +749,10 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     console.log(`ID type: ${typeof id}`);
     
     try {
-      // Use raw MongoDB driver for collections with string _id fields
-      if (collection === 'SheepGoatHindi' || collection === 'PoultryBirdsHindi') {
+    // Use raw MongoDB driver for collections with string _id fields
+    const collectionsWithStringId = ['SheepGoatHindi', 'PoultryBirdsHindi', 'SheepGoatMalayalam', 'PoultryBirdsMalayalam', 'cowAndBuffaloHindi', 'cowAndBuffaloMalayalam'];
+    
+    if (collectionsWithStringId.includes(collection)) {
         console.log(`Using raw MongoDB driver for collection: ${collection}`);
         const db = mongoose.connection.db;
         const allDiseases = await db.collection(collection).find({}).toArray();
@@ -996,19 +1005,16 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
         targetCollection = collection.replace('Hindi', '');
       } else if (collection.endsWith('Tamil')) {
         targetCollection = collection.replace('Tamil', '');
+      } else if (collection.endsWith('Malayalam')) {
+        targetCollection = collection.replace('Malayalam', '');
       } else {
         // Already English collection
         targetCollection = collection;
       }
     } else {
-      // For other languages, add language suffix
-      if (collection.endsWith('Hindi') || collection.endsWith('Tamil')) {
-        // Replace existing language suffix
-        targetCollection = collection.replace(/Hindi|Tamil$/, '') + targetSuffix;
-      } else {
-        // Add language suffix to English collection
-        targetCollection = collection + targetSuffix;
-      }
+      // For other languages, add suffix to base collection name
+      const baseCollection = collection.replace(/Hindi$|Tamil$|Malayalam$/, '');
+      targetCollection = baseCollection + targetSuffix;
     }
     
     console.log(`Looking for disease in collection: ${targetCollection}`);
@@ -1016,22 +1022,31 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
     // Try to find the disease in the target language collection
     let disease = null;
     
-    // Handle different collection types
+    // Handle different collection types - use raw MongoDB driver for all language-specific collections
+    const collectionsWithStringId = ['SheepGoatHindi', 'PoultryBirdsHindi', 'SheepGoatMalayalam', 'PoultryBirdsMalayalam', 'cowAndBuffaloHindi', 'cowAndBuffaloMalayalam'];
+    
     if (targetCollection === 'cowAndBuffalo' || targetCollection === 'cowAndBuffaloTamil') {
       // Use Mongoose models for these collections
       const Model = targetCollection === 'cowAndBuffalo' ? CowBuffaloDisease : CowBuffaloTamilDisease;
       disease = await Model.findById(id);
-    } else if (targetCollection.includes('Hindi') || targetCollection.includes('Tamil')) {
-      // Use raw MongoDB driver for Hindi/Tamil collections
-      const rawDisease = await mongoose.connection.db.collection(targetCollection).findOne({ _id: id });
-      if (rawDisease) {
-        disease = rawDisease;
+    } else if (collectionsWithStringId.includes(targetCollection) || targetCollection.includes('Hindi') || targetCollection.includes('Tamil') || targetCollection.includes('Malayalam')) {
+      // Use raw MongoDB driver for language-specific collections
+      const db = mongoose.connection.db;
+      if (db) {
+        const allDiseases = await db.collection(targetCollection).find({}).toArray();
+        disease = allDiseases.find(d => {
+          if (d._id) {
+            const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
+            return diseaseId === id;
+          }
+          return false;
+        });
       }
     } else {
       // For other collections, try to find by ID
-      const rawDisease = await mongoose.connection.db.collection(targetCollection).findOne({ _id: id });
-      if (rawDisease) {
-        disease = rawDisease;
+      const db = mongoose.connection.db;
+      if (db) {
+        disease = await db.collection(targetCollection).findOne({ _id: id });
       }
     }
     
