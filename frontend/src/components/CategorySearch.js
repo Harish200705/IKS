@@ -17,8 +17,29 @@ const CategorySearch = () => {
   const hasContent = (field) => {
     if (!field) return false;
     if (typeof field === 'string') return field.trim() !== '';
-    if (Array.isArray(field)) return field.length > 0 && field.some(item => item && item.trim() !== '');
+    if (Array.isArray(field)) {
+      return field.length > 0 && field.some(item => {
+        if (!item) return false;
+        if (typeof item === 'string') return item.trim() !== '';
+        if (Array.isArray(item)) return item.length > 0; // Nested arrays
+        return true; // Objects or other types
+      });
+    }
     return true;
+  };
+  
+  // Helper function to convert field to searchable string
+  const fieldToString = (field) => {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (Array.isArray(field)) {
+      return field.map(item => {
+        if (typeof item === 'string') return item;
+        if (Array.isArray(item)) return item.join(' ');
+        return String(item);
+      }).join(' ');
+    }
+    return String(field);
   };
 
   // Real-time search function
@@ -105,7 +126,7 @@ const CategorySearch = () => {
     const query = searchQuery.toLowerCase();
     
     if (filter === 'all') {
-      // Search across all fields
+      // Search across all fields - handle both strings and arrays
       const searchableFields = [
         disease["Disease Name"],
         disease["Symptoms"],
@@ -116,19 +137,22 @@ const CategorySearch = () => {
         disease["Dosage"]
       ].filter(hasContent);
       
-      return searchableFields.some(field => 
-        field.toLowerCase().includes(query)
-      );
+      return searchableFields.some(field => {
+        const fieldStr = fieldToString(field);
+        return fieldStr.toLowerCase().includes(query);
+      });
     }
     
     if (filter === 'name') {
-      return hasContent(disease["Disease Name"]) && 
-             disease["Disease Name"].toLowerCase().includes(query);
+      if (!hasContent(disease["Disease Name"])) return false;
+      const nameStr = fieldToString(disease["Disease Name"]);
+      return nameStr.toLowerCase().includes(query);
     }
     
     if (filter === 'symptoms') {
-      return hasContent(disease["Symptoms"]) && 
-             disease["Symptoms"].toLowerCase().includes(query);
+      if (!hasContent(disease["Symptoms"])) return false;
+      const symptomsStr = fieldToString(disease["Symptoms"]);
+      return symptomsStr.toLowerCase().includes(query);
     }
     
     return false;
@@ -199,11 +223,6 @@ const CategorySearch = () => {
               </h2>
             )}
 
-            {!searchQuery && (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
-                <p>{t('searchToStart')}</p>
-              </div>
-            )}
 
             {searchQuery && filteredDiseases.length === 0 && (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>

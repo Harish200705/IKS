@@ -27,8 +27,29 @@ const Home = () => {
   const hasContent = (field) => {
     if (!field) return false;
     if (typeof field === 'string') return field.trim() !== '';
-    if (Array.isArray(field)) return field.length > 0 && field.some(item => item && item.trim() !== '');
+    if (Array.isArray(field)) {
+      return field.length > 0 && field.some(item => {
+        if (!item) return false;
+        if (typeof item === 'string') return item.trim() !== '';
+        if (Array.isArray(item)) return item.length > 0; // Nested arrays
+        return true; // Objects or other types
+      });
+    }
     return true;
+  };
+  
+  // Helper function to convert field to searchable string
+  const fieldToString = (field) => {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (Array.isArray(field)) {
+      return field.map(item => {
+        if (typeof item === 'string') return item;
+        if (Array.isArray(item)) return item.join(' ');
+        return String(item);
+      }).join(' ');
+    }
+    return String(field);
   };
 
   // Real-time search function
@@ -122,7 +143,7 @@ const Home = () => {
     const query = searchQuery.toLowerCase();
     
     if (filter === 'all') {
-      // Search across all fields
+      // Search across all fields - handle both strings and arrays
       const searchableFields = [
         disease["Disease Name"],
         disease["Symptoms"],
@@ -133,19 +154,22 @@ const Home = () => {
         disease["Dosage"]
       ].filter(hasContent);
       
-      return searchableFields.some(field => 
-        field.toLowerCase().includes(query)
-      );
+      return searchableFields.some(field => {
+        const fieldStr = fieldToString(field);
+        return fieldStr.toLowerCase().includes(query);
+      });
     }
     
     if (filter === 'name') {
-      return hasContent(disease["Disease Name"]) && 
-             disease["Disease Name"].toLowerCase().includes(query);
+      if (!hasContent(disease["Disease Name"])) return false;
+      const nameStr = fieldToString(disease["Disease Name"]);
+      return nameStr.toLowerCase().includes(query);
     }
     
     if (filter === 'symptoms') {
-      return hasContent(disease["Symptoms"]) && 
-             disease["Symptoms"].toLowerCase().includes(query);
+      if (!hasContent(disease["Symptoms"])) return false;
+      const symptomsStr = fieldToString(disease["Symptoms"]);
+      return symptomsStr.toLowerCase().includes(query);
     }
     
     return false;
@@ -230,41 +254,6 @@ const Home = () => {
               </h2>
             )}
 
-            {!searchQuery && (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
-                <p>{t('searchToStart')}</p>
-                <div style={{ marginTop: '2rem' }}>
-                  <h3 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Browse Diseases with Images</h3>
-                  <Link 
-                    to="/category/imagesheepandgoat" 
-                    className="browse-images-btn"
-                    style={{
-                      display: 'inline-block',
-                      padding: '12px 24px',
-                      backgroundColor: '#16a34a',
-                      color: 'white',
-                      textDecoration: 'none',
-                      borderRadius: '8px',
-                      fontWeight: '600',
-                      transition: 'all 0.3s ease',
-                      boxShadow: '0 2px 10px rgba(22, 163, 74, 0.3)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = '#15803d';
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(22, 163, 74, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = '#16a34a';
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 2px 10px rgba(22, 163, 74, 0.3)';
-                    }}
-                  >
-                    🖼️ View Herbal Masala Bolus Images
-                  </Link>
-                </div>
-              </div>
-            )}
 
             {searchQuery && filteredDiseases.length === 0 && (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>

@@ -777,10 +777,28 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
           return res.status(503).json({ message: 'Database connection unavailable' });
         }
         
-        console.log(`[DISEASE] Searching for ID: ${id} (type: ${typeof id})`);
+        console.log(`[DISEASE] Searching for ID: ${id} (type: ${typeof id}, length: ${id.length})`);
         
-        // Try direct find first (faster)
+        // Try multiple ID formats for string ID collections
+        // First try direct find with the ID as-is
         disease = await db.collection(collection).findOne({ _id: id });
+        
+        if (!disease) {
+          // Try with ObjectId conversion if it looks like an ObjectId
+          const mongoose = require('mongoose');
+          if (mongoose.Types.ObjectId.isValid(id) && id.length === 24) {
+            console.log(`[DISEASE] ID looks like ObjectId, trying ObjectId conversion...`);
+            try {
+              const objectId = new mongoose.Types.ObjectId(id);
+              disease = await db.collection(collection).findOne({ _id: objectId });
+              if (disease) {
+                console.log(`[DISEASE] Found disease using ObjectId conversion`);
+              }
+            } catch (e) {
+              console.log(`[DISEASE] ObjectId conversion failed: ${e.message}`);
+            }
+          }
+        }
         
         if (!disease) {
           // If direct find fails, try searching all documents (for string ID matching)
@@ -788,11 +806,20 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
           const allDiseases = await db.collection(collection).find({}).toArray();
           console.log(`[DISEASE] Found ${allDiseases.length} total diseases in collection`);
           
+          // Log first few IDs for debugging
+          if (allDiseases.length > 0) {
+            console.log(`[DISEASE] Sample IDs in collection:`);
+            allDiseases.slice(0, 3).forEach((d, idx) => {
+              const sampleId = d._id ? (typeof d._id === 'string' ? d._id : d._id.toString()) : 'No ID';
+              console.log(`[DISEASE]   ${idx + 1}. ${sampleId} (type: ${typeof d._id})`);
+            });
+          }
+          
           disease = allDiseases.find(d => {
             if (d._id) {
               // Handle both ObjectId and string _id types
               const diseaseId = typeof d._id === 'string' ? d._id : d._id.toString();
-              const match = diseaseId === id || diseaseId === String(id);
+              const match = diseaseId === id || diseaseId === String(id) || String(diseaseId) === String(id);
               if (match) {
                 console.log(`[DISEASE] Found match: ${diseaseId} === ${id}`);
               }
