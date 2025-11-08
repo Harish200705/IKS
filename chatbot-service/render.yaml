@@ -5,8 +5,10 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --threads 2
     envVars:
       - key: PORT
         sync: false  # Render sets this automatically
+      - key: MAX_DATASET_SIZE
+        value: "2000"  # Limit dataset to 2000 items for free tier
 

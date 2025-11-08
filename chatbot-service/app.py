@@ -5,6 +5,7 @@ Uses Sentence Transformers for semantic search
 
 import json
 import os
+import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from sentence_transformers import SentenceTransformer, util
@@ -52,7 +53,8 @@ def load_dataset():
     
     # Reduce dataset size for free tier (512MB limit)
     # Set MAX_DATASET_SIZE environment variable to override, or set to 0 to use all
-    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2500"))  # Default to 2500 for free tier
+    # Reduced default to 2000 for better memory management on Render free tier
+    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2000"))  # Default to 2000 for free tier
     if max_size > 0 and len(questions) > max_size:
         print(f"⚠️  Reducing dataset from {len(questions)} to {max_size} items to save memory")
         questions = questions[:max_size]
@@ -75,18 +77,23 @@ def initialize_model():
     print("✅ Model loaded")
     
     print("🔄 Encoding dataset questions...")
-    # Encode in batches to save memory
-    batch_size = 100
+    # Encode in smaller batches to save memory
+    batch_size = 50  # Reduced from 100 to save memory
     embeddings_list = []
     for i in range(0, len(questions), batch_size):
         batch = questions[i:i+batch_size]
         batch_embeddings = embedder.encode(batch, convert_to_tensor=False, show_progress_bar=False)
         embeddings_list.append(batch_embeddings)
+        # Clear batch from memory
+        del batch
         print(f"   Encoded {min(i+batch_size, len(questions))}/{len(questions)} questions...")
     
     # Combine all embeddings
-    import numpy as np
-    q_embeddings = torch.from_numpy(np.vstack(embeddings_list))
+    q_embeddings = np.vstack(embeddings_list)
+    # Convert to tensor only when needed (saves memory)
+    q_embeddings = torch.from_numpy(q_embeddings)
+    # Clear embeddings_list from memory
+    del embeddings_list
     print(f"✅ Encoded {len(questions)} questions")
     
     return True
@@ -140,11 +147,15 @@ def chat():
                 "status": "error"
             }), 500
         
-        # Encode user query (use CPU to save memory)
-        query_emb = embedder.encode(user_q, convert_to_tensor=True, device='cpu')
+        # Encode user query (use CPU to save memory, don't keep in tensor format)
+        query_emb = embedder.encode(user_q, convert_to_tensor=False, show_progress_bar=False)
+        query_emb_tensor = torch.from_numpy(query_emb) if isinstance(query_emb, np.ndarray) else query_emb
         
         # Calculate similarity scores
-        cos_scores = util.cos_sim(query_emb, q_embeddings)[0]
+        cos_scores = util.cos_sim(query_emb_tensor, q_embeddings)[0]
+        
+        # Clear query embedding from memory
+        del query_emb_tensor
         
         # Get best match
         best_idx = int(cos_scores.argmax())
@@ -192,12 +203,18 @@ def index():
 # Start Server
 # =====================
 
+# Get port from environment (Render sets this automatically)
+# Must be outside __main__ block for gunicorn
+port = int(os.environ.get("PORT", 5000))
+
 if __name__ == "__main__":
-    # Get port from environment (Render sets this automatically)
-    port = int(os.environ.get("PORT", 5000))
-    
     print(f"🚀 Starting Chatbot API on port {port}")
     print(f"📡 Health check: http://localhost:{port}/health")
     print(f"💬 Chat endpoint: http://localhost:{port}/chat")
     app.run(host="0.0.0.0", port=port, debug=False)
+else:
+    # For gunicorn
+    print(f"🚀 Chatbot API configured for port {port}")
+    print(f"📡 Health check: /health")
+    print(f"💬 Chat endpoint: /chat")
 
