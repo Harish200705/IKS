@@ -304,7 +304,8 @@ const detectLanguage = (text) => {
 };
 
 // Search diseases by name or symptoms with collection filter and language support
-app.get('/api/search', async (req, res) => {
+// Support both /api/search and /search for compatibility
+const handleSearch = async (req, res) => {
   const searchStartTime = Date.now();
   
   try {
@@ -328,10 +329,22 @@ app.get('/api/search', async (req, res) => {
     console.log('   Origin:', requestInfo.origin);
     console.log('   IP:', requestInfo.ip);
     console.log('   Query Params:', JSON.stringify(requestInfo.query));
+    console.log('   MongoDB State:', mongoose.connection.readyState, mongoose.connection.readyState === 1 ? '(Connected)' : '(Disconnected)');
     console.log('=======================================');
     
     // Log in a format easy to see in Render
-    console.log(`[REQUEST] ${requestInfo.method} ${requestInfo.url} from ${requestInfo.origin}`);
+    console.log(`[SEARCH] ${requestInfo.method} ${requestInfo.url} from ${requestInfo.origin}`);
+    console.log(`[SEARCH] Query: "${query}", Collection: "${collection}", Language: "${language}"`);
+    
+    // Check MongoDB connection first
+    if (mongoose.connection.readyState !== 1) {
+      console.error('[ERROR] MongoDB not connected! State:', mongoose.connection.readyState);
+      return res.status(503).json({ 
+        message: 'Database connection unavailable. Please try again later.',
+        error: 'MongoDB not connected',
+        timestamp: requestInfo.timestamp
+      });
+    }
     
     if (!query || !query.trim()) {
       console.log('   ❌ Empty query received\n');
@@ -454,6 +467,7 @@ app.get('/api/search', async (req, res) => {
       
       try {
         const collectionStartTime = Date.now();
+        console.log(`[SEARCH] Searching collection: ${coll}`);
         
         // Use raw MongoDB driver for collections with string _id fields
         let diseases;
@@ -462,9 +476,12 @@ app.get('/api/search', async (req, res) => {
         if (collectionsWithStringId.includes(coll)) {
           const db = mongoose.connection.db;
           if (!db) {
+            console.error(`[ERROR] MongoDB db object not available for collection: ${coll}`);
             console.log(`   ⚠️  MongoDB connection not ready for collection: ${coll}`);
             continue;
           }
+          
+          console.log(`[SEARCH] Using raw MongoDB driver for ${coll}`);
           // Try multiple search patterns - use text search for better matching
           const searchQuery = {
             $or: [
@@ -495,6 +512,7 @@ app.get('/api/search', async (req, res) => {
           }
         } else {
           // Try multiple search patterns with Mongoose
+          console.log(`[SEARCH] Using Mongoose model for ${coll}`);
           const searchQuery = {
             $or: [
               { "Disease Name": { $regex: escapedQuery, $options: 'i' } },
@@ -505,7 +523,9 @@ app.get('/api/search', async (req, res) => {
             ]
           };
           
+          console.log(`[SEARCH] Executing Mongoose query for ${coll}...`);
           diseases = await DiseaseModel.find(searchQuery).limit(50);
+          console.log(`[SEARCH] Mongoose query completed for ${coll}, found ${diseases.length} results`);
           
           // If no results, try getting all and filtering
           if (diseases.length === 0) {
@@ -617,11 +637,16 @@ app.get('/api/search', async (req, res) => {
       console.log(`   ✅ Returning ${allResults.length} results\n`);
     }
     
-    res.json({
+    console.log(`[SEARCH] Sending response with ${allResults.length} results`);
+    const response = {
       results: allResults,
       detectedLanguage: searchLanguage,
       searchedCollections: collectionsToSearch
-    });
+    };
+    
+    console.log(`[SEARCH] Response prepared, sending...`);
+    res.json(response);
+    console.log(`[SEARCH] Response sent successfully`);
   } catch (error) {
     const errorDetails = {
       message: error.message,
@@ -654,7 +679,11 @@ app.get('/api/search', async (req, res) => {
       timestamp: errorDetails.timestamp
     });
   }
-});
+};
+
+// Register search route for both /api/search and /search
+app.get('/api/search', handleSearch);
+app.get('/search', handleSearch);
 
 // Get disease by ID with collection
 app.get('/api/disease/:collection/:id', async (req, res) => {
