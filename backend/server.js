@@ -32,6 +32,71 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Request logging middleware - log all incoming requests
+app.use((req, res, next) => {
+  const requestLog = {
+    method: req.method,
+    url: req.url,
+    origin: req.get('origin') || 'Unknown',
+    ip: req.ip || req.connection.remoteAddress || 'Unknown',
+    timestamp: new Date().toISOString()
+  };
+  
+  // Log in Render-friendly format
+  console.log(`[${requestLog.timestamp}] ${requestLog.method} ${requestLog.url} from ${requestLog.origin} (IP: ${requestLog.ip})`);
+  
+  // Log response when it finishes
+  const originalSend = res.send;
+  res.send = function(data) {
+    const responseLog = {
+      statusCode: res.statusCode,
+      timestamp: new Date().toISOString()
+    };
+    
+    if (res.statusCode >= 400) {
+      console.error(`[${responseLog.timestamp}] ${requestLog.method} ${requestLog.url} - Status: ${responseLog.statusCode}`);
+    } else {
+      console.log(`[${responseLog.timestamp}] ${requestLog.method} ${requestLog.url} - Status: ${responseLog.statusCode}`);
+    }
+    
+    return originalSend.call(this, data);
+  };
+  
+  next();
+});
+
+// Global error handler middleware
+app.use((err, req, res, next) => {
+  const errorLog = {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+    url: req.url,
+    method: req.method,
+    origin: req.get('origin') || 'Unknown',
+    timestamp: new Date().toISOString()
+  };
+  
+  console.error('\n❌ ========== GLOBAL ERROR HANDLER ==========');
+  console.error('   Timestamp:', errorLog.timestamp);
+  console.error('   Method:', errorLog.method);
+  console.error('   URL:', errorLog.url);
+  console.error('   Origin:', errorLog.origin);
+  console.error('   Error Type:', errorLog.name);
+  console.error('   Error Message:', errorLog.message);
+  console.error('   Stack Trace:');
+  console.error(errorLog.stack);
+  console.error('===========================================\n');
+  
+  console.error(`[ERROR] ${errorLog.method} ${errorLog.url}: ${errorLog.message}`);
+  
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+    timestamp: errorLog.timestamp
+  });
+});
+
 // MongoDB Connection - Updated to use correct database and collection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://harishjwork5:0511@iks.1bnw6oy.mongodb.net/Diseases?retryWrites=true&w=majority&appName=IKS';
 
@@ -44,19 +109,48 @@ const connectMongoDB = async () => {
       retryWrites: true,
       w: 'majority'
     });
-    console.log('✅ Connected to MongoDB Atlas successfully!');
-    console.log('Database: Diseases');
-    console.log('Collection: cowAndBuffalo');
+    const connectionInfo = {
+      database: mongoose.connection.db?.databaseName || 'Diseases',
+      host: mongoose.connection.host || 'Unknown',
+      port: mongoose.connection.port || 'Unknown',
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('\n✅ ========== MONGODB CONNECTED ==========');
+    console.log(`   Database: ${connectionInfo.database}`);
+    console.log(`   Host: ${connectionInfo.host}`);
+    console.log(`   Port: ${connectionInfo.port}`);
+    console.log(`   Timestamp: ${connectionInfo.timestamp}`);
+    console.log(`==========================================\n`);
+    
+    console.log(`[INFO] MongoDB connected successfully to ${connectionInfo.database}`);
     return true;
   } catch (error) {
-    console.error('\n❌ MongoDB connection error:', error.message);
-    console.error('Error code:', error.code);
+    const errorDetails = {
+      message: error.message,
+      code: error.code,
+      name: error.name,
+      timestamp: new Date().toISOString(),
+      mongodbUri: MONGODB_URI ? MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//***:***@') : 'Not set'
+    };
+    
+    console.error('\n❌ ========== MONGODB CONNECTION ERROR ==========');
+    console.error('   Timestamp:', errorDetails.timestamp);
+    console.error('   Error Type:', errorDetails.name);
+    console.error('   Error Code:', errorDetails.code);
+    console.error('   Error Message:', errorDetails.message);
+    console.error('   MongoDB URI:', errorDetails.mongodbUri);
     console.error('\n💡 To fix this:');
     console.error('   1. Go to: https://cloud.mongodb.com');
     console.error('   2. Select your cluster');
     console.error('   3. Click "Network Access" → "Add IP Address"');
     console.error('   4. Click "Allow Access from Anywhere" (0.0.0.0/0)');
     console.error('   5. Wait 1-2 minutes, then restart server');
+    console.error('==================================================\n');
+    
+    // Log in a format easy to see in Render
+    console.error(`[ERROR] MongoDB connection failed: ${error.message} (Code: ${error.code})`);
+    
     console.error('\n⚠️  Server will continue but database operations may fail\n');
     return false;
   }
@@ -216,11 +310,28 @@ app.get('/api/search', async (req, res) => {
   try {
     const { query, collection, language } = req.query;
     
-    // Debug logging
-    console.log('\n🔍 === SEARCH REQUEST ===');
-    console.log('   Raw query params:', req.query);
-    console.log('   Raw URL:', req.url);
-    console.log('   Timestamp:', new Date().toISOString());
+    // Debug logging with request details
+    const requestInfo = {
+      query: req.query,
+      url: req.url,
+      method: req.method,
+      origin: req.get('origin') || 'Unknown',
+      userAgent: req.get('user-agent') || 'Unknown',
+      ip: req.ip || req.connection.remoteAddress || 'Unknown',
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('\n🔍 ========== SEARCH REQUEST ==========');
+    console.log('   Timestamp:', requestInfo.timestamp);
+    console.log('   Method:', requestInfo.method);
+    console.log('   URL:', requestInfo.url);
+    console.log('   Origin:', requestInfo.origin);
+    console.log('   IP:', requestInfo.ip);
+    console.log('   Query Params:', JSON.stringify(requestInfo.query));
+    console.log('=======================================');
+    
+    // Log in a format easy to see in Render
+    console.log(`[REQUEST] ${requestInfo.method} ${requestInfo.url} from ${requestInfo.origin}`);
     
     if (!query || !query.trim()) {
       console.log('   ❌ Empty query received\n');
@@ -512,15 +623,35 @@ app.get('/api/search', async (req, res) => {
       searchedCollections: collectionsToSearch
     });
   } catch (error) {
-    console.error('\n❌ Search error:', error);
-    console.error('   Query:', query);
-    console.error('   Collection:', collection);
-    console.error('   Error details:', error.message);
-    console.error('   Stack:', error.stack);
-    console.error('');
+    const errorDetails = {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      query: query,
+      collection: collection,
+      timestamp: new Date().toISOString(),
+      mongodbState: mongoose.connection.readyState,
+      mongodbConnected: mongoose.connection.readyState === 1
+    };
+    
+    console.error('\n❌ ========== SEARCH ERROR ==========');
+    console.error('   Timestamp:', errorDetails.timestamp);
+    console.error('   Query:', errorDetails.query);
+    console.error('   Collection:', errorDetails.collection);
+    console.error('   Error Type:', errorDetails.name);
+    console.error('   Error Message:', errorDetails.message);
+    console.error('   MongoDB State:', errorDetails.mongodbState, errorDetails.mongodbConnected ? '(Connected)' : '(Disconnected)');
+    console.error('   Stack Trace:');
+    console.error(errorDetails.stack);
+    console.error('=====================================\n');
+    
+    // Log to console in a way that's easy to see in Render logs
+    console.error(`[ERROR] Search failed for query "${query}" in collection "${collection}": ${error.message}`);
+    
     res.status(500).json({ 
-      message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Search failed. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      timestamp: errorDetails.timestamp
     });
   }
 });
@@ -745,64 +876,38 @@ app.get('/api/test', async (req, res) => {
 // Seed data endpoint (for testing - only if collection is empty)
 app.post('/api/seed', async (req, res) => {
   try {
-    const existingCount = await Disease.countDocuments();
+    // Check if cowAndBuffalo collection has data
+    const existingCount = await CowBuffaloDisease.countDocuments();
     
     if (existingCount > 0) {
       return res.json({ 
-        message: `Database already contains ${existingCount} diseases. Skipping seed.`,
+        message: `Database already contains ${existingCount} diseases in cowAndBuffalo collection. Skipping seed.`,
         existingCount 
       });
     }
 
     const sampleDiseases = [
       {
-        diseaseName: 'Canine Parvovirus',
-        symptoms: 'Vomiting, diarrhea, lethargy, loss of appetite, fever',
-        causes: 'Viral infection, contact with infected dogs or contaminated feces',
-        treatmentName: 'Supportive Care Protocol',
-        ingredients: 'IV fluids, anti-nausea medication, antibiotics',
-        preparationMethod: 'Hospitalization with IV fluid therapy and medication administration',
-        dosage: 'IV fluids: 60-90ml/kg/day, Anti-nausea: 0.5-1mg/kg every 8-12 hours'
+        "Disease Name": "Bovine Mastitis",
+        "Symptoms": "Swollen udder, abnormal milk, fever, decreased milk production",
+        "Causes": "Bacterial infection, poor milking hygiene, stress",
+        "Treatment Name": "Mastitis Antibiotic Therapy",
+        "Ingredients": "Intramammary antibiotics, anti-inflammatory drugs, udder cream",
+        "Preparation Method": "Intramammary infusion after proper udder cleaning",
+        "Dosage": "Antibiotic: 1 tube per quarter every 12-24 hours for 3-5 days"
       },
       {
-        diseaseName: 'Feline Upper Respiratory Infection',
-        symptoms: 'Sneezing, runny nose, watery eyes, coughing, fever',
-        causes: 'Viral or bacterial infection, stress, poor ventilation',
-        treatmentName: 'Respiratory Support Treatment',
-        ingredients: 'Antibiotics, decongestants, eye drops, steam therapy',
-        preparationMethod: 'Oral medication with steam therapy and eye care',
-        dosage: 'Antibiotics: 10-15mg/kg twice daily, Eye drops: 1-2 drops every 6-8 hours'
-      },
-      {
-        diseaseName: 'Equine Colic',
-        symptoms: 'Abdominal pain, restlessness, rolling, decreased appetite, sweating',
-        causes: 'Dietary changes, parasites, stress, intestinal blockage',
-        treatmentName: 'Colic Relief Protocol',
-        ingredients: 'Pain medication, muscle relaxants, IV fluids, mineral oil',
-        preparationMethod: 'Immediate pain relief followed by fluid therapy and monitoring',
-        dosage: 'Pain meds: 0.5-1mg/kg every 4-6 hours, IV fluids: 10-20L over 24 hours'
-      },
-      {
-        diseaseName: 'Bovine Mastitis',
-        symptoms: 'Swollen udder, abnormal milk, fever, decreased milk production',
-        causes: 'Bacterial infection, poor milking hygiene, stress',
-        treatmentName: 'Mastitis Antibiotic Therapy',
-        ingredients: 'Intramammary antibiotics, anti-inflammatory drugs, udder cream',
-        preparationMethod: 'Intramammary infusion after proper udder cleaning',
-        dosage: 'Antibiotic: 1 tube per quarter every 12-24 hours for 3-5 days'
-      },
-      {
-        diseaseName: 'Avian Psittacosis',
-        symptoms: 'Respiratory distress, lethargy, weight loss, eye discharge',
-        causes: 'Bacterial infection, stress, poor nutrition',
-        treatmentName: 'Psittacosis Antibiotic Treatment',
-        ingredients: 'Tetracycline antibiotics, vitamin supplements, supportive care',
-        preparationMethod: 'Oral antibiotic administration with nutritional support',
-        dosage: 'Tetracycline: 50-100mg/kg daily for 21-45 days'
+        "Disease Name": "Foot and Mouth Disease",
+        "Symptoms": "Fever, blisters in mouth and on feet, lameness, reduced milk production",
+        "Causes": "Viral infection, contact with infected animals",
+        "Treatment Name": "Supportive Care and Antiviral Treatment",
+        "Ingredients": "Antiviral medication, pain relievers, antiseptic solutions",
+        "Preparation Method": "Oral medication with topical treatment for blisters",
+        "Dosage": "As per veterinarian's prescription based on severity"
       }
     ];
 
-    const result = await Disease.insertMany(sampleDiseases);
+    const result = await CowBuffaloDisease.insertMany(sampleDiseases);
     
     res.json({ 
       message: 'Sample data seeded successfully', 
@@ -1181,13 +1286,33 @@ app.get('/api/diseases-with-images/:collection', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 Server is running on port ${PORT}`);
-  console.log(`📊 Database: Diseases`);
-  console.log(`📁 Collection: cowAndBuffalo`);
-  console.log(`🤖 Chatbot service: ${chatbotService ? (chatbotService.isAvailable ? '✅ Available' : '⚠️  Not available (check CHATBOT_API_URL)') : '❌ Not loaded'}`);
+  const serverInfo = {
+    port: PORT,
+    nodeEnv: process.env.NODE_ENV || 'development',
+    mongodbUri: process.env.MONGODB_URI ? 'Set (hidden)' : 'Not set',
+    frontendUrl: process.env.FRONTEND_URL || 'Not set',
+    chatbotUrl: process.env.CHATBOT_API_URL || 'Not set',
+    timestamp: new Date().toISOString()
+  };
+  
+  console.log(`\n🚀 ========== SERVER STARTED ==========`);
+  console.log(`   Port: ${serverInfo.port}`);
+  console.log(`   Environment: ${serverInfo.nodeEnv}`);
+  console.log(`   Timestamp: ${serverInfo.timestamp}`);
+  console.log(`   MongoDB URI: ${serverInfo.mongodbUri}`);
+  console.log(`   Frontend URL: ${serverInfo.frontendUrl}`);
+  console.log(`   Chatbot URL: ${serverInfo.chatbotUrl}`);
+  console.log(`   MongoDB State: ${mongoose.connection.readyState === 1 ? '✅ Connected' : '❌ Disconnected'}`);
+  console.log(`   Database: Diseases`);
+  console.log(`   Collection: cowAndBuffalo`);
+  console.log(`   Chatbot service: ${chatbotService ? (chatbotService.isAvailable ? '✅ Available' : '⚠️  Not available') : '❌ Not loaded'}`);
+  console.log(`=====================================\n`);
+  
+  // Log in a format easy to see in Render
+  console.log(`[INFO] Server started on port ${PORT} in ${serverInfo.nodeEnv} mode`);
+  console.log(`[INFO] MongoDB connection: ${mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'}`);
+  
   if (chatbotService && !chatbotService.isAvailable) {
-    console.log(`💡 Chatbot URL: ${process.env.CHATBOT_API_URL || 'http://localhost:5002/chat'}`);
-    console.log(`💡 To enable: Set CHATBOT_API_URL environment variable`);
+    console.log(`[WARN] Chatbot service not available. Set CHATBOT_API_URL to enable.`);
   }
-  console.log(`\n`);
 });
