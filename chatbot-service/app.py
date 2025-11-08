@@ -205,7 +205,8 @@ def index():
 
 # Get port from environment (Render sets this automatically)
 # Must be outside __main__ block for gunicorn
-port = int(os.environ.get("PORT", 5000))
+# Render sets PORT automatically, default to 10000 if not set
+port = int(os.environ.get("PORT", 10000))
 
 if __name__ == "__main__":
     print(f"🚀 Starting Chatbot API on port {port}")
