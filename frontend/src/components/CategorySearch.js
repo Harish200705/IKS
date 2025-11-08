@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 const CategorySearch = () => {
   const { category } = useParams();
@@ -11,8 +12,6 @@ const CategorySearch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
-
-  const API_BASE_URL = 'http://localhost:5001/api';
 
   // Helper function to check if a field has content
   const hasContent = (field) => {
@@ -47,8 +46,17 @@ const CategorySearch = () => {
       
       setDiseases(uniqueDiseases);
     } catch (err) {
-      setError('Search failed. Please try again.');
       console.error('Search error:', err);
+      if (err.response) {
+        // Server responded with error
+        setError(`Search failed: ${err.response.data?.message || err.response.statusText || 'Please try again.'}`);
+      } else if (err.request) {
+        // Request made but no response
+        setError('Cannot connect to server. Please check your internet connection.');
+      } else {
+        // Something else happened
+        setError('Search failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
