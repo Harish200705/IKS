@@ -12,7 +12,14 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from your website
+# CORS - Allow requests from your website
+CORS(app, origins=[
+    "https://veterinary-frontend.onrender.com",
+    "https://veterinary-backend-j19d.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:5001",
+    "*"  # Allow all origins for now (can restrict later)
+])
 
 # =====================
 # Configuration
@@ -51,10 +58,10 @@ def load_dataset():
     answers = [item["answer"] for item in data]
     diseases = [item.get("disease", "Unknown") for item in data]
     
-    # Reduce dataset size for free tier (512MB limit)
+    # Reduce dataset size for free tier (Vercel: 1024MB, Render: 512MB)
     # Set MAX_DATASET_SIZE environment variable to override, or set to 0 to use all
-    # Reduced default to 2000 for better memory management on Render free tier
-    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2000"))  # Default to 2000 for free tier
+    # Default to 2000 for better memory management
+    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2000"))  # Default to 2000
     if max_size > 0 and len(questions) > max_size:
         print(f"⚠️  Reducing dataset from {len(questions)} to {max_size} items to save memory")
         questions = questions[:max_size]
@@ -203,10 +210,9 @@ def index():
 # Start Server
 # =====================
 
-# Get port from environment (Render sets this automatically)
-# Must be outside __main__ block for gunicorn
-# Render sets PORT automatically, default to 10000 if not set
-port = int(os.environ.get("PORT", 10000))
+# Get port from environment (Render/Vercel sets this automatically)
+# Must be outside __main__ block for gunicorn/vercel
+port = int(os.environ.get("PORT", 5000))
 
 if __name__ == "__main__":
     print(f"🚀 Starting Chatbot API on port {port}")
@@ -214,8 +220,10 @@ if __name__ == "__main__":
     print(f"💬 Chat endpoint: http://localhost:{port}/chat")
     app.run(host="0.0.0.0", port=port, debug=False)
 else:
-    # For gunicorn
-    print(f"🚀 Chatbot API configured for port {port}")
+    # For gunicorn/vercel
+    print(f"🚀 Chatbot API configured")
     print(f"📡 Health check: /health")
     print(f"💬 Chat endpoint: /chat")
+    # Export app for Vercel/gunicorn
+    # Vercel will automatically detect the Flask app
 

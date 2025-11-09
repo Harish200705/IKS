@@ -1,0 +1,18 @@
+# Vercel ignore file
+*.md
+DEPLOY_*.md
+FIX_*.md
+GET_*.md
+SETUP_*.md
+test_*.py
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
