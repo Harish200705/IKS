@@ -58,10 +58,10 @@ def load_dataset():
     answers = [item["answer"] for item in data]
     diseases = [item.get("disease", "Unknown") for item in data]
     
-    # Reduce dataset size for free tier (Vercel: 1024MB, Render: 512MB)
+    # Reduce dataset size for free tier (Render: 512MB limit)
     # Set MAX_DATASET_SIZE environment variable to override, or set to 0 to use all
-    # Default to 2000 for better memory management
-    max_size = int(os.environ.get("MAX_DATASET_SIZE", "2000"))  # Default to 2000
+    # Reduced to 1500 for Render free tier to stay under 512MB
+    max_size = int(os.environ.get("MAX_DATASET_SIZE", "1500"))  # Default to 1500 for Render free tier
     if max_size > 0 and len(questions) > max_size:
         print(f"⚠️  Reducing dataset from {len(questions)} to {max_size} items to save memory")
         questions = questions[:max_size]
@@ -85,7 +85,7 @@ def initialize_model():
     
     print("🔄 Encoding dataset questions...")
     # Encode in smaller batches to save memory
-    batch_size = 50  # Reduced from 100 to save memory
+    batch_size = 32  # Reduced to 32 to save more memory
     embeddings_list = []
     for i in range(0, len(questions), batch_size):
         batch = questions[i:i+batch_size]
@@ -96,11 +96,15 @@ def initialize_model():
         print(f"   Encoded {min(i+batch_size, len(questions))}/{len(questions)} questions...")
     
     # Combine all embeddings
+    print("   Combining embeddings...")
     q_embeddings = np.vstack(embeddings_list)
-    # Convert to tensor only when needed (saves memory)
-    q_embeddings = torch.from_numpy(q_embeddings)
-    # Clear embeddings_list from memory
+    # Clear embeddings_list from memory before converting to tensor
     del embeddings_list
+    # Convert to tensor (this uses more memory, but needed for similarity search)
+    q_embeddings = torch.from_numpy(q_embeddings)
+    # Force garbage collection
+    import gc
+    gc.collect()
     print(f"✅ Encoded {len(questions)} questions")
     
     return True
@@ -109,12 +113,24 @@ def initialize_model():
 # Initialize on startup
 # =====================
 print("🚀 Initializing Veterinary Chatbot API...")
+print(f"📊 Available memory info:")
+try:
+    import psutil
+    mem = psutil.virtual_memory()
+    print(f"   Total: {mem.total / (1024**3):.2f} GB")
+    print(f"   Available: {mem.available / (1024**3):.2f} GB")
+    print(f"   Used: {mem.used / (1024**3):.2f} GB")
+except:
+    print("   (psutil not available)")
+
 try:
     load_dataset()
     initialize_model()
     print("✅ Chatbot ready!")
 except Exception as e:
     print(f"❌ Initialization failed: {e}")
+    import traceback
+    traceback.print_exc()
     print("⚠️  App will start but chatbot may not work")
 
 # =====================
