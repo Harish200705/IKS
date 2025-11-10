@@ -1,0 +1,25 @@
+# Docker ignore file
+*.md
+DEPLOY_*.md
+FIX_*.md
+GET_*.md
+SETUP_*.md
+test_*.py
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.git/
+.gitignore
+render.yaml
+vercel.json
+.vercelignore
+app.py
+!app_hf.py
+
