@@ -1,0 +1,832 @@
+[
+  {
+    "id": 1,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Herbal masala bolus for all Digestive Problems:",
+      "ta": "மூலிகை மசால் உருண்டை தயாரிக்கும் முறை",
+      "ml": "ദഹനസംബന്ധമായ അസുഖങ്ങൾക്കുള്ള മസാല ഉരുളക്കൂട്ട്",
+      "hi": "समस्त पाचन समस्याओं हेतु हर्बल मसाला बोलस (Herbal masala bolus for all Digestive Problems)"
+    }
+  },
+  {
+    "id": 2,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Mastitis in Dairy animals:",
+      "ta": "பால் கறவை மாடுகளில் மடி நோய்",
+      "ml": "അകിടുവീക്കം (Mastitis)",
+      "hi": "दुधारु पशुओं में थनैला रोग (Mastitis in Dairy Animals)"
+    }
+  },
+  {
+    "id": 3,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Infertility:",
+      "ta": "சினை தங்காமை / பருவ அறிகுறி தோன்றாமை /",
+      "ml": "വന്ധ്യത (Infertility)",
+      "hi": "बांझपन (Infertility)"
+    }
+  },
+  {
+    "id": 4,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Retention of Placenta:",
+      "ta": "இளங்கொடி விழாதிருத்தல்",
+      "ml": "മറുപിളള വീഴാതിരിക്കൽ (Retention of placenta)",
+      "hi": "जेर का न गिरना / अपरा रोध (Retention of Placenta)"
+    }
+  },
+  {
+    "id": 5,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Prolapse of the Uterus:",
+      "ta": "கர்ப்பப்பை வெளித்தள்ளுதல்",
+      "ml": "ഗർഭപാത്രം പുറത്തേക്ക് തള്ളൽ (Prolapse of uterus)",
+      "hi": "गर्भाशय का बाहर आना (Prolapse of the Uterus)"
+    }
+  },
+  {
+    "id": 6,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Blue Tongue Disease",
+      "ta": "நீல நாக்கு நோய்",
+      "ml": "നീലനാവ് (Blue Tongue)",
+      "hi": "ब्लू टंग रोग (Blue Tongue Disease)"
+    }
+  },
+  {
+    "id": 7,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Poisonous bite or Food poisoning:",
+      "ta": "விஷக்கடி அல்லது விஷமுள்ள தீவனம் உண்ட பாதிப்பு",
+      "ml": "വിഷം തീണ്ടൽ/ ഭക്ഷ്യവിഷബാധ (Poisonous bite or Food poisoning)",
+      "hi": "विषाक्त दंश या खाद्य विषाक्तता (Poisonous bite or Food poisoning)"
+    }
+  },
+  {
+    "id": 8,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Wounds",
+      "ta": "புண்கள்",
+      "ml": "മുറിവ്/ വ്രണങ്ങൾ",
+      "hi": "घाव (Wounds)"
+    }
+  },
+  {
+    "id": 9,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Diarrhoea in young ones",
+      "ta": "கன்றுகளின் கழிச்சல் நோய்",
+      "ml": "കിടാങ്ങളിൽ കാണപ്പെടുന്ന വയറിളക്കം (Diarrhoea in young ones)",
+      "hi": "नवजात पशुओं (बछड़ो) में दस्त (Diarrhoea in Young ones)"
+    }
+  },
+  {
+    "id": 10,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Milk fever or Calcium Deficiency:",
+      "ta": "பால் காய்ச்சல் நோய்",
+      "ml": "പഞ്ചഗവ്യം (Panchagavya)",
+      "hi": "पंचगव्य (panchagavya)"
+    }
+  },
+  {
+    "id": 11,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Tympany:",
+      "ta": "வாயு அதிகரிப்பால் ஏற்படும் வயிறு உப்பிசம்",
+      "ml": "പാൽപ്പനി/ ക്ഷീരസന്നി (Milk fever)",
+      "hi": "मिल्क फीवर या कैल्शियम की कमी (Milk fever or Calcium Deficiency)"
+    }
+  },
+  {
+    "id": 12,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Fracture and broken leg",
+      "ta": "எலும்பு முறிவு",
+      "ml": "വയറുപെരുക്കം/വയറ് വീർക്കൽ (Tympany)",
+      "hi": "अफारा/पेट फूलना (Tympany)"
+    }
+  },
+  {
+    "id": 13,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "To Increase Milk",
+      "ta": "பால் அதிகம் கறக்க",
+      "ml": "എല്ല് ഒടിവ്/പൊട്ടൽ (Fracture)",
+      "hi": "हड्डी टूटना या पैर में फ्रैक्चर (Fracture and broken leg)"
+    }
+  },
+  {
+    "id": 14,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Fracture of horn",
+      "ta": "கொம்பு முறிவு",
+      "ml": "പാലുത്പാദനം കൂടാൻ (To increase milk production)",
+      "hi": "दूध बढ़ाने के लिए उपाय (To Increase Milk)"
+    }
+  },
+  {
+    "id": 15,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Cow unable to stand up or falling suddenly:",
+      "ta": "படுத்த மாடு எழுந்து நடக்க",
+      "ml": "കൊമ്പ് പൊട്ടൽ (Fracture of horn)",
+      "hi": "सींग का फ्रैक्चर (Fracture of Horn)"
+    }
+  },
+  {
+    "id": 16,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Teat obstruction:",
+      "ta": "மடிக்காம்பு அடைப்பு",
+      "ml": "പശു വീണുപോകുക",
+      "hi": "गाय का खड़े न हो पाना या अचानक गिर जाना (Cow unable to stand up or falling suddenly)"
+    }
+  },
+  {
+    "id": 17,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Pox / wart / cracks:",
+      "ta": "அம்மை / மருகு / வெடிப்பு",
+      "ml": "കാമ്പ് അടഞ്ഞുപോകൽ (Teat obstruction)",
+      "hi": "थन में रुकावट (Teat obstruction)"
+    }
+  },
+  {
+    "id": 18,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Hygroma (swelling of joints):",
+      "ta": "மூட்டு வீக்கம்",
+      "ml": "അകിട് നീര്/കല്ലപ്പ് (Udder odema)",
+      "hi": "थन में सूजन (Udder Edema)"
+    }
+  },
+  {
+    "id": 19,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Downer (not able to get up):",
+      "ta": "மாடுகள் எழுந்திருக்க முடியாது இருத்தல்",
+      "ml": "പരു/ അരിമ്പാറ/ വിണ്ടുകീറൽ",
+      "hi": "पॉक्स/चेचक/मस्से/दरारें वाली त्वचा (Pox/Wart/Cracks)"
+    }
+  },
+  {
+    "id": 20,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Diarrhea:",
+      "ta": "கழிச்சல்",
+      "ml": "സന്ധിവീക്കം",
+      "hi": "हाईग्रोमा / जोड़ों में सूजन (Hygroma / swelling of joints)"
+    }
+  },
+  {
+    "id": 21,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Blood in Milk:",
+      "ta": "பாலில் இரத்தம் கலந்து வந்தால்",
+      "ml": "കിടന്നുപോകുന്ന പശുക്കൾ",
+      "hi": "पशु का खड़ा न हो पाना (Downer / not able to get up)"
+    }
+  },
+  {
+    "id": 22,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Urinary Obstruction:",
+      "ta": "சிறுநீர் பிரியாதிருத்தல் / சிறுநீரில் ரத்தம் கலந்து வருதல்",
+      "ml": "കീടനാശിനി/സയനൈഡ്/പൂപ്പൽ വിഷബാധ (Pesticide/ HCN/mycotoxin Toxicity)",
+      "hi": "कीटनाशक /एच.सी.एन./  मायकोटॉक्सिन विषाक्तता (Pesticide / HCN / Mycotoxin Toxicity)"
+    }
+  },
+  {
+    "id": 23,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Skin disease:",
+      "ta": "தோல் நோய்",
+      "ml": "വയറിളക്കം (Diarrhoea)",
+      "hi": "दस्त (Diarrhoea)"
+    }
+  },
+  {
+    "id": 24,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Sprains:",
+      "ta": "சுளுக்கு",
+      "ml": "പാലിൽ രക്തമയം (Blood in milk)",
+      "hi": "दूध में खून (Blood in  Milk)"
+    }
+  },
+  {
+    "id": 25,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Rabis dog bite",
+      "ta": "வெறி நாய்க்கடி",
+      "ml": "മൂത്രതടസ്സം (Urinary obstruction)",
+      "hi": "मूत्राशय में रुकावट (Urinary Obstruction)"
+    }
+  },
+  {
+    "id": 26,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Frog disease",
+      "ta": "தவளை நோய்",
+      "ml": "ത്വക്ക് രോഗങ്ങൾ",
+      "hi": "त्वचा रोग Skin Disease)"
+    }
+  },
+  {
+    "id": 27,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Tetanus",
+      "ta": "குதிரை வலிப்பு நோய்",
+      "ml": "ഉളുക്ക്",
+      "hi": "मोच (Sprain)"
+    }
+  },
+  {
+    "id": 28,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For Skink Bite",
+      "ta": "அரணைக்கடி",
+      "ml": "പേപ്പട്ടി കടിയേറ്റാൽ",
+      "hi": "रेबीज/ जलप्रदर (Rabies Dog bite)"
+    }
+  },
+  {
+    "id": 29,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For Swelling due to Injury or Blood clotting",
+      "ta": "அடிபட்ட வீக்கம், இரத்தக்கட்டு",
+      "ml": "ഫ്രോഗ് ഡിസീസ് (Frog disease)",
+      "hi": "मेंढ़क रोग (Frog disease)"
+    }
+  },
+  {
+    "id": 30,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For Choke in Animals",
+      "ta": "சொக்கிக்கொள்ளுதல்",
+      "ml": "കുതിരസന്നി (Tetanus)",
+      "hi": "टिटनेस (Tetanus)"
+    }
+  },
+  {
+    "id": 31,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Constipation:",
+      "ta": "மலச்சிக்கல் / வயிறு கட்டுதல்",
+      "ml": "അരണകടി (Skink Bite)",
+      "hi": "बभनी दंश (Skink Bite)"
+    }
+  },
+  {
+    "id": 32,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Diarrhoea in young calves",
+      "ta": "இளங்கன்று கழிச்சல்",
+      "ml": "ക്ഷതങ്ങൾ മൂലമുണ്ടാകുന്ന നീർക്കെട്ട് (For swelling due to injury or blood clotting)",
+      "hi": "चोट लगने या रक्त के थक्के के कारण सूजन (For Swelling due to Injury or Blood clotting)"
+    }
+  },
+  {
+    "id": 33,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For Ear disease:",
+      "ta": "காது நோய்",
+      "ml": "തൊണ്ടയിലെ തടസ്സം (For choke in animals)",
+      "hi": "पशुओं में चोक/गला रुकना/दम घुटना (For Choke in Animals)"
+    }
+  },
+  {
+    "id": 34,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Broken of horn:",
+      "ta": "கொம்பு ஒடிதல்",
+      "ml": "ചാണകം പോകാനുള്ള ബുദ്ധിമുട്ട് (Constipation)",
+      "hi": "कब्ज़ (Constipation)"
+    }
+  },
+  {
+    "id": 35,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Snoring or Coughing:",
+      "ta": "மாடு கனைத்தல் அல்லது செருமல்",
+      "ml": "കിടാങ്ങളിൽ കാണപ്പെടുന്ന വയറിളക്കം (Diarrhoea in young ones)",
+      "hi": "नवजात बछड़ों में दस्त (Diarrhoea in young calves)"
+    }
+  },
+  {
+    "id": 36,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Animal unable to stand up or the animal falls suddenly",
+      "ta": "படுத்த மாடு எழுந்திருக்காமல் இருந்தால் அல்லது சினை மாடு திடீரென விழுதல்",
+      "ml": "ചെവിക്കുള്ളിലെ അസുഖങ്ങൾ (For ear diseases)",
+      "hi": "कानों की बीमारी (For Ear disease)"
+    }
+  },
+  {
+    "id": 37,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Rheumatism (Vadha disease)",
+      "ta": "வாத நோய்",
+      "ml": "കൊമ്പ് പൊട്ടിപോകുക (Broken of horn)",
+      "hi": "सींग का टूटना (Fracture of Horn)"
+    }
+  },
+  {
+    "id": 38,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Canker sores",
+      "ta": "புழு வைத்த புண்",
+      "ml": "ചുമ/ശ്വാസം എടുക്കുമ്പോൾ ഉണ്ടാകുന്ന കുറുങ്ങൽ ശബ്ദം (Snoring or Coughing)",
+      "hi": "खर्राटे या खांसी (Snoring or Coughing)"
+    }
+  },
+  {
+    "id": 39,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Hamorrhagic Septicaemia",
+      "ta": "தொண்டை அடைப்பான்",
+      "ml": "പശു പെട്ടെന്ന് വീണ് പോകുക/ എഴുന്നേറ്റു നില്കാനാകുന്നില്ല (Animal unable to stand up or the animal falls suddenly)",
+      "hi": "पशु का खड़ा न हो पाना या अचानक गिर जाना (Animal unable to stand up or the animal falls suddenly)"
+    }
+  },
+  {
+    "id": 40,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Blood tinged Diarrhoea (Coccidiosis)",
+      "ta": "இரத்தக்கழிச்சல்",
+      "ml": "സന്ധിവാതം (Rheumatism)",
+      "hi": "आमवात / गठिया (Rheumatism / Vadha disease)"
+    }
+  },
+  {
+    "id": 41,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Premature death of calf inside the womb",
+      "ta": "வயிற்றுக்குள் கன்று  இறந்தால்",
+      "ml": "വ്രണങ്ങൾ/ പുഴുക്കടി (Canker sores)",
+      "hi": "नासूर/घाव /मुँह के छाले (Canker sores)"
+    }
+  },
+  {
+    "id": 42,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Endoparasites (Intestinal worms)",
+      "ta": "குடற்புழுக்கள்",
+      "ml": "കുരലടപ്പൻ (Heamorrhagic septicemia)",
+      "hi": "गलघोंटू (Haemorrhagic Septicemia)"
+    }
+  },
+  {
+    "id": 43,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Dandruff",
+      "ta": "ரோமங்கள் உதிர்ந்து சொட்டையாக இருத்தல்:",
+      "ml": "കോക്സീഡിയോസിസ്/ രക്തത്തോട് കൂടിയ വയറിളക്കം (Coccidiosis/Blood-tinged diarrhoea)",
+      "hi": "कुकड़िया रोग (Blood tinged Diarrhoea / Coccidiosis)"
+    }
+  },
+  {
+    "id": 44,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Fatty liver disease",
+      "ta": "ஈரல் முட்டி நோய்",
+      "ml": "ഭ്രൂണാവസ്ഥയിൽ ഉള്ള കിടാവിന്റെ അകാലമരണം (Premature death of calf inside the womb)",
+      "hi": "गर्भ में बछड़े की असमय मौत (Premature death of calf inside the womb)"
+    }
+  },
+  {
+    "id": 45,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Measles:",
+      "ta": "அம்மை கொப்பளம்",
+      "ml": "വിരശല്യം/ ആന്തരപരാദങ്ങൾ (Endoparasites/Intestinal Worms)",
+      "hi": "आंतरिक परजीवी / पेट के कीड़े (Intestinal Worms)"
+    }
+  },
+  {
+    "id": 46,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For immature tumors",
+      "ta": "பழுக்காத கட்டிகளுக்கு",
+      "ml": "മുതുകിൽ കാണപ്പെടുന്ന മുഴ (Yoke Sore)",
+      "hi": "जूए के घाव (Yoke Sore)"
+    }
+  },
+  {
+    "id": 47,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Conch (or) laryngeal disease",
+      "ta": "சங்கு அடைப்பான் நோய் \n(குரல்வளை நோய்)",
+      "ml": "താരൻ (Dandruff)",
+      "hi": "रूसी (Dandruff)"
+    }
+  },
+  {
+    "id": 48,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Sores caused by nosebleeds",
+      "ta": "மூக்கணாங்கயிற்றினால் ஏற்படும் புண்கள்",
+      "ml": "ഫാറ്റി ലിവർ (Fatty liver)",
+      "hi": "वसायुक्त यकृत रोग (Fatty Liver Disease)"
+    }
+  },
+  {
+    "id": 49,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For non-weaned calf",
+      "ta": "பால் குடிக்காத கன்றுக்கு",
+      "ml": "മീസിൽസ് (Measles)",
+      "hi": "खसरा (Measles)"
+    }
+  },
+  {
+    "id": 50,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Intestinal Arthritis:",
+      "ta": "குடல் வாதம்",
+      "ml": "അർബുദം (For immature tumors)",
+      "hi": "अपरिपक्व गांठ / फोड़ा (For immature tumors)"
+    }
+  },
+  {
+    "id": 51,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For ordinary dog bites",
+      "ta": "சாதாரண நாய்க்கடிக்கு",
+      "ml": "ശ്വാസനാളത്തിൽ ഉണ്ടാകുന്ന അണുബാധ (Conch/ laryngeal disease)",
+      "hi": "शंख रोग/स्वरयंत्र रोग/कंठनली रोग (Conch / laryngeal disease)"
+    }
+  },
+  {
+    "id": 52,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Ectoparasites (Lice, ticks, mites)",
+      "ta": "வெளிப்புற ஒட்டுண்ணிகள் (ஒட்டுண்ணி, பேன்கள், செல்கள்)",
+      "ml": "മൂക്കിലെ രക്തസ്രാവം മൂലമുണ്ടാകുന്ന വ്രണങ്ങൾ",
+      "hi": "नकसीर से हुए घाव (Sores caused by nosebleeds)"
+    }
+  },
+  {
+    "id": 53,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Fracture of broken leg",
+      "ta": "எலும்பு முறிவு மற்றும் \nகால்   ஒடிதல்",
+      "ml": "നവജാത കിടാങ്ങൾക്ക് വേണ്ടി (For non-weaned calf)",
+      "hi": "दूध न पीने वाले बछड़ों के लिए (For non-weaned calf)"
+    }
+  },
+  {
+    "id": 54,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Obstruction in Nasal region",
+      "ta": "மூக்கடைப்பான்",
+      "ml": "Intestinal arthritis",
+      "hi": "आंतों का गठिया (Intestinal Arthritis)"
+    }
+  },
+  {
+    "id": 55,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Jaundice",
+      "ta": "மஞ்சள் காமாலை",
+      "ml": "പേവിഷബാധ ഇല്ലാത്ത പട്ടികടിക്കുന്നത് (For ordinary dog bite)",
+      "hi": "सामान्य कुत्तों के काटने पर उपचार (For ordinary dog bites)"
+    }
+  },
+  {
+    "id": 56,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Jaw Swelling",
+      "ta": "தாடை வீக்கம்",
+      "ml": "6 ബാഹ്യപരാദങ്ങൾ (പേൻ, ചെള്ള്, പട്ടുണ്ണി) (Ectoparasites- Lice, Tick, Mite)",
+      "hi": "बाह्य परजीवी/ जूँ, टिक्स, माइट्स (Ectoparasites /  Lice Ticks, Mites)"
+    }
+  },
+  {
+    "id": 57,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Watery eyes",
+      "ta": "கண்களில் நீர் வடிதல்",
+      "ml": "എല്ലുപൊട്ടൽ (Fracture of broken leg)",
+      "hi": "टूटी हुई टांग (Fracture of broken leg)"
+    }
+  },
+  {
+    "id": 58,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Wooden tongue or Navaranai disease",
+      "ta": "நாவரணை",
+      "ml": "മൂക്കിലെ തടസ്സം (Obstruction in nasal region)",
+      "hi": "नाक में अवरोध / नासिका क्षेत्र में रूकावट (Obstruction in Nasal region)"
+    }
+  },
+  {
+    "id": 59,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Uterine diseases",
+      "ta": "கருப்பை நோய்கள்",
+      "ml": "മഞ്ഞപിത്തം (Jaundice)",
+      "hi": "पीलिया (Jaundice)"
+    }
+  },
+  {
+    "id": 60,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Bovine Asthma",
+      "ta": "இளைப்பு நோய் (இரைப்பு நோய்)",
+      "ml": "താടവീക്കം (Jaw swelling)",
+      "hi": "जबड़े में सूजन (Jaw swelling)"
+    }
+  },
+  {
+    "id": 61,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "​​To prevent morbidity due to overdose of allopathic medicine",
+      "ta": "அதிகமான மருந்து கொடுத்ததால் ஏற்படும் மரணத்தை தடுக்க",
+      "ml": "കണ്ണിൽനിന്ന് വെള്ളംവരിക (Watery eyes)",
+      "hi": "आंखों से पानी/कीचड़ आना (Watery Eyes)"
+    }
+  },
+  {
+    "id": 62,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Yolk gall in bullocks",
+      "ta": "முன் கழுத்து கழலை / கட்டி",
+      "ml": "മരനാക്ക് രോഗം (Wooden tongue)",
+      "hi": "वुडन टंग (लकड़ी जैसी जीभ) या नावरणै रोग (Wooden Tongue)"
+    }
+  },
+  {
+    "id": 63,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Respiratory tract Infections:",
+      "ta": "சுவாசம் சம்பந்தப்பட்ட நோய்கள்",
+      "ml": "ഗർഭപാത്ര സംബന്ധമായ അസുഖകൾ (Uterine diseases)",
+      "hi": "गर्भाशय से संबंधित रोग (Uterine diseases)"
+    }
+  },
+  {
+    "id": 64,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Fever",
+      "ta": "வெப்பக் காய்ச்சல்",
+      "ml": "ആസ്മ",
+      "hi": "गायों में दमा (Bovine Asthma)"
+    }
+  },
+  {
+    "id": 65,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Lumpy Skin Disease",
+      "ta": "பெரிய அம்மை நோய் (எல். எஸ்.டி)",
+      "ml": "അലോപതി മരുന്നിന്റെ അമിത ഉപയോഗം മൂലമുള്ള മരണനിരക്ക് കുറയ്ക്കാൻ (​​To prevent morbidity due to overdose of allopathic medicine)",
+      "hi": "ऐलोपैथिक दवा की अधिक मात्रा से होने वाली बीमारी (दुष्प्रभाव) को रोकने हेतु (To prevent morbidity due to overdose of allopathic medicine)"
+    }
+  },
+  {
+    "id": 66,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Tympany due to intake of rice",
+      "ta": "அரிசி தின்ற மாட்டிற்கு",
+      "ml": "കാളകളുടെ മുതുകിൽ കാണുന്ന പഴുപ്പ്",
+      "hi": "बैल में योक गॉल (गर्दन की गांठ/सूजन) (Yolk gall in bullocks)"
+    }
+  },
+  {
+    "id": 67,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Cows not coming for Heat",
+      "ta": "கால் குளம்பு அழுகல் நோய்",
+      "ml": "ശ്വാസകോശസംബന്ധമായ അസുഖങ്ങൾ (Respiratory tract Infections)",
+      "hi": "श्वसन तंत्र में संक्रमण (Respiratory Tract Infections)"
+    }
+  },
+  {
+    "id": 68,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Bottle jaw disease",
+      "ta": "மாடு பருவத்திற்கு வராமல் இருத்தல்",
+      "ml": "പനി (Fever)",
+      "hi": "पशुओं में बुखार (Animal Fever)"
+    }
+  },
+  {
+    "id": 69,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Premature death of calf in the embryo",
+      "ta": "பாட்டில் தாடை நோய் (Bottle jaw)",
+      "ml": "പൊക്കിൾകൊടിയിൽ പഴുപ്പ് (Naval ill in calf)",
+      "hi": "बछड़े में नाभि रोग (Naval ill in calf)"
+    }
+  },
+  {
+    "id": 70,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Anorexia",
+      "ta": "மாடு வயிற்றுக்குள் கன்று இறந்து விட்டால்",
+      "ml": "പ്ലാസ്റ്റിക് കഴിക്കാൻ ഇടയായാൽ (Animal ingested plastic paper)",
+      "hi": "पशुओं द्वारा प्लास्टिक कागज का निगलना (Animals ingested plastic papers)"
+    }
+  },
+  {
+    "id": 71,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "For developing body immunity and strength",
+      "ta": "தீனி தின்னாமை / தெளியாத நிலை",
+      "ml": "ചർമ്മമുഴ രോഗം (Lumpy skin disease)",
+      "hi": "लम्पी रोग/गांठदार त्वचा रोग (Lumpy Skin Disease)"
+    }
+  },
+  {
+    "id": 72,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "Foot and Mouth Disease:",
+      "ta": "மூக்கில் இரத்தப்போக்கு (எபிஸ்டாக்ஸிஸ்)",
+      "ml": "കഞ്ഞി കൊടുത്താൽ ഉണ്ടാകുന്ന വയർപെരുക്കം (Tympany due to intake of rice)",
+      "hi": "अत्यधिक चावल खाने से अफारा/पेट फूलना (Tympany due to intake of rice)"
+    }
+  },
+  {
+    "id": 73,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "மாடுகளின் சரீர பலம், ரத்த விருத்திக்கு.",
+      "ml": "കുളമ്പ് ചീയൽ (Foot rot disease in cattle)",
+      "hi": "गायों में खुर/पैर सड़न (Foot Rot Disease in Cattle)"
+    }
+  },
+  {
+    "id": 74,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "கோமாரி நோய் \n(கால்காணை, வாய்காணை)",
+      "ml": "മദിലക്ഷണങ്ങൾ കാണിക്കാതിരിക്കുക (Cows not coming to heat)",
+      "hi": "गायों का मद (हीट) में न आना (Cows not coming for Heat)"
+    }
+  },
+  {
+    "id": 75,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "വിത്തുകാളകളുടെ ശേഷിക്കുറവ് (Young bulls unable to breed or unable to mount cows)",
+      "hi": "युवा सांडों में कामोत्तेजना की कमी (Young bulls unable to breed or unable to mount cows)"
+    }
+  },
+  {
+    "id": 76,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "കരിങ്കാൽ രോഗം (Black leg/black quarters disease)",
+      "hi": "लंगड़ा बुखार रोग (Black Leg)"
+    }
+  },
+  {
+    "id": 77,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "താടവീക്കം (Bottle jaw disease)",
+      "hi": "बोटल जबड़ा रोग (Bottle Jaw Disease)"
+    }
+  },
+  {
+    "id": 78,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "മുടന്തൻ പനി (Ephemeral fever)",
+      "hi": "पशुओं में बुखार (Animal Fever)"
+    }
+  },
+  {
+    "id": 79,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "ഭ്രൂണാവസ്ഥയിൽ ഉള്ള കുട്ടിയുടെ അകാലമരണം (Premature death of calf in the embryo)",
+      "hi": "गर्भ में बछड़े की समय से पहले मृत्यु (Premature death of calf in the embryo)"
+    }
+  },
+  {
+    "id": 80,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "തീറ്റമടുപ്പ്‌/വിശപ്പില്ലായ്മ (Anorexia)",
+      "hi": "भूख न लगना (Anorexia)"
+    }
+  },
+  {
+    "id": 81,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "മൂക്കിൽ നിന്ന് രക്തം വരിക (Bleeding in nose/ Epistaxis)",
+      "hi": "नाक से खून आना / नकसीर फूटना (Bleeding in nose / Epistaxis)"
+    }
+  },
+  {
+    "id": 82,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "രോഗപ്രതിരോധ ശേഷി വർധിപ്പിക്കാൻ (For developing body immunity and strength)",
+      "hi": "शरीर की रोग प्रतिरोधक क्षमता और ताकत बढ़ाने के लिए (For developing body immunity and strength)"
+    }
+  },
+  {
+    "id": 83,
+    "category": "CowAndBuffalo",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "കുളമ്പ് രോഗം/ കുളമ്പ് ദീനം (Foot and mouth disease)",
+      "hi": "खुरपका मुँहपका रोग (Foot and Mouth Disease)"
+    }
+  }
+]

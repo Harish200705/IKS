@@ -1,0 +1,582 @@
+[
+  {
+    "id": 1,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Herbal masala bolus for all Digestive Problems of sheep and goat",
+      "ta": "மூலிகை மசால் உருண்டை தயாரிக்கும் முறைகள்",
+      "ml": "ദഹനസംബന്ധമായ അസുഖങ്ങൾക്കുള്ള മസാല ഉരുളക്കൂട്ട്- ആടുകൾക്കും ചെമ്മരിയാടുകൾക്കും",
+      "hi": "भेड़-बकरी की सभी पाचन समस्याओं के लिए हर्बल मसाला बोलस (Herbal masala bolus for all Digestive Problems of sheep and goat)"
+    }
+  },
+  {
+    "id": 2,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Mastitis in goats",
+      "ta": "பால் கறவை ஆடுகளில் மடி நோய்",
+      "ml": "അകിടുവീക്കം (Mastitis)",
+      "hi": "बकरियों में थनैला रोग (Mastitis in goats)"
+    }
+  },
+  {
+    "id": 3,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Infertility",
+      "ta": "சினை தங்காமை / பருவ அறிகுறி தோன்றாமை /",
+      "ml": "വന്ധ്യത (Infertility)",
+      "hi": "बाँझपन (Infertility)"
+    }
+  },
+  {
+    "id": 4,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Retention of Placenta",
+      "ta": "இளங்கொடி விழாதிருத்தல்",
+      "ml": "മറുപിളള വീഴാതിരിക്കൽ (Retention of placenta)",
+      "hi": "जेर का न गिरना / अपरा रोध (Retention of Placenta)"
+    }
+  },
+  {
+    "id": 5,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Prolapse of the Uterus",
+      "ta": "கர்ப்பப்பை வெளித்தள்ளுதல்",
+      "ml": "ഗർഭപാത്രം പുറത്തേക്ക് തള്ളൽ (Prolapse of uterus)",
+      "hi": "गर्भाशय का बाहर आना (Prolapse of the Uterus)"
+    }
+  },
+  {
+    "id": 6,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Blue Tongue Disease in Sheep and Goats",
+      "ta": "நீல நாக்கு நோய்",
+      "ml": "നീലനാവ് (Blue Tongue)",
+      "hi": "भेड़ और बकरियों में ब्लू टंग रोग (Blue Tongue Disease in Sheep and Goats)"
+    }
+  },
+  {
+    "id": 7,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Poisonous bite or Food poisoning",
+      "ta": "விஷக்கடி அல்லது விஷமுள்ள தீவனம் உண்ட பாதிப்பு",
+      "ml": "വിഷം തീണ്ടൽ/ ഭക്ഷ്യവിഷബാധ (Poisonous bite or Food poisoning)",
+      "hi": "विषाक्त दंश या खाद्य विषाक्तता (Poisonous bite or Food poisoning)"
+    }
+  },
+  {
+    "id": 8,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Wounds",
+      "ta": "புண்கள்",
+      "ml": "മുറിവ്/ വ്രണങ്ങൾ",
+      "hi": "घाव (Wounds)"
+    }
+  },
+  {
+    "id": 9,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Diarrhoea in young ones",
+      "ta": "ஆட்டுக்குட்டிகளின் கழிச்சல் நோய்",
+      "ml": "ആട്ടിൻകുട്ടികളിൽ കാണപ്പെടുന്ന വയറിളക്കം (Diarrhoea in young ones)",
+      "hi": "बकरी के बच्चों में दस्त (Diarrhoea in Young Ones)"
+    }
+  },
+  {
+    "id": 10,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Milk fever or Calcium Deficiency",
+      "ta": "பால் காய்ச்சல் அல்லது கால்சியம் குறைபாடு:",
+      "ml": "പഞ്ചഗവ്യം (Panchagavya)",
+      "hi": "बकरियों के स्वास्थ्य के लिए पंचगव्य (Panchagavya for goat Health)"
+    }
+  },
+  {
+    "id": 11,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Tympani",
+      "ta": "வாயு அதிகரிப்பால் ஏற்படும் வயிறு உப்பிசம்",
+      "ml": "പാൽപ്പനി/ ക്ഷീരസന്നി (Milk fever)",
+      "hi": "दूध ज्वर या कैल्शियम की कमी (Milk fever or Calcium Deficiency)"
+    }
+  },
+  {
+    "id": 12,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fracture and broken leg",
+      "ta": "எலும்பு முறிவு",
+      "ml": "വയറുപെരുക്കം/ഗ്യാസ് (Tympany)",
+      "hi": "पेट फूलना / अफारा (Tympany)"
+    }
+  },
+  {
+    "id": 13,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fracture of horn:",
+      "ta": "படுத்த ஆடு எழுந்து நடக்க",
+      "ml": "എല്ല് ഒടിവ്/പൊട്ടൽ (Fracture)",
+      "hi": "हड्डी टूटना या पैर में फ्रैक्चर (Fracture and broken leg)"
+    }
+  },
+  {
+    "id": 14,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Animal unable to stand",
+      "ta": "அம்மை / மருகு / வெடிப்பு",
+      "ml": "പാലുത്പാദനം കൂടാൻ (To increase milk production)",
+      "hi": "दूध बढ़ाने के लिए (To Increase Milk)"
+    }
+  },
+  {
+    "id": 15,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Hygroma (swelling of joints):",
+      "ta": "மூட்டு வீக்கம்",
+      "ml": "കൊമ്പ് പൊട്ടൽ (Fracture of horn)",
+      "hi": "सींग का फ्रैक्चर (Fracture of Horn)"
+    }
+  },
+  {
+    "id": 16,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Pesticide/HCN/MycotoxinToxicity:",
+      "ta": "சிறுநீர் பிரியாதிருத்தல்,\nசிறுநீரில் ரத்தம் கலந்து வருதல்",
+      "ml": "ആട് വീണുപോകുക (Animal unable to stand)",
+      "hi": "भेंड़/बकरी का खड़ा न हो पाना (Animal unable to stand)"
+    }
+  },
+  {
+    "id": 17,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Urinary Obstruction:",
+      "ta": "தோல் நோய்",
+      "ml": "പരു/ അരിമ്പാറ/ വിണ്ടുകീറൽ",
+      "hi": "चेचक/वार्ट/दरारें (Pox/Wart/Cracks)"
+    }
+  },
+  {
+    "id": 18,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Sprains:",
+      "ta": "வெறி நாய்க்கடி",
+      "ml": "സന്ധിവീക്കം",
+      "hi": "हाइग्रोमा / जोड़ों में सूजन (Hygroma / Swelling of joints)"
+    }
+  },
+  {
+    "id": 19,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Rabis dog bite",
+      "ta": "அரணைக்கடி",
+      "ml": "കീടനാശിനി/സയനൈഡ്/പൂപ്പൽ വിഷബാധ (Pesticide/ HCN/mycotoxin Toxicity)",
+      "hi": "कीटनाशक/HCN/मायकोटॉक्सिन विषाक्तता (Pesticide/HCN/MycotoxinToxicity)"
+    }
+  },
+  {
+    "id": 20,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For Skink Bite",
+      "ta": "அடிபட்ட வீக்கம், இரத்தக்கட்டு",
+      "ml": "മൂത്രതടസ്സം (Urinary obstruction)",
+      "hi": "मूत्राशय में रुकावट (Urinary Obstruction)"
+    }
+  },
+  {
+    "id": 21,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For Swelling due to Injury or Blood clotting",
+      "ta": "சொக்கிக்கொள்ளுதல்",
+      "ml": "ഉളുക്ക്",
+      "hi": "मोच (Sprains)"
+    }
+  },
+  {
+    "id": 22,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For Choke in Animals",
+      "ta": "காது நோய்",
+      "ml": "പേപ്പട്ടി കടിയേറ്റാൽ",
+      "hi": "बकरी में रेबीज / जलांतक (Rabis dog bite)"
+    }
+  },
+  {
+    "id": 23,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For Ear disease:",
+      "ta": "கொம்பு முறிவு",
+      "ml": "വയറിളക്കം (Diarrhoea)",
+      "hi": "दस्त (Diarrhea)"
+    }
+  },
+  {
+    "id": 24,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fracture of horn:",
+      "ta": "வாத நோய்",
+      "ml": "അരണകടി (Skink Bite)",
+      "hi": "बभनी के काटने का उपचार (For Skink Bite)"
+    }
+  },
+  {
+    "id": 25,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Rheumatism (Vadha disease)",
+      "ta": "இரத்தக்கழிச்சல்",
+      "ml": "ക്ഷതങ്ങൾ മൂലമുണ്ടാകുന്ന നീർക്കെട്ട് (For swelling due to injury or blood clotting)",
+      "hi": "चोट लगने या रक्त जमाव के कारण सूजन का उपचार (Swelling due to Injury or Blood clotting)"
+    }
+  },
+  {
+    "id": 26,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Maggot Wounds",
+      "ta": "வயிற்றுக்குள் கன்று இறந்தால்",
+      "ml": "തൊണ്ടയിലെ തടസ്സം (For choke in animals)",
+      "hi": "पशुओं में घुटन का उपचार (For Choke in Animals)"
+    }
+  },
+  {
+    "id": 27,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Blood tinged Diarrhoea (Coccidiosis)",
+      "ta": "மலச்சிக்கல் / வயிறு கட்டுதல்",
+      "ml": "ചെവിക്കുള്ളിലെ അസുഖങ്ങൾ (For ear diseases)",
+      "hi": "कान के रोग का उपचार (For Ear disease)"
+    }
+  },
+  {
+    "id": 28,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Premature death of calf inside the womb",
+      "ta": "ரோமங்கள் உதிர்ந்து சொட்டையாக இருத்தல்",
+      "ml": "കൊമ്പ് പൊട്ടിപോകുക (Broken of horn)",
+      "hi": "सींग टूटने पर उपचार (Fracture of Horn)"
+    }
+  },
+  {
+    "id": 29,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Obesity in Goat (fatty goat)",
+      "ta": "ஈரல் முட்டி நோய்",
+      "ml": "സന്ധിവാതം (Rheumatism)",
+      "hi": "आमवात / गठिया (Rheumatism / Vadha disease)"
+    }
+  },
+  {
+    "id": 30,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Constipation",
+      "ta": "அம்மை கொப்பளம்",
+      "ml": "പുഴുക്കടി / പുഴുവന്ന വ്രണങ്ങൾ (Wound and maggot infested wound)",
+      "hi": "कीड़े युक्त घाव (Maggot Wounds)"
+    }
+  },
+  {
+    "id": 31,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Dandruff",
+      "ta": "பழுக்காத கட்டிகளுக்கு",
+      "ml": "കോക്സീഡിയോസിസ്/ രക്തത്തോട് കൂടിയ വയറിളക്കം (Coccidiosis/Blood-tinged diarrhoea)",
+      "hi": "कुकड़िया रोग/ रक्तयुक्त दस्त (Blood tinged Diarrhoea / Coccidiosis)"
+    }
+  },
+  {
+    "id": 32,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fatty liver disease in goat",
+      "ta": "சங்கு அடைப்பான் நோய் \n(குரல்வளை நோய்)",
+      "ml": "ഭ്രൂണാവസ്ഥയിൽ ഉള്ള കിടാവിന്റെ അകാലമരണം (Premature death of calf inside the womb)",
+      "hi": "गर्भ में बछड़े की असमय मृत्यु (Premature death of calf inside the womb)"
+    }
+  },
+  {
+    "id": 33,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Measles:",
+      "ta": "குடல் வாதம்",
+      "ml": "ആടുകളിലെ പൊണ്ണത്തടി (Obesity in goat)",
+      "hi": "बकरी में मोटापा (Obesity in Goat / fatty goat)"
+    }
+  },
+  {
+    "id": 34,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For immature tumors",
+      "ta": "சாதாரண நாய்க்கடிக்கு",
+      "ml": "ചാണകം പോകാനുള്ള ബുദ്ധിമുട്ട് (Constipation)",
+      "hi": "कब्ज (Constipation)"
+    }
+  },
+  {
+    "id": 35,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Conch (or) laryngeal disease",
+      "ta": "எலும்பு முறிவு மற்றும் கால் முறிவிற்கு",
+      "ml": "താരൻ (Dandruff)",
+      "hi": "रूसी (Dandruff)"
+    }
+  },
+  {
+    "id": 36,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For non-weaned lamb and kids",
+      "ta": "மூக்கடைப்பான்",
+      "ml": "ഫാറ്റി ലിവർ (Fatty liver)",
+      "hi": "बकरियों में फैटी लिवर रोग (Fatty liver disease in goat)"
+    }
+  },
+  {
+    "id": 37,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Intestinal Arthritis:",
+      "ta": "குடற்புழுக்கள்",
+      "ml": "മീസിൽസ് (Measles)",
+      "hi": "खसरा (Measles)"
+    }
+  },
+  {
+    "id": 38,
+    "category": "SheepGoat",
+    "names": {
+      "en": "For ordinary dog bites",
+      "ta": "மஞ்சள் காமாலை",
+      "ml": "അർബുദം (For immature tumors)",
+      "hi": "अपरिपक्व ट्यूमर (Immature Tumors)"
+    }
+  },
+  {
+    "id": 39,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fracture and broken leg",
+      "ta": "தாடை வீக்கம்",
+      "ml": "ശ്വാസനാളത്തിൽ ഉണ്ടാകുന്ന അണുബാധ (Conch/ laryngeal disease)",
+      "hi": "शंख (या) कंठ रोग (Conch / Laryngeal Disease)"
+    }
+  },
+  {
+    "id": 40,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Obstruction in Nasal region",
+      "ta": "கண்களில் நீர் வடிதல்",
+      "ml": "നവജാത കിടാങ്ങൾക്ക് വേണ്ടി (For non-weaned calf)",
+      "hi": "मेमने और बच्चों के लिए (For non-weaned lamb and kids)"
+    }
+  },
+  {
+    "id": 41,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Endoparasites (Intestinal worms)",
+      "ta": "நாவரணை",
+      "ml": "Intestinal arthritis",
+      "hi": "आंतों में गठिया (Intestinal Arthritis)"
+    }
+  },
+  {
+    "id": 42,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Jaundice",
+      "ta": "கருப்பை நோய்கள்",
+      "ml": "പേവിഷബാധ ഇല്ലാത്ത പട്ടികടിക്കുന്നത് (For ordinary dog bite)",
+      "hi": "सामान्य कुत्ते के काटने पर उपचार (For ordinary dog bites)"
+    }
+  },
+  {
+    "id": 43,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Jaw Swelling",
+      "ta": "அதிகமான மருந்து கொடுத்ததால் ஏற்படும் இறப்பைத்தடுக்க",
+      "ml": "എല്ലുപൊട്ടൽ (Fracture of broken leg)",
+      "hi": "हड्डी का फ्रैक्चर और टूटी हुई टांग (Fracture and broken leg)"
+    }
+  },
+  {
+    "id": 44,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Watery eyes",
+      "ta": "வெளிப்புற ஒட்டுண்ணிகள்  \n(ஒட்டுண்ணி, பேன்கள், செல்கள்)",
+      "ml": "മൂക്കിലെ തടസ്സം (Obstruction in nasal region)",
+      "hi": "नाक में अवरोध / नासिका क्षेत्र में रुकावट (Obstruction in Nasal region)"
+    }
+  },
+  {
+    "id": 45,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Wooden tongue or Navaranai disease",
+      "ta": "சுவாசம் சம்பந்தப்பட்ட நோய்கள்",
+      "ml": "വിരശല്യം/ ആന്തരപരാദങ്ങൾ (Endoparasites/Intestinal Worms)",
+      "hi": "आंतरिक परजीवी / आंतों के कीड़े (Endoparasites / Intestinal worms)"
+    }
+  },
+  {
+    "id": 46,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Uterine diseases",
+      "ta": "கோமாரி நோய் (கால்காணை வாய்காணை)",
+      "ml": "മഞ്ഞപിത്തം (Jaundice)",
+      "hi": "पीलिया (Jaundice)"
+    }
+  },
+  {
+    "id": 47,
+    "category": "SheepGoat",
+    "names": {
+      "en": "To prevent morbidity due to overdose of allopathic medicine",
+      "ta": "",
+      "ml": "താടവീക്കം (Jaw swelling)",
+      "hi": "जबड़े में सूजन (Jaw Swelling)"
+    }
+  },
+  {
+    "id": 48,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Fever",
+      "ta": "",
+      "ml": "കണ്ണിൽനിന്ന് വെള്ളംവരിക (Watery eyes)",
+      "hi": "आंखों से पानी/कीचड़ आना (Watery Eyes)"
+    }
+  },
+  {
+    "id": 49,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Navel ill in kids and lambs",
+      "ta": "",
+      "ml": "മരനാക്ക് രോഗം (Wooden tongue)",
+      "hi": "लकड़ी जैसी जीभ या नवरणाई रोग (Wooden tongue or Navaranai disease)"
+    }
+  },
+  {
+    "id": 50,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Animals ingested plastic paper",
+      "ta": "",
+      "ml": "ഗർഭപാത്ര സംബന്ധമായ അസുഖകൾ (Uterine diseases)",
+      "hi": "गर्भाशय संबंधी रोग (Uterine diseases)"
+    }
+  },
+  {
+    "id": 51,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Ectoparasites (Lice, ticks, mites)",
+      "ta": "",
+      "ml": "അലോപതി മരുന്നിന്റെ അമിത ഉപയോഗം മൂലമുള്ള മരണനിരക്ക് കുറയ്ക്കാൻ (​​To prevent morbidity due to overdose of allopathic medicine)",
+      "hi": "ऐलोपैथिक दवा की अधिक मात्रा से होने वाली बीमारी (दुष्प्रभाव) को रोकने हेतु (To prevent morbidity due to overdose of allopathic medicine)"
+    }
+  },
+  {
+    "id": 52,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Respiratory tract Infections",
+      "ta": "",
+      "ml": "പനി (Fever)",
+      "hi": "बुखार (Fever)"
+    }
+  },
+  {
+    "id": 53,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Animal Fever",
+      "ta": "",
+      "ml": "പൊക്കിൾകൊടിയിൽ പഴുപ്പ് (Naval ill in calf)",
+      "hi": "नवजात मेमनों में नाभि रोग (Navel ill in kids and lambs)"
+    }
+  },
+  {
+    "id": 54,
+    "category": "SheepGoat",
+    "names": {
+      "en": "Foot and Mouth Disease",
+      "ta": "",
+      "ml": "പ്ലാസ്റ്റിക് കഴിക്കാൻ ഇടയായാൽ (Animal ingested plastic paper)",
+      "hi": "पशुओं द्वारा प्लास्टिक कागज का निगलना ( Animals ingested plastic paper)"
+    }
+  },
+  {
+    "id": 55,
+    "category": "SheepGoat",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "6 ബാഹ്യപരാദങ്ങൾ (പേൻ, ചെള്ള്, പട്ടുണ്ണി) (Ectoparasites- Lice, Tick, Mite)",
+      "hi": "बाह्य परजीवी / जूँ, चिचड़ी, माईटस (Ectoparasites / Lice, ticks, mites)"
+    }
+  },
+  {
+    "id": 56,
+    "category": "SheepGoat",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "ശ്വാസകോശസംബന്ധമായ അസുഖങ്ങൾ (Respiratory tract Infections)",
+      "hi": "श्वसन तंत्र के संक्रमण (Respiratory tract Infections)"
+    }
+  },
+  {
+    "id": 57,
+    "category": "SheepGoat",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "പനി (Fever)",
+      "hi": "पशुओं को बुखार (Animal Fever)"
+    }
+  },
+  {
+    "id": 58,
+    "category": "SheepGoat",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "കുളമ്പ് രോഗം/ കുളമ്പ് ദീനം (Foot and mouth disease)",
+      "hi": "खुरपका मुँहपका रोग (Foot and Mouth Disease)"
+    }
+  }
+]

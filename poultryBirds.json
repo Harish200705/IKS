@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "1 Ranikhet disease:",
+      "ta": "ராணிக்கெட் அல்லது வெள்ளைக்கழிச்சல் நோய்",
+      "ml": "റാണിഖേത് രോഗം/ന്യൂകാസിൽ രോഗം ( Ranikhet disease)",
+      "hi": "रानीखेत रोग (Ranikhet Disease)"
+    }
+  },
+  {
+    "id": 2,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Wounds and Maggot infested Wounds",
+      "ta": "புழு வைத்த புண்",
+      "ml": "പുഴുക്കടി / പുഴുവന്ന വ്രണങ്ങൾ (Wound and maggot infested wound)",
+      "hi": "कीड़े से संक्रमित घाव (Maggot infested Wounds)"
+    }
+  },
+  {
+    "id": 3,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Blisters or Fowl pox",
+      "ta": "கோழிப் பேன்கள், செல் பூச்சிகள் (Lice in Poultry)",
+      "ml": "കോഴി വസൂരി (Blisters of fowl pox)",
+      "hi": "फफोले या मुर्गियों का चेचक (Blisters or Fowl pox)"
+    }
+  },
+  {
+    "id": 4,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Feeding Termites to increase immunity",
+      "ta": "கீரிபூச்சிகள், குடற்புழுக்கள்",
+      "ml": "രോഗപ്രതിരോധശേഷി കൂട്ടാനായി ചിതലുകൾ",
+      "hi": "इम्युनिटी बढ़ाने के लिए दीमकों को खिलाना (Feeding Termites to increase immunity)"
+    }
+  },
+  {
+    "id": 5,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Lice:",
+      "ta": "கோழி அம்மை",
+      "ml": "പേൻ (Lice)",
+      "hi": "जूं (Lice)"
+    }
+  },
+  {
+    "id": 6,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Intestinal Worms",
+      "ta": "புற ஒட்டுண்ணிகள்",
+      "ml": "ശ്വാസകോശ സംബന്ധമായ അസുഖകൾ/Respiratory diseases",
+      "hi": "श्वसन रोग (Respiratory Disease)"
+    }
+  },
+  {
+    "id": 7,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Fowl Pox",
+      "ta": "மைக்கோடாக்சிகோசிஸ் / காளான் நச்சு பாதிப்பு நோய் (Mycotoxins)",
+      "ml": "വിരബാധ (Intestinal worms)",
+      "hi": "आंतों के कीड़े (Intestinal Worms)"
+    }
+  },
+  {
+    "id": 8,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Lice and ticks",
+      "ta": "கோழி காயங்கள்:",
+      "ml": "കോഴി വസൂരി (Fowl Pox)",
+      "hi": "मुर्गी चेचक (Fowl Pox)"
+    }
+  },
+  {
+    "id": 9,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Mycotoxicosis",
+      "ta": "",
+      "ml": "ബാഹ്യപരാദങ്ങൾ (പേൻ, ചെള്ള്) (Lice & Ticks)",
+      "hi": "जूँ और चिचड़ी/ किलनी (Lice and Ticks)"
+    }
+  },
+  {
+    "id": 10,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Chicken Wounds",
+      "ta": "",
+      "ml": "പൂപ്പൽബാധ (Mycotoxicosis)",
+      "hi": "कवक विषाक्तता (Mycotoxicosis)"
+    }
+  },
+  {
+    "id": 11,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "Panchakavya for Chicken Health",
+      "ta": "",
+      "ml": "മുറിവുകൾ (Chicken Wounds)",
+      "hi": "मुर्गियों के घाव (Chicken Wounds)"
+    }
+  },
+  {
+    "id": 12,
+    "category": "PoultryBirds",
+    "names": {
+      "en": "",
+      "ta": "",
+      "ml": "ആരോഗ്യസംരക്ഷണത്തിന് പഞ്ചഗവ്യം",
+      "hi": "मुर्गियों के स्वास्थ्य के लिए पंचगव्य (Panchagavya for Chicken Health)"
+    }
+  }
+]

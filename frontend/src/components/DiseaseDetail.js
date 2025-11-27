@@ -11,6 +11,8 @@ const DiseaseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [originalDiseaseName, setOriginalDiseaseName] = useState(null);
+  const [category, setCategory] = useState(null);
 
   // Helper function to check if a field has content
   const hasContent = (field) => {
@@ -39,50 +41,76 @@ const DiseaseDetail = () => {
     return true;
   };
 
+  // Fetch disease - handles both initial load and language changes
   useEffect(() => {
     const fetchDisease = async () => {
       setLoading(true);
       setError(null);
       
       try {
-        // First, try to get the disease in the current language
-        const response = await axios.get(`${API_BASE_URL}/translate-disease/${collection}/${id}/${language}`);
+        // First, get the disease in the original collection to get the disease name
+        const originalResponse = await axios.get(`${API_BASE_URL}/disease/${collection}/${id}`);
         
-        if (response.data.message === 'Disease not found') {
-          // If not found in target language, try original endpoint
-          const originalResponse = await axios.get(`${API_BASE_URL}/disease/${collection}/${id}`);
+        if (originalResponse.data && originalResponse.data.message === 'Disease not found') {
+          setError('Disease not found');
+          setDisease(null);
+          setLoading(false);
+          return;
+        }
+        
+        // Store original disease name and determine category (only if not already stored)
+        if (!originalDiseaseName) {
+          const diseaseName = originalResponse.data["Disease Name"] || originalResponse.data["Disease name"] || '';
+          setOriginalDiseaseName(diseaseName);
           
-          if (originalResponse.data.message === 'Disease not found') {
-            setError('Disease not found');
-            setDisease(null);
-          } else {
-            setDisease(originalResponse.data);
-            // Removed translation error message
+          // Determine category from collection name
+          let categoryName = collection;
+          if (collection.includes('PoultryBirds')) {
+            categoryName = 'PoultryBirds';
+          } else if (collection.includes('CowAndBuffalo') || collection.includes('cowAndBuffalo')) {
+            categoryName = 'CowAndBuffalo';
+          } else if (collection.includes('SheepGoat')) {
+            categoryName = 'SheepGoat';
           }
-        } else {
-          // Check if we got the same content (meaning no translation available)
-          if (response.data.translated === false || response.data.collection === collection) {
-            setDisease(response.data);
-          } else {
-            setDisease(response.data);
+          setCategory(categoryName);
+        }
+        
+        // If current language is English, use the original disease
+        if (language === 'en') {
+          setDisease(originalResponse.data);
+          setLoading(false);
+          return;
+        }
+        
+        // For other languages, try to get translated version using translation collections
+        // Use stored originalDiseaseName if available, otherwise use the one from response
+        const diseaseNameToUse = originalDiseaseName || 
+          (originalResponse.data["Disease Name"] || originalResponse.data["Disease name"] || '');
+        
+        if (diseaseNameToUse && category) {
+          try {
+            const encodedDiseaseName = encodeURIComponent(diseaseNameToUse);
+            const translateResponse = await axios.get(
+              `${API_BASE_URL}/disease-by-name/${category}/${encodedDiseaseName}/${language}`
+            );
+
+            if (translateResponse.data && translateResponse.data["Disease Name"]) {
+              // Successfully got translated disease
+              setDisease(translateResponse.data);
+              setLoading(false);
+              return;
+            }
+          } catch (translateErr) {
+            console.log('Translation not available, using original:', translateErr.message);
+            // Fallback to original disease below
           }
         }
+        
+        // Fallback: use original disease if translation not available
+        setDisease(originalResponse.data);
       } catch (err) {
-        // If translation fails, try original endpoint
-        try {
-          const originalResponse = await axios.get(`${API_BASE_URL}/disease/${collection}/${id}`);
-          
-          if (originalResponse.data.message === 'Disease not found') {
-            setError('Disease not found');
-            setDisease(null);
-          } else {
-            setDisease(originalResponse.data);
-            // Removed translation error message
-          }
-        } catch (originalErr) {
-          setError('Failed to load disease details. Please try again.');
-          console.error('Error fetching disease:', originalErr);
-        }
+        setError('Failed to load disease details. Please try again.');
+        console.error('Error fetching disease:', err);
       } finally {
         setLoading(false);
       }

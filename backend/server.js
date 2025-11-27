@@ -1199,6 +1199,360 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
   }
 });
 
+// New endpoint: Get disease by name using translation collections
+// This endpoint uses Diseases.translationPoultryBirds, Diseases.translationCowAndBuffalo, Diseases.translationSheepGoat
+app.get('/api/disease-by-name/:category/:diseaseName/:targetLanguage', async (req, res) => {
+  try {
+    const { category, diseaseName, targetLanguage } = req.params;
+    
+    console.log(`\n=== DISEASE BY NAME TRANSLATION ===`);
+    console.log(`Category: ${category}`);
+    console.log(`Disease Name (original): ${diseaseName}`);
+    console.log(`Target Language: ${targetLanguage}`);
+    
+    // Map language codes
+    const languageMap = {
+      'en': 'en',
+      'ta': 'ta',
+      'hi': 'hi',
+      'ml': 'ml'
+    };
+    
+    const langCode = languageMap[targetLanguage] || targetLanguage;
+    
+    // Map category to translation collection name
+    // Collections are: translationPoultryBirds, translationCowAndBuffalo, translationSheepGoat
+    const translationCollectionMap = {
+      'PoultryBirds': 'translationPoultryBirds',
+      'CowAndBuffalo': 'translationCowAndBuffalo',
+      'cowAndBuffalo': 'translationCowAndBuffalo',
+      'SheepGoat': 'translationSheepGoat'
+    };
+    
+    // Map category to target language collection name
+    const targetCollectionMap = {
+      'PoultryBirds': {
+        'en': 'PoultryBirds',
+        'ta': 'PoultryBirdsTamil',
+        'hi': 'PoultryBirdsHindi',
+        'ml': 'PoultryBirdsMalayalam'
+      },
+      'CowAndBuffalo': {
+        'en': 'cowAndBuffalo',
+        'ta': 'cowAndBuffaloTamil',
+        'hi': 'cowAndBuffaloHindi',
+        'ml': 'cowAndBuffaloMalayalam'
+      },
+      'cowAndBuffalo': {
+        'en': 'cowAndBuffalo',
+        'ta': 'cowAndBuffaloTamil',
+        'hi': 'cowAndBuffaloHindi',
+        'ml': 'cowAndBuffaloMalayalam'
+      },
+      'SheepGoat': {
+        'en': 'SheepGoat',
+        'ta': 'SheepGoatTamil',
+        'hi': 'SheepGoatHindi',
+        'ml': 'SheepGoatMalayalam'
+      }
+    };
+    
+    const translationCollectionName = translationCollectionMap[category];
+    const targetCollection = targetCollectionMap[category]?.[langCode];
+    
+    if (!translationCollectionName || !targetCollection) {
+      return res.status(400).json({ 
+        message: 'Invalid category or language',
+        category,
+        targetLanguage: langCode,
+        availableCategories: Object.keys(translationCollectionMap)
+      });
+    }
+    
+    const db = mongoose.connection.db;
+    if (!db) {
+      return res.status(503).json({ message: 'Database connection unavailable' });
+    }
+    
+    // Step 1: Find the disease in the translation collection
+    console.log(`Looking in translation collection: ${translationCollectionName}`);
+    
+    // Access the translation collection
+    const translationDocs = await db.collection(translationCollectionName).find({}).toArray();
+    console.log(`Found ${translationDocs.length} entries in translation collection`);
+    
+    // Helper function to normalize disease names for matching
+    const normalizeDiseaseName = (name) => {
+      if (!name) return '';
+      // Remove leading numbers and dots (e.g., "1. Disease name")
+      let normalized = name.replace(/^\d+[\.\)]\s*/, '');
+      // Remove trailing colons
+      normalized = normalized.replace(/:\s*$/, '');
+      // Remove extra spaces
+      normalized = normalized.replace(/\s+/g, ' ').trim();
+      return normalized.toLowerCase();
+    };
+    
+    // Decode the disease name
+    const decodedDiseaseName = decodeURIComponent(diseaseName);
+    console.log(`Searching for English name: "${decodedDiseaseName}"`);
+    const normalizedSearchName = normalizeDiseaseName(decodedDiseaseName);
+    console.log(`Normalized search name: "${normalizedSearchName}"`);
+    
+    // Find the disease entry by matching the English name (case-insensitive, with normalization)
+    let diseaseEntry = translationDocs.find(entry => {
+      const enName = entry.names?.en || '';
+      const normalizedEnName = normalizeDiseaseName(enName);
+      return normalizedEnName === normalizedSearchName;
+    });
+    
+    // If exact match not found, try partial matching
+    if (!diseaseEntry) {
+      console.log(`Exact match not found, trying partial match...`);
+      diseaseEntry = translationDocs.find(entry => {
+        const enName = entry.names?.en || '';
+        const normalizedEnName = normalizeDiseaseName(enName);
+        // Try partial matching (one contains the other)
+        return normalizedEnName.includes(normalizedSearchName) || normalizedSearchName.includes(normalizedEnName);
+      });
+    }
+    
+    // If still not found, try matching without normalization (original matching)
+    if (!diseaseEntry) {
+      console.log(`Normalized match not found, trying original matching...`);
+      diseaseEntry = translationDocs.find(entry => {
+        const enName = entry.names?.en || '';
+        const normalizedEnName = enName.toLowerCase().trim();
+        const normalizedSearch = decodedDiseaseName.toLowerCase().trim();
+        return normalizedEnName === normalizedSearch;
+      });
+    }
+    
+    if (!diseaseEntry) {
+      console.log(`\n=== DISEASE NOT FOUND IN TRANSLATION COLLECTION ===`);
+      console.log(`Searched for: "${decodedDiseaseName}"`);
+      console.log(`Available English names (first 10):`);
+      translationDocs.slice(0, 10).forEach((entry, idx) => {
+        const enName = entry.names?.en || 'N/A';
+        console.log(`  ${idx + 1}. "${enName}"`);
+      });
+      console.log(`=== END AVAILABLE NAMES ===\n`);
+      
+      return res.status(404).json({ 
+        message: 'Disease not found in translation collection',
+        searchedFor: decodedDiseaseName,
+        collection: translationCollectionName
+      });
+    }
+    
+    console.log(`✅ Found disease entry in translation collection`);
+    console.log(`  English name: "${diseaseEntry.names?.en || 'N/A'}"`);
+    console.log(`  Available languages: ${Object.keys(diseaseEntry.names || {}).join(', ')}`);
+    
+    // Step 2: Get the translated disease name
+    const translatedName = diseaseEntry.names?.[langCode];
+    
+    if (!translatedName || translatedName.trim() === '') {
+      console.log(`\n❌ No translation available for language: ${langCode}`);
+      console.log(`Available languages with translations:`);
+      Object.keys(diseaseEntry.names || {}).forEach(lang => {
+        if (diseaseEntry.names[lang]) {
+          console.log(`  ${lang}: "${diseaseEntry.names[lang]}"`);
+        }
+      });
+      console.log(`\n`);
+      
+      return res.status(404).json({ 
+        message: `No translation available for ${langCode}`,
+        availableLanguages: Object.keys(diseaseEntry.names || {}).filter(lang => diseaseEntry.names[lang]),
+        englishName: diseaseEntry.names?.en
+      });
+    }
+    
+    console.log(`✅ Found translation: "${translatedName}" in ${langCode}`);
+    
+    // Step 3: Find the disease in the target language collection by name
+    const targetCollectionName = targetCollection;
+    console.log(`Looking for disease in target collection: ${targetCollectionName}`);
+    console.log(`Translated name to search: "${translatedName}"`);
+    
+    // Helper function to normalize disease names for matching in target collections
+    const normalizeNameForTargetSearch = (name) => {
+      if (!name) return '';
+      // Remove leading numbers and dots
+      let normalized = name.replace(/^\d+[\.\)]\s*/, '');
+      // Remove trailing colons
+      normalized = normalized.replace(/:\s*$/, '');
+      // Remove parentheses and their content (e.g., "(Disease)")
+      normalized = normalized.replace(/\([^)]*\)/g, '');
+      // Remove extra spaces
+      normalized = normalized.replace(/\s+/g, ' ').trim();
+      return normalized.toLowerCase();
+    };
+    
+    const normalizedTranslatedName = normalizeNameForTargetSearch(translatedName);
+    console.log(`Normalized translated name for search: "${normalizedTranslatedName}"`);
+    
+    // Search in the target collection
+    let targetDisease = null;
+    
+    // First, try using Mongoose models if available (for better compatibility)
+    try {
+      let DiseaseModel = null;
+      switch(targetCollectionName) {
+        case 'cowAndBuffaloHindi':
+          DiseaseModel = CowBuffaloHindiDisease;
+          break;
+        case 'cowAndBuffaloMalayalam':
+          DiseaseModel = CowBuffaloMalayalamDisease;
+          break;
+        case 'PoultryBirdsHindi':
+          DiseaseModel = PoultryBirdsHindiDisease;
+          break;
+        case 'PoultryBirdsMalayalam':
+          DiseaseModel = PoultryBirdsMalayalamDisease;
+          break;
+        case 'SheepGoatHindi':
+          // Use raw MongoDB for this
+          break;
+        case 'SheepGoatMalayalam':
+          // Use raw MongoDB for this
+          break;
+      }
+      
+      if (DiseaseModel) {
+        console.log(`Using Mongoose model for collection: ${targetCollectionName}`);
+        const allDiseases = await DiseaseModel.find({}).lean();
+        console.log(`Found ${allDiseases.length} diseases in collection`);
+        
+        // Try exact match first (with normalization)
+        targetDisease = allDiseases.find(d => {
+          const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+          const normalizedField = normalizeNameForTargetSearch(diseaseNameField);
+          return normalizedField === normalizedTranslatedName;
+        });
+        
+        // If not found, try original exact match (without normalization)
+        if (!targetDisease) {
+          console.log(`Normalized exact match not found, trying original exact match...`);
+          targetDisease = allDiseases.find(d => {
+            const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+            const normalizedField = diseaseNameField.toLowerCase().trim();
+            const normalizedTranslated = translatedName.toLowerCase().trim();
+            return normalizedField === normalizedTranslated;
+          });
+        }
+        
+        // If not found, try partial match (contains)
+        if (!targetDisease) {
+          console.log(`Exact match not found, trying partial match...`);
+          targetDisease = allDiseases.find(d => {
+            const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+            const normalizedField = normalizeNameForTargetSearch(diseaseNameField);
+            // Try partial matching
+            return normalizedField.includes(normalizedTranslatedName) || normalizedTranslatedName.includes(normalizedField);
+          });
+        }
+      }
+    } catch (modelErr) {
+      console.log(`Mongoose model approach failed, using raw MongoDB:`, modelErr.message);
+    }
+    
+    // If not found via Mongoose, use raw MongoDB driver
+    if (!targetDisease) {
+      console.log(`Using raw MongoDB driver for collection: ${targetCollectionName}`);
+      const allDiseases = await db.collection(targetCollectionName).find({}).toArray();
+      console.log(`Found ${allDiseases.length} diseases in collection`);
+      
+      // Try exact match first (with normalization)
+      targetDisease = allDiseases.find(d => {
+        const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+        const normalizedField = normalizeNameForTargetSearch(diseaseNameField);
+        return normalizedField === normalizedTranslatedName;
+      });
+      
+      // If not found, try original exact match (without normalization)
+      if (!targetDisease) {
+        console.log(`Normalized exact match not found, trying original exact match...`);
+        targetDisease = allDiseases.find(d => {
+          const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+          const normalizedField = diseaseNameField.toLowerCase().trim();
+          const normalizedTranslated = translatedName.toLowerCase().trim();
+          return normalizedField === normalizedTranslated;
+        });
+      }
+      
+      // If not found, try partial match (contains)
+      if (!targetDisease) {
+        console.log(`Exact match not found, trying partial match...`);
+        targetDisease = allDiseases.find(d => {
+          const diseaseNameField = d["Disease Name"] || d["Disease name"] || d["disease_name"] || '';
+          const normalizedField = normalizeNameForTargetSearch(diseaseNameField);
+          // Try partial matching
+          return normalizedField.includes(normalizedTranslatedName) || normalizedTranslatedName.includes(normalizedField);
+        });
+      }
+      
+      // If still not found, log available disease names for debugging
+      if (!targetDisease && allDiseases.length > 0) {
+        console.log(`\n=== AVAILABLE DISEASE NAMES IN ${targetCollectionName} ===`);
+        allDiseases.slice(0, 10).forEach((d, idx) => {
+          const name = d["Disease Name"] || d["Disease name"] || d["disease_name"] || 'N/A';
+          console.log(`${idx + 1}. "${name}"`);
+        });
+        console.log(`=== END AVAILABLE DISEASES ===\n`);
+      }
+    }
+    
+    if (!targetDisease) {
+      console.log(`Disease not found in target collection: ${targetCollectionName}`);
+      console.log(`Searched for: "${translatedName}"`);
+      return res.status(404).json({ 
+        message: `Disease "${translatedName}" not found in ${targetCollectionName} collection`,
+        translatedName,
+        targetCollection: targetCollectionName,
+        debug: {
+          searchedFor: translatedName,
+          collectionName: targetCollectionName
+        }
+      });
+    }
+    
+    console.log(`✅ Found disease in target collection: ${targetDisease["Disease Name"] || targetDisease["Disease name"] || 'N/A'}`);
+    
+    // Step 4: Format and return the disease data
+    const displayName = targetDisease["Disease Name"] || targetDisease["Disease name"] || targetDisease["disease_name"] || translatedName;
+    
+    const response = {
+      _id: targetDisease._id,
+      "Disease Name": displayName,
+      "Symptoms": targetDisease["Symptoms"],
+      "Causes": targetDisease["Causes"],
+      "Treatment Name": targetDisease["Treatment Name"],
+      "Ingredients": targetDisease["Ingredients"],
+      "Preparation Method": targetDisease["Preparation Method"],
+      "Dosage": targetDisease["Dosage"],
+      "Treatments": targetDisease["Treatments"],
+      images: targetDisease.images,
+      collection: targetCollectionName,
+      language: langCode,
+      translated: true,
+      originalName: diseaseName,
+      translatedName: translatedName
+    };
+    
+    console.log(`✅ Found disease: ${displayName}`);
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Disease by name translation error:', error);
+    res.status(500).json({ 
+      message: 'Internal server error during disease translation',
+      error: error.message 
+    });
+  }
+});
+
 // Chatbot endpoints
 app.post('/api/chat', async (req, res) => {
   const requestStartTime = Date.now();

@@ -59,7 +59,7 @@ const Chatbot = () => {
       // Handle different response formats from chatbot API
       const responseText = response.data.response || response.data.message || response.data.answer || 'No response received';
       const source = response.data.source || response.data.detected_disease || 'chatbot';
-      
+
       const botMessage = {
         id: Date.now() + 1,
         text: responseText,
