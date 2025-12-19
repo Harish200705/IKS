@@ -697,6 +697,215 @@ const handleSearch = async (req, res) => {
 app.get('/api/search', handleSearch);
 app.get('/search', handleSearch);
 
+// New endpoint: Get disease by index for language translation
+// This endpoint uses the index field to find the same disease across different languages
+app.get('/api/disease-by-index/:category/:index/:targetLanguage', async (req, res) => {
+  try {
+    const { category, index, targetLanguage } = req.params;
+    
+    console.log(`\n=== DISEASE BY INDEX TRANSLATION ===`);
+    console.log(`Category: ${category}`);
+    console.log(`Index: ${index}`);
+    console.log(`Target Language: ${targetLanguage}`);
+    
+    // Map language codes to collection names
+    const languageMap = {
+      'en': 'en',
+      'ta': 'ta',
+      'hi': 'hi',
+      'ml': 'ml'
+    };
+    
+    const langCode = languageMap[targetLanguage] || targetLanguage;
+    
+    // Map category to target language collection name
+    const targetCollectionMap = {
+      'PoultryBirds': {
+        'en': 'PoultryBirds',
+        'ta': 'PoultryBirdsTamil',
+        'hi': 'PoultryBirdsHindi',
+        'ml': 'PoultryBirdsMalayalam'
+      },
+      'CowAndBuffalo': {
+        'en': 'cowAndBuffalo',
+        'ta': 'cowAndBuffaloTamil',
+        'hi': 'cowAndBuffaloHindi',
+        'ml': 'cowAndBuffaloMalayalam'
+      },
+      'cowAndBuffalo': {
+        'en': 'cowAndBuffalo',
+        'ta': 'cowAndBuffaloTamil',
+        'hi': 'cowAndBuffaloHindi',
+        'ml': 'cowAndBuffaloMalayalam'
+      },
+      'SheepGoat': {
+        'en': 'SheepGoat',
+        'ta': 'SheepGoatTamil',
+        'hi': 'SheepGoatHindi',
+        'ml': 'SheepGoatMalayalam'
+      }
+    };
+    
+    const targetCollection = targetCollectionMap[category]?.[langCode];
+    
+    if (!targetCollection) {
+      return res.status(400).json({ 
+        message: 'Invalid category or language',
+        category,
+        targetLanguage: langCode,
+        availableCategories: Object.keys(targetCollectionMap)
+      });
+    }
+    
+    const db = mongoose.connection.db;
+    if (!db) {
+      return res.status(503).json({ message: 'Database connection unavailable' });
+    }
+    
+    // Convert index to number if it's a string
+    const indexNum = typeof index === 'string' ? parseInt(index, 10) : index;
+    
+    if (isNaN(indexNum)) {
+      return res.status(400).json({ 
+        message: 'Invalid index value',
+        index
+      });
+    }
+    
+    console.log(`Looking for disease with index ${indexNum} in collection: ${targetCollection}`);
+    
+    // Find all diseases with the same index (in case there are duplicates)
+    let diseases = [];
+    
+    // Use raw MongoDB driver for all collections to handle index field
+    const allDiseases = await db.collection(targetCollection).find({}).toArray();
+    
+    // Filter diseases by index (handle both number and string index values)
+    diseases = allDiseases.filter(d => {
+      const diseaseIndex = d.index !== undefined ? (typeof d.index === 'string' ? parseInt(d.index, 10) : d.index) : null;
+      return diseaseIndex === indexNum;
+    });
+    
+    console.log(`Found ${diseases.length} disease(s) with index ${indexNum}`);
+    
+    if (diseases.length === 0) {
+      return res.status(404).json({ 
+        message: `Disease with index ${indexNum} not found in ${targetCollection} collection`,
+        index: indexNum,
+        targetCollection: targetCollection
+      });
+    }
+    
+    // If multiple diseases have the same index, merge them
+    // Use the first one as base and merge unique fields from others
+    let mergedDisease = JSON.parse(JSON.stringify(diseases[0])); // Deep clone
+    
+    if (diseases.length > 1) {
+      console.log(`Multiple diseases found with same index, merging data...`);
+      
+      // Merge unique data from other diseases with the same index
+      for (let i = 1; i < diseases.length; i++) {
+        const otherDisease = diseases[i];
+        
+        // Merge disease name if not already present or if current is empty
+        if (!mergedDisease["Disease Name"] && otherDisease["Disease Name"]) {
+          mergedDisease["Disease Name"] = otherDisease["Disease Name"];
+        }
+        
+        // Merge symptoms if not already present or if current is empty
+        if (!mergedDisease["Symptoms"] && otherDisease["Symptoms"]) {
+          mergedDisease["Symptoms"] = otherDisease["Symptoms"];
+        }
+        
+        // Merge causes if not already present or if current is empty
+        if (!mergedDisease["Causes"] && otherDisease["Causes"]) {
+          mergedDisease["Causes"] = otherDisease["Causes"];
+        }
+        
+        // Merge treatment data
+        if (!mergedDisease["Treatment Name"] && otherDisease["Treatment Name"]) {
+          mergedDisease["Treatment Name"] = otherDisease["Treatment Name"];
+        }
+        
+        if (!mergedDisease["Ingredients"] && otherDisease["Ingredients"]) {
+          mergedDisease["Ingredients"] = otherDisease["Ingredients"];
+        }
+        
+        if (!mergedDisease["Preparation Method"] && otherDisease["Preparation Method"]) {
+          mergedDisease["Preparation Method"] = otherDisease["Preparation Method"];
+        }
+        
+        if (!mergedDisease["Dosage"] && otherDisease["Dosage"]) {
+          mergedDisease["Dosage"] = otherDisease["Dosage"];
+        }
+        
+        // Merge Treatments array if present
+        if (otherDisease["Treatments"] && Array.isArray(otherDisease["Treatments"])) {
+          if (!mergedDisease["Treatments"]) {
+            mergedDisease["Treatments"] = [];
+          }
+          // Add unique treatments
+          otherDisease["Treatments"].forEach(treatment => {
+            const exists = mergedDisease["Treatments"].some(t => 
+              JSON.stringify(t) === JSON.stringify(treatment)
+            );
+            if (!exists) {
+              mergedDisease["Treatments"].push(treatment);
+            }
+          });
+        }
+        
+        // Merge images if present
+        if (otherDisease.images && Array.isArray(otherDisease.images)) {
+          if (!mergedDisease.images) {
+            mergedDisease.images = [];
+          }
+          // Add unique images
+          otherDisease.images.forEach(image => {
+            const exists = mergedDisease.images.some(img => 
+              img.image_id === image.image_id
+            );
+            if (!exists) {
+              mergedDisease.images.push(image);
+            }
+          });
+        }
+      }
+    }
+    
+    // Format the response
+    const displayName = mergedDisease["Disease Name"] || mergedDisease["Disease name"] || mergedDisease["disease_name"] || 'Unknown';
+    
+    const response = {
+      _id: mergedDisease._id,
+      index: mergedDisease.index,
+      "Disease Name": displayName,
+      "Symptoms": mergedDisease["Symptoms"],
+      "Causes": mergedDisease["Causes"],
+      "Treatment Name": mergedDisease["Treatment Name"],
+      "Ingredients": mergedDisease["Ingredients"],
+      "Preparation Method": mergedDisease["Preparation Method"],
+      "Dosage": mergedDisease["Dosage"],
+      "Treatments": mergedDisease["Treatments"],
+      images: mergedDisease.images,
+      collection: targetCollection,
+      language: langCode,
+      translated: true,
+      mergedFromMultiple: diseases.length > 1
+    };
+    
+    console.log(`✅ Found disease: ${displayName} (merged from ${diseases.length} document(s))`);
+    res.json(response);
+    
+  } catch (error) {
+    console.error('Disease by index translation error:', error);
+    res.status(500).json({ 
+      message: 'Internal server error during disease translation by index',
+      error: error.message 
+    });
+  }
+});
+
 // Get disease by ID with collection
 app.get('/api/disease/:collection/:id', async (req, res) => {
   try {
@@ -888,12 +1097,18 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     const displayName = diseaseData["Disease Name"] || diseaseData["Disease name"] || diseaseData["disease_name"] || 'Unknown';
     console.log(`✅ Found disease: ${displayName}`);
     console.log(`[DISEASE] Disease ID: ${diseaseData._id} (type: ${typeof diseaseData._id})`);
+    console.log(`[DISEASE] Index: ${diseaseData.index !== undefined ? diseaseData.index : 'Not set'}`);
     console.log(`[DISEASE] Has Symptoms: ${!!diseaseData["Symptoms"]}`);
     console.log(`[DISEASE] Has Treatment Name: ${!!diseaseData["Treatment Name"]}`);
     console.log(`[DISEASE] Has Ingredients: ${!!diseaseData["Ingredients"]}`);
     console.log(`[DISEASE] Treatment Name type: ${Array.isArray(diseaseData["Treatment Name"]) ? 'Array' : typeof diseaseData["Treatment Name"]}`);
     console.log(`[DISEASE] Ingredients type: ${Array.isArray(diseaseData["Ingredients"]) ? 'Array' : typeof diseaseData["Ingredients"]}`);
     console.log(`\n=== DISEASE DETAIL REQUEST END (200) ===`);
+    
+    // Ensure index is included in response (if it exists)
+    if (diseaseData.index === undefined) {
+      console.log(`[WARN] Disease does not have index field`);
+    }
     
     res.json(diseaseData);
   } catch (error) {
@@ -1199,8 +1414,10 @@ app.get('/api/translate-disease/:collection/:id/:targetLanguage', async (req, re
   }
 });
 
-// New endpoint: Get disease by name using translation collections
+// DEPRECATED: Get disease by name using translation collections
 // This endpoint uses Diseases.translationPoultryBirds, Diseases.translationCowAndBuffalo, Diseases.translationSheepGoat
+// NOTE: This endpoint is deprecated. Use /api/disease-by-index/:category/:index/:targetLanguage instead
+// The new endpoint uses the index field which is consistent across languages for the same disease
 app.get('/api/disease-by-name/:category/:diseaseName/:targetLanguage', async (req, res) => {
   try {
     const { category, diseaseName, targetLanguage } = req.params;

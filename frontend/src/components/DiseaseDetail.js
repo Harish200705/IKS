@@ -13,6 +13,7 @@ const DiseaseDetail = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [originalDiseaseName, setOriginalDiseaseName] = useState(null);
   const [category, setCategory] = useState(null);
+  const [diseaseIndex, setDiseaseIndex] = useState(null);
 
   // Helper function to check if a field has content
   const hasContent = (field) => {
@@ -48,7 +49,7 @@ const DiseaseDetail = () => {
       setError(null);
       
       try {
-        // First, get the disease in the original collection to get the disease name
+        // First, get the disease in the original collection to get the disease index
         const originalResponse = await axios.get(`${API_BASE_URL}/disease/${collection}/${id}`);
         
         if (originalResponse.data && originalResponse.data.message === 'Disease not found') {
@@ -58,10 +59,18 @@ const DiseaseDetail = () => {
           return;
         }
         
-        // Store original disease name and determine category (only if not already stored)
-        if (!originalDiseaseName) {
+        // Store original disease name, index, and determine category (only if not already stored)
+        if (!originalDiseaseName || diseaseIndex === null) {
           const diseaseName = originalResponse.data["Disease Name"] || originalResponse.data["Disease name"] || '';
           setOriginalDiseaseName(diseaseName);
+          
+          // Get and store the index
+          const index = originalResponse.data.index;
+          if (index !== undefined && index !== null) {
+            setDiseaseIndex(index);
+          } else {
+            console.warn('Disease does not have index field, cannot translate by index');
+          }
           
           // Determine category from collection name
           let categoryName = collection;
@@ -82,16 +91,14 @@ const DiseaseDetail = () => {
           return;
         }
         
-        // For other languages, try to get translated version using translation collections
-        // Use stored originalDiseaseName if available, otherwise use the one from response
-        const diseaseNameToUse = originalDiseaseName || 
-          (originalResponse.data["Disease Name"] || originalResponse.data["Disease name"] || '');
+        // For other languages, use index-based translation
+        // Use stored diseaseIndex if available, otherwise try to get from response
+        const indexToUse = diseaseIndex !== null ? diseaseIndex : originalResponse.data.index;
         
-        if (diseaseNameToUse && category) {
+        if (indexToUse !== undefined && indexToUse !== null && category) {
           try {
-            const encodedDiseaseName = encodeURIComponent(diseaseNameToUse);
             const translateResponse = await axios.get(
-              `${API_BASE_URL}/disease-by-name/${category}/${encodedDiseaseName}/${language}`
+              `${API_BASE_URL}/disease-by-index/${category}/${indexToUse}/${language}`
             );
 
             if (translateResponse.data && translateResponse.data["Disease Name"]) {
@@ -101,9 +108,11 @@ const DiseaseDetail = () => {
               return;
             }
           } catch (translateErr) {
-            console.log('Translation not available, using original:', translateErr.message);
+            console.log('Translation by index not available, using original:', translateErr.message);
             // Fallback to original disease below
           }
+        } else {
+          console.warn('Cannot translate: index is missing');
         }
         
         // Fallback: use original disease if translation not available
@@ -117,7 +126,7 @@ const DiseaseDetail = () => {
     };
 
     fetchDisease();
-  }, [id, collection, language]);
+  }, [id, collection, language, diseaseIndex, originalDiseaseName, category]);
 
   // Debug: Log disease data structure
   useEffect(() => {
