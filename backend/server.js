@@ -160,21 +160,23 @@ const connectMongoDB = async () => {
 connectMongoDB();
 
 // Disease Schema - Updated to match the existing collection structure
+// Note: Treatment Name, Ingredients, Preparation Method, and Dosage can be either String or Array
 const diseaseSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.Mixed, required: false }, // Handle both ObjectId and string _id
   "Disease Name": { type: String, required: false },
   "Disease name": { type: String, required: false }, // Alternative field name
   "disease_name": { type: String, required: false }, // Alternative field name for new format
-  "Symptoms": { type: String, required: true },
-  "Causes": { type: String, required: true },
-  "Treatment Name": { type: String, required: false }, // Individual treatment fields
+  "Symptoms": { type: mongoose.Schema.Types.Mixed, required: true }, // Can be String or Array
+  "Causes": { type: mongoose.Schema.Types.Mixed, required: true }, // Can be String or Array
+  "Treatment Name": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be String or Array
   "treatment_description": { type: String, required: false }, // Alternative field name for new format
-  "Ingredients": { type: String, required: false },
-  "Preparation Method": { type: String, required: false },
-  "Dosage": { type: String, required: false },
+  "Ingredients": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be String or Array
+  "Preparation Method": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be String or Array
+  "Dosage": { type: mongoose.Schema.Types.Mixed, required: false }, // Can be String or Array
   "Treatments": { type: [mongoose.Schema.Types.Mixed], required: false }, // Array of treatment objects
-  "images": { type: [mongoose.Schema.Types.Mixed], required: false } // Array of image objects
-}, { _id: false }); // Disable automatic _id generation
+  "images": { type: [mongoose.Schema.Types.Mixed], required: false }, // Array of image objects
+  "index": { type: mongoose.Schema.Types.Mixed, required: false } // Index field for translation
+}, { _id: false, strict: false }); // Disable automatic _id generation and allow fields not in schema
 
 // Create models for different collections
 const CowBuffaloDisease = mongoose.model('CowBuffaloDisease', diseaseSchema, 'cowAndBuffalo');
@@ -822,21 +824,49 @@ app.get('/api/disease-by-index/:category/:index/:targetLanguage', async (req, re
           mergedDisease["Causes"] = otherDisease["Causes"];
         }
         
-        // Merge treatment data
+        // Merge treatment data - preserve arrays
         if (!mergedDisease["Treatment Name"] && otherDisease["Treatment Name"]) {
           mergedDisease["Treatment Name"] = otherDisease["Treatment Name"];
+        } else if (Array.isArray(otherDisease["Treatment Name"]) && Array.isArray(mergedDisease["Treatment Name"])) {
+          // If both are arrays, merge unique values
+          otherDisease["Treatment Name"].forEach(treatment => {
+            if (!mergedDisease["Treatment Name"].includes(treatment)) {
+              mergedDisease["Treatment Name"].push(treatment);
+            }
+          });
         }
         
         if (!mergedDisease["Ingredients"] && otherDisease["Ingredients"]) {
           mergedDisease["Ingredients"] = otherDisease["Ingredients"];
+        } else if (Array.isArray(otherDisease["Ingredients"]) && Array.isArray(mergedDisease["Ingredients"])) {
+          // If both are arrays, merge unique values
+          otherDisease["Ingredients"].forEach(ingredient => {
+            if (!mergedDisease["Ingredients"].includes(ingredient)) {
+              mergedDisease["Ingredients"].push(ingredient);
+            }
+          });
         }
         
         if (!mergedDisease["Preparation Method"] && otherDisease["Preparation Method"]) {
           mergedDisease["Preparation Method"] = otherDisease["Preparation Method"];
+        } else if (Array.isArray(otherDisease["Preparation Method"]) && Array.isArray(mergedDisease["Preparation Method"])) {
+          // If both are arrays, merge unique values
+          otherDisease["Preparation Method"].forEach(method => {
+            if (!mergedDisease["Preparation Method"].includes(method)) {
+              mergedDisease["Preparation Method"].push(method);
+            }
+          });
         }
         
         if (!mergedDisease["Dosage"] && otherDisease["Dosage"]) {
           mergedDisease["Dosage"] = otherDisease["Dosage"];
+        } else if (Array.isArray(otherDisease["Dosage"]) && Array.isArray(mergedDisease["Dosage"])) {
+          // If both are arrays, merge unique values
+          otherDisease["Dosage"].forEach(dosage => {
+            if (!mergedDisease["Dosage"].includes(dosage)) {
+              mergedDisease["Dosage"].push(dosage);
+            }
+          });
         }
         
         // Merge Treatments array if present
@@ -876,6 +906,24 @@ app.get('/api/disease-by-index/:category/:index/:targetLanguage', async (req, re
     // Format the response
     const displayName = mergedDisease["Disease Name"] || mergedDisease["Disease name"] || mergedDisease["disease_name"] || 'Unknown';
     
+    // Log array types for debugging
+    console.log(`[INDEX-TRANSLATION] Treatment Name type: ${Array.isArray(mergedDisease["Treatment Name"]) ? 'Array' : typeof mergedDisease["Treatment Name"]}`);
+    if (Array.isArray(mergedDisease["Treatment Name"])) {
+      console.log(`[INDEX-TRANSLATION] Treatment Name array length: ${mergedDisease["Treatment Name"].length}`);
+    }
+    console.log(`[INDEX-TRANSLATION] Ingredients type: ${Array.isArray(mergedDisease["Ingredients"]) ? 'Array' : typeof mergedDisease["Ingredients"]}`);
+    if (Array.isArray(mergedDisease["Ingredients"])) {
+      console.log(`[INDEX-TRANSLATION] Ingredients array length: ${mergedDisease["Ingredients"].length}`);
+    }
+    console.log(`[INDEX-TRANSLATION] Preparation Method type: ${Array.isArray(mergedDisease["Preparation Method"]) ? 'Array' : typeof mergedDisease["Preparation Method"]}`);
+    if (Array.isArray(mergedDisease["Preparation Method"])) {
+      console.log(`[INDEX-TRANSLATION] Preparation Method array length: ${mergedDisease["Preparation Method"].length}`);
+    }
+    console.log(`[INDEX-TRANSLATION] Dosage type: ${Array.isArray(mergedDisease["Dosage"]) ? 'Array' : typeof mergedDisease["Dosage"]}`);
+    if (Array.isArray(mergedDisease["Dosage"])) {
+      console.log(`[INDEX-TRANSLATION] Dosage array length: ${mergedDisease["Dosage"].length}`);
+    }
+    
     const response = {
       _id: mergedDisease._id,
       index: mergedDisease.index,
@@ -893,6 +941,20 @@ app.get('/api/disease-by-index/:category/:index/:targetLanguage', async (req, re
       translated: true,
       mergedFromMultiple: diseases.length > 1
     };
+    
+    // Ensure arrays are properly preserved in response (explicitly set to preserve array type)
+    if (Array.isArray(mergedDisease["Treatment Name"])) {
+      response["Treatment Name"] = [...mergedDisease["Treatment Name"]]; // Create new array to ensure it's preserved
+    }
+    if (Array.isArray(mergedDisease["Ingredients"])) {
+      response["Ingredients"] = [...mergedDisease["Ingredients"]];
+    }
+    if (Array.isArray(mergedDisease["Preparation Method"])) {
+      response["Preparation Method"] = [...mergedDisease["Preparation Method"]];
+    }
+    if (Array.isArray(mergedDisease["Dosage"])) {
+      response["Dosage"] = [...mergedDisease["Dosage"]];
+    }
     
     console.log(`✅ Found disease: ${displayName} (merged from ${diseases.length} document(s))`);
     res.json(response);
@@ -1077,15 +1139,53 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       return res.status(404).json({ message: 'Disease not found' });
     }
 
+    // Debug: Log raw disease object before conversion
+    console.log(`[DISEASE] Raw disease object keys:`, Object.keys(disease));
+    console.log(`[DISEASE] Raw disease has toObject:`, typeof disease.toObject === 'function');
+    if (disease["Treatment Name"] !== undefined) {
+      console.log(`[DISEASE] Raw Treatment Name:`, disease["Treatment Name"], 'Type:', typeof disease["Treatment Name"], 'Is Array:', Array.isArray(disease["Treatment Name"]));
+    } else {
+      console.log(`[DISEASE] Raw Treatment Name: undefined`);
+    }
+    if (disease["Ingredients"] !== undefined) {
+      console.log(`[DISEASE] Raw Ingredients:`, disease["Ingredients"], 'Type:', typeof disease["Ingredients"], 'Is Array:', Array.isArray(disease["Ingredients"]));
+    } else {
+      console.log(`[DISEASE] Raw Ingredients: undefined`);
+    }
+
     // Convert to plain object and ensure proper formatting
     let diseaseData;
     if (disease.toObject) {
-      diseaseData = disease.toObject();
+      // Use lean() equivalent or toObject() with proper options
+      diseaseData = disease.toObject({ getters: true, virtuals: false });
       console.log(`[DISEASE] Converted Mongoose document to plain object`);
     } else {
       // For raw MongoDB documents, ensure it's a proper object
       diseaseData = JSON.parse(JSON.stringify(disease));
       console.log(`[DISEASE] Converted raw MongoDB document to plain object`);
+    }
+    
+    // Debug: Log after conversion
+    console.log(`[DISEASE] After conversion - keys:`, Object.keys(diseaseData));
+    console.log(`[DISEASE] After conversion - Treatment Name:`, diseaseData["Treatment Name"], 'Type:', typeof diseaseData["Treatment Name"], 'Is Array:', Array.isArray(diseaseData["Treatment Name"]));
+    console.log(`[DISEASE] After conversion - Ingredients:`, diseaseData["Ingredients"], 'Type:', typeof diseaseData["Ingredients"], 'Is Array:', Array.isArray(diseaseData["Ingredients"]));
+    
+    // If arrays are missing after conversion, try to get them directly from the raw object
+    if (!diseaseData["Treatment Name"] && disease["Treatment Name"]) {
+      console.log(`[DISEASE] WARNING: Treatment Name missing after conversion, restoring from raw object`);
+      diseaseData["Treatment Name"] = Array.isArray(disease["Treatment Name"]) ? [...disease["Treatment Name"]] : disease["Treatment Name"];
+    }
+    if (!diseaseData["Ingredients"] && disease["Ingredients"]) {
+      console.log(`[DISEASE] WARNING: Ingredients missing after conversion, restoring from raw object`);
+      diseaseData["Ingredients"] = Array.isArray(disease["Ingredients"]) ? [...disease["Ingredients"]] : disease["Ingredients"];
+    }
+    if (!diseaseData["Preparation Method"] && disease["Preparation Method"]) {
+      console.log(`[DISEASE] WARNING: Preparation Method missing after conversion, restoring from raw object`);
+      diseaseData["Preparation Method"] = Array.isArray(disease["Preparation Method"]) ? [...disease["Preparation Method"]] : disease["Preparation Method"];
+    }
+    if (!diseaseData["Dosage"] && disease["Dosage"]) {
+      console.log(`[DISEASE] WARNING: Dosage missing after conversion, restoring from raw object`);
+      diseaseData["Dosage"] = Array.isArray(disease["Dosage"]) ? [...disease["Dosage"]] : disease["Dosage"];
     }
     
     // Ensure _id is properly formatted
@@ -1102,7 +1202,21 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
     console.log(`[DISEASE] Has Treatment Name: ${!!diseaseData["Treatment Name"]}`);
     console.log(`[DISEASE] Has Ingredients: ${!!diseaseData["Ingredients"]}`);
     console.log(`[DISEASE] Treatment Name type: ${Array.isArray(diseaseData["Treatment Name"]) ? 'Array' : typeof diseaseData["Treatment Name"]}`);
+    if (Array.isArray(diseaseData["Treatment Name"])) {
+      console.log(`[DISEASE] Treatment Name array length: ${diseaseData["Treatment Name"].length}`);
+    }
     console.log(`[DISEASE] Ingredients type: ${Array.isArray(diseaseData["Ingredients"]) ? 'Array' : typeof diseaseData["Ingredients"]}`);
+    if (Array.isArray(diseaseData["Ingredients"])) {
+      console.log(`[DISEASE] Ingredients array length: ${diseaseData["Ingredients"].length}`);
+    }
+    console.log(`[DISEASE] Preparation Method type: ${Array.isArray(diseaseData["Preparation Method"]) ? 'Array' : typeof diseaseData["Preparation Method"]}`);
+    if (Array.isArray(diseaseData["Preparation Method"])) {
+      console.log(`[DISEASE] Preparation Method array length: ${diseaseData["Preparation Method"].length}`);
+    }
+    console.log(`[DISEASE] Dosage type: ${Array.isArray(diseaseData["Dosage"]) ? 'Array' : typeof diseaseData["Dosage"]}`);
+    if (Array.isArray(diseaseData["Dosage"])) {
+      console.log(`[DISEASE] Dosage array length: ${diseaseData["Dosage"].length}`);
+    }
     console.log(`\n=== DISEASE DETAIL REQUEST END (200) ===`);
     
     // Ensure index is included in response (if it exists)
@@ -1110,7 +1224,17 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
       console.log(`[WARN] Disease does not have index field`);
     }
     
-    res.json(diseaseData);
+    // Ensure arrays are explicitly preserved in the response
+    const response = {
+      ...diseaseData,
+      // Explicitly preserve arrays to ensure they're sent correctly
+      "Treatment Name": diseaseData["Treatment Name"],
+      "Ingredients": diseaseData["Ingredients"],
+      "Preparation Method": diseaseData["Preparation Method"],
+      "Dosage": diseaseData["Dosage"]
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error('\n=== DISEASE DETAIL ERROR ===');
     console.error('Error message:', error.message);

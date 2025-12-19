@@ -39,6 +39,7 @@ const DiseaseDetail = () => {
   const hasTreatmentContent = (field) => {
     if (!field) return false;
     if (typeof field === 'string') return field.trim() !== '';
+    if (Array.isArray(field)) return field.length > 0 && field.some(item => item && (typeof item === 'string' ? item.trim() !== '' : true));
     return true;
   };
 
@@ -134,12 +135,29 @@ const DiseaseDetail = () => {
       console.log('=== DISEASE DATA STRUCTURE ===');
       console.log('Collection:', collection);
       console.log('Disease Name:', disease["Disease Name"]);
+      console.log('Index:', disease.index);
       console.log('Symptoms:', disease["Symptoms"], 'Type:', Array.isArray(disease["Symptoms"]) ? 'Array' : typeof disease["Symptoms"]);
       console.log('Causes:', disease["Causes"], 'Type:', Array.isArray(disease["Causes"]) ? 'Array' : typeof disease["Causes"]);
       console.log('Treatment Name:', disease["Treatment Name"], 'Type:', Array.isArray(disease["Treatment Name"]) ? 'Array' : typeof disease["Treatment Name"]);
+      if (Array.isArray(disease["Treatment Name"])) {
+        console.log('Treatment Name array length:', disease["Treatment Name"].length);
+        console.log('Treatment Name array values:', disease["Treatment Name"]);
+      }
       console.log('Ingredients:', disease["Ingredients"], 'Type:', Array.isArray(disease["Ingredients"]) ? 'Array' : typeof disease["Ingredients"]);
+      if (Array.isArray(disease["Ingredients"])) {
+        console.log('Ingredients array length:', disease["Ingredients"].length);
+        console.log('Ingredients array values:', disease["Ingredients"]);
+      }
       console.log('Preparation Method:', disease["Preparation Method"], 'Type:', Array.isArray(disease["Preparation Method"]) ? 'Array' : typeof disease["Preparation Method"]);
+      if (Array.isArray(disease["Preparation Method"])) {
+        console.log('Preparation Method array length:', disease["Preparation Method"].length);
+        console.log('Preparation Method array values:', disease["Preparation Method"]);
+      }
       console.log('Dosage:', disease["Dosage"], 'Type:', Array.isArray(disease["Dosage"]) ? 'Array' : typeof disease["Dosage"]);
+      if (Array.isArray(disease["Dosage"])) {
+        console.log('Dosage array length:', disease["Dosage"].length);
+        console.log('Dosage array values:', disease["Dosage"]);
+      }
       console.log('=============================');
     }
   }, [disease, collection]);
