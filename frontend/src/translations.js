@@ -5,10 +5,13 @@ export const translations = {
     home: "Home",
     
     // Search
-    searchTitle: "Find Animal Diseases",
+    searchTitle: "Search for Animal Diseases",
     searchSubtitle: "Search for diseases by name or symptoms to get detailed treatment information",
-    searchPlaceholder: "Search for diseases or symptoms...",
+    searchPlaceholder: "Search by disease name / symptoms",
     searchButton: "Search",
+    getAllDiseases: "Get all diseases",
+    noResultsFound: "No results found.",
+    showAllDiseases: "Show all diseases",
     
     // Categories
     categories: "Animal Categories",
@@ -73,10 +76,13 @@ export const translations = {
     home: "முகப்பு",
     
     // Search
-    searchTitle: "விலங்கு நோய்களைக் கண்டறியுங்கள்",
+    searchTitle: "விலங்கு நோய்களைத் தேடுங்கள்",
     searchSubtitle: "நோயின் பெயர் அல்லது அறிகுறிகளால் தேடி விரிவான சிகிச்சை தகவல்களைப் பெறுங்கள்",
-    searchPlaceholder: "நோய்கள் அல்லது அறிகுறிகளைத் தேடுங்கள்...",
+    searchPlaceholder: "நோயின் பெயர் / அறிகுறிகளால் தேடுங்கள்",
     searchButton: "தேடு",
+    getAllDiseases: "அனைத்து நோய்களையும் பெறுங்கள்",
+    noResultsFound: "முடிவுகள் எதுவும் கிடைக்கவில்லை.",
+    showAllDiseases: "அனைத்து நோய்களையும் காட்டு",
     
     // Categories
     categories: "விலங்கு வகைகள்",
@@ -129,10 +135,13 @@ export const translations = {
     home: "హోమ్",
     
     // Search
-    searchTitle: "పశువుల వ్యాధులను కనుగొనండి",
+    searchTitle: "పశువుల వ్యాధులను శోధించండి",
     searchSubtitle: "వ్యాధి పేరు లేదా లక్షణాల ద్వారా శోధించి వివరమైన చికిత్సా సమాచారాన్ని పొందండి",
-    searchPlaceholder: "వ్యాధులు లేదా లక్షణాలను శోధించండి...",
+    searchPlaceholder: "వ్యాధి పేరు / లక్షణాల ద్వారా శోధించండి",
     searchButton: "శోధించు",
+    getAllDiseases: "అన్ని వ్యాధులను పొందండి",
+    noResultsFound: "ఫలితాలు ఏవీ కనుగొనబడలేదు.",
+    showAllDiseases: "అన్ని వ్యాధులను చూపించు",
     
     // Categories
     categories: "పశువుల వర్గాలు",
@@ -185,10 +194,13 @@ export const translations = {
     home: "ഹോം",
     
     // Search
-    searchTitle: "മൃഗങ്ങളുടെ രോഗങ്ങൾ കണ്ടെത്തുക",
+    searchTitle: "മൃഗങ്ങളുടെ രോഗങ്ങൾ തിരയുക",
     searchSubtitle: "രോഗത്തിന്റെ പേര് അല്ലെങ്കിൽ ലക്ഷണങ്ങൾ ഉപയോഗിച്ച് തിരയുക",
-    searchPlaceholder: "രോഗങ്ങൾ അല്ലെങ്കിൽ ലക്ഷണങ്ങൾ തിരയുക...",
+    searchPlaceholder: "രോഗത്തിന്റെ പേര് / ലക്ഷണങ്ങൾ അനുസരിച്ച് തിരയുക",
     searchButton: "തിരയുക",
+    getAllDiseases: "എല്ലാ രോഗങ്ങളും നേടുക",
+    noResultsFound: "ഫലങ്ങൾ ഒന്നും കണ്ടെത്തിയില്ല.",
+    showAllDiseases: "എല്ലാ രോഗങ്ങളും കാണിക്കുക",
     
     // Categories
     categories: "മൃഗ വിഭാഗങ്ങൾ",
@@ -243,8 +255,11 @@ export const translations = {
     // Search
     searchTitle: "ಪ್ರಾಣಿಗಳ ರೋಗಗಳನ್ನು ಹುಡುಕಿ",
     searchSubtitle: "ರೋಗದ ಹೆಸರು ಅಥವಾ ಲಕ್ಷಣಗಳಿಂದ ಹುಡುಕಿ ವಿವರವಾದ ಚಿಕಿತ್ಸೆ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಿರಿ",
-    searchPlaceholder: "ರೋಗಗಳು ಅಥವಾ ಲಕ್ಷಣಗಳನ್ನು ಹುಡುಕಿ...",
+    searchPlaceholder: "ರೋಗದ ಹೆಸರು / ಲಕ್ಷಣಗಳಿಂದ ಹುಡುಕಿ",
     searchButton: "ಹುಡುಕು",
+    getAllDiseases: "ಎಲ್ಲಾ ರೋಗಗಳನ್ನು ಪಡೆಯಿರಿ",
+    noResultsFound: "ಯಾವುದೇ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ.",
+    showAllDiseases: "ಎಲ್ಲಾ ರೋಗಗಳನ್ನು ತೋರಿಸಿ",
     
     // Categories
     categories: "ಪ್ರಾಣಿ ವರ್ಗಗಳು",
@@ -299,8 +314,11 @@ export const translations = {
     // Search
     searchTitle: "पशु रोग खोजें",
     searchSubtitle: "रोग के नाम या लक्षणों से खोजें और विस्तृत उपचार जानकारी प्राप्त करें",
-    searchPlaceholder: "रोग या लक्षण खोजें...",
+    searchPlaceholder: "रोग के नाम / लक्षणों से खोजें",
     searchButton: "खोजें",
+    getAllDiseases: "सभी रोग प्राप्त करें",
+    noResultsFound: "कोई परिणाम नहीं मिला।",
+    showAllDiseases: "सभी रोग दिखाएं",
     
     // Categories
     categories: "पशु श्रेणियां",

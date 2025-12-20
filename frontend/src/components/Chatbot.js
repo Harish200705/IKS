@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useChatbot } from '../contexts/ChatbotContext';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
 
 const Chatbot = () => {
   const { t, currentLanguage } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggleChatbot, closeChatbot } = useChatbot();
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -97,25 +98,10 @@ const Chatbot = () => {
     setMessages([]);
   };
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
-    <div className="chatbot-container">
-      {/* Chat Toggle Button */}
-      <button 
-        className={`chatbot-toggle ${isOpen ? 'open' : ''}`}
-        onClick={toggleChat}
-        title={t('chatbotTitle') || 'Ask about animal diseases'}
-      >
-        <span className="chatbot-icon">💬</span>
-        {isOpen && <span className="chatbot-close">×</span>}
-      </button>
-
+    <div className={`chatbot-container ${isOpen ? 'open' : ''}`}>
       {/* Chat Window */}
-      {isOpen && (
-        <div className="chatbot-window">
+      <div className="chatbot-window">
           <div className="chatbot-header">
             <h3>{t('chatbotTitle') || 'Veterinary Assistant'}</h3>
             <div className="chatbot-actions">
@@ -128,7 +114,7 @@ const Chatbot = () => {
               </button>
               <button 
                 className="close-chat-btn" 
-                onClick={toggleChat}
+                onClick={closeChatbot}
                 title={t('closeChat') || 'Close chat'}
               >
                 ×
@@ -212,7 +198,6 @@ const Chatbot = () => {
             </button>
           </div>
         </div>
-      )}
     </div>
   );
 };

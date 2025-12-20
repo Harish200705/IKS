@@ -156,6 +156,30 @@ const connectMongoDB = async () => {
   }
 };
 
+// MongoDB connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('[MongoDB] ✅ Connection established successfully');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('[MongoDB] ❌ Connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('[MongoDB] ⚠️  Connection disconnected. Attempting to reconnect...');
+  // Attempt to reconnect after 5 seconds
+  setTimeout(() => {
+    if (mongoose.connection.readyState === 0) {
+      console.log('[MongoDB] 🔄 Attempting to reconnect...');
+      connectMongoDB();
+    }
+  }, 5000);
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('[MongoDB] ✅ Connection reestablished');
+});
+
 // Attempt connection
 connectMongoDB();
 
@@ -414,8 +438,20 @@ const handleSearch = async (req, res) => {
         collectionsToSearch = ['imagesheepandgoat'];
         break;
       default:
-        // Search all collections if no specific category
-        collectionsToSearch = ['cowAndBuffalo', 'PoultryBirds', 'SheepGoat', 'cowAndBuffaloTamil', 'PoultryBirdsTamil', 'SheepGoatTamil', 'PoultryBirdsHindi', 'SheepGoatHindi', 'cowAndBuffaloHindi', 'PoultryBirdsMalayalam', 'SheepGoatMalayalam', 'cowAndBuffaloMalayalam'];
+        // Search all collections based on language
+        // If English, only search English collections
+        if (searchLanguage === 'en') {
+          collectionsToSearch = ['cowAndBuffalo', 'PoultryBirds', 'SheepGoat'];
+        } else if (searchLanguage === 'ta') {
+          collectionsToSearch = ['cowAndBuffaloTamil', 'PoultryBirdsTamil', 'SheepGoatTamil'];
+        } else if (searchLanguage === 'hi') {
+          collectionsToSearch = ['cowAndBuffaloHindi', 'PoultryBirdsHindi', 'SheepGoatHindi'];
+        } else if (searchLanguage === 'ml') {
+          collectionsToSearch = ['cowAndBuffaloMalayalam', 'PoultryBirdsMalayalam', 'SheepGoatMalayalam'];
+        } else {
+          // Default to English if language not recognized
+          collectionsToSearch = ['cowAndBuffalo', 'PoultryBirds', 'SheepGoat'];
+        }
     }
     
     let allResults = [];
@@ -1250,6 +1286,16 @@ app.get('/api/disease/:collection/:id', async (req, res) => {
 // Get all diseases for a specific collection
 app.get('/api/diseases/:collection', async (req, res) => {
   try {
+    // Check MongoDB connection
+    if (mongoose.connection.readyState !== 1) {
+      console.error(`[ERROR] MongoDB not connected for /api/diseases/${req.params.collection}! State:`, mongoose.connection.readyState);
+      return res.status(503).json({ 
+        message: 'Database connection unavailable. Please try again later.',
+        error: 'MongoDB not connected',
+        readyState: mongoose.connection.readyState
+      });
+    }
+
     const { collection } = req.params;
     let DiseaseModel = CowBuffaloDisease; // default
     
@@ -1283,21 +1329,26 @@ app.get('/api/diseases/:collection', async (req, res) => {
         DiseaseModel = CowBuffaloDisease;
     }
     
+    console.log(`[API] Fetching diseases from ${collection} collection...`);
     const diseases = await DiseaseModel.find();
     
-    // Map the results to include only the needed fields
-    const mappedDiseases = diseases.map(disease => ({
-      _id: disease._id,
-      "Disease Name": disease["Disease Name"],
-      "Symptoms": disease["Symptoms"],
-      collection: collection
-    }));
+    // Convert Mongoose documents to plain objects with all fields
+    const mappedDiseases = diseases.map(disease => {
+      const diseaseObj = disease.toObject ? disease.toObject() : disease;
+      return {
+        ...diseaseObj,
+        collection: collection
+      };
+    });
     
-    console.log(`Retrieved ${mappedDiseases.length} diseases from ${collection} collection`);
+    console.log(`[API] Retrieved ${mappedDiseases.length} diseases from ${collection} collection`);
     res.json(mappedDiseases);
   } catch (error) {
-    console.error('Get all diseases error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error(`[ERROR] Get all diseases error for ${req.params.collection}:`, error);
+    res.status(500).json({ 
+      message: 'Internal server error',
+      error: error.message 
+    });
   }
 });
 

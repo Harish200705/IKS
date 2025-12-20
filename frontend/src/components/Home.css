@@ -1,0 +1,410 @@
+/* Home Container */
+.home-container {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Background with gradient */
+.home-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: 0;
+}
+
+.home-background::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgb(100, 180, 120) 0%, rgba(120, 200, 140, 0.95) 15%, rgba(140, 220, 160, 0.85) 30%, rgba(160, 230, 180, 0.7) 50%, rgba(180, 240, 200, 0.5) 70%, rgba(200, 245, 220, 0.3) 85%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Home Content */
+.home-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px 40px;
+  transition: all 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.home-content.searched {
+  justify-content: flex-start;
+  padding-top: 100px;
+  align-items: center;
+}
+
+/* Heading */
+.home-heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 2rem;
+  text-align: center;
+  transition: opacity 1200ms cubic-bezier(0.4, 0, 0.2, 1), height 1200ms cubic-bezier(0.4, 0, 0.2, 1), margin 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+}
+
+.home-heading.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Search Wrapper */
+.search-wrapper {
+  width: 100%;
+  max-width: 700px;
+  transition: all 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-wrapper.moved-to-top {
+  max-width: 700px;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+/* Search Form */
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.search-wrapper.moved-to-top .search-form {
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Search Input Container */
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.5rem;
+  color: #9ca3af;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.home-search-input {
+  width: 100%;
+  padding: 1rem 1.5rem 1rem 3.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 50px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.home-search-input:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.search-wrapper.moved-to-top .home-search-input {
+  width: 100%;
+}
+
+/* Get All Diseases Button */
+.get-all-button {
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: #22c55e;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 1500ms cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  white-space: nowrap;
+}
+
+.get-all-button:hover {
+  color: #16a34a;
+}
+
+.get-all-button .arrow {
+  margin-left: 0.5rem;
+}
+
+.search-wrapper.moved-to-top .get-all-button {
+  flex-shrink: 0;
+}
+
+
+/* Filter Section */
+.filter-section {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  animation: fadeIn 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-button {
+  padding: 0.5rem 1.5rem;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.filter-button.active {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.filter-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Results Section */
+.results-section {
+  width: 100%;
+  animation: fadeIn 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 20px;
+}
+
+.results-title {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  animation: fadeIn 1200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.no-results-text {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.show-all-button {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: #22c55e;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.show-all-button:hover {
+  color: #16a34a;
+}
+
+/* Disease Grid */
+.disease-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* Disease Card */
+.disease-card {
+  background-color: rgb(207, 237, 214);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+  animation: slideInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.disease-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+}
+
+.disease-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.disease-affected {
+  color: #16a34a;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.affected-animal {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.disease-symptoms {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin-top: 0.5rem;
+}
+
+/* Loading and Error States */
+.loading {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #7f8c8d;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #22c55e;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #e74c3c;
+  background: #fdf2f2;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .home-heading {
+    font-size: 2rem;
+  }
+
+  .search-wrapper.moved-to-top .search-form {
+    flex-direction: column;
+  }
+
+  .disease-grid {
+    grid-template-columns: 1fr;
+    padding: 0 10px;
+  }
+
+  .home-content {
+    padding: 100px 20px 40px;
+  }
+
+  .home-content.searched {
+    padding-top: 120px;
+  }
+
+  .results-section {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-heading {
+    font-size: 1.75rem;
+  }
+
+  .home-search-input {
+    font-size: 0.9rem;
+    padding: 0.875rem 1.25rem 0.875rem 3rem;
+  }
+
+  .get-all-button {
+    font-size: 0.9rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  .disease-card {
+    padding: 1.25rem;
+  }
+}
+

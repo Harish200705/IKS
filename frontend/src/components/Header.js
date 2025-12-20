@@ -1,26 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
+import Chatbot from './Chatbot';
 import LanguageSelector from './LanguageSelector';
+import { useChatbot } from '../contexts/ChatbotContext';
 
 const Header = () => {
-  const { t } = useLanguage();
+  const { toggleChatbot } = useChatbot();
 
   return (
-    <header className="header">
-      <div className="header-content">
-        <Link to="/" className="logo">
-          <span className="logo-icon">🐾</span>
-          <span>{t('logo')}</span>
-        </Link>
-        <nav className="nav-menu">
-          <Link to="/" className="nav-link">
-            {t('home')}
+    <>
+      <header className="header-new">
+        <div className="header-content-new">
+          <Link to="/" className="logo-new">
+            <span>VetCare</span>
           </Link>
-          <LanguageSelector />
-        </nav>
-      </div>
-    </header>
+          <div className="header-actions">
+            <button 
+              className="chatbot-button"
+              onClick={toggleChatbot}
+            >
+              Chatbot
+            </button>
+            <LanguageSelector />
+          </div>
+        </div>
+      </header>
+      <Chatbot />
+    </>
   );
 };
 

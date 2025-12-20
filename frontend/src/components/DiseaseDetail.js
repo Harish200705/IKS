@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import './DiseaseDetail.css';
 
 const DiseaseDetail = () => {
   const { id, collection } = useParams();
@@ -195,9 +196,10 @@ const DiseaseDetail = () => {
 
   return (
     <div className="disease-detail">
-      <Link to="/" className="back-button">
-        ← {t('backToSearch')}
-      </Link>
+      <div className="disease-detail-content">
+        <Link to="/" className="back-button">
+          ← {t('backToSearch')}
+        </Link>
 
       {/* Translation notice removed - no longer displaying translation availability messages */}
 
@@ -264,9 +266,7 @@ const DiseaseDetail = () => {
           <h2 className="detail-section-title">{t('symptoms')}</h2>
           {Array.isArray(disease["Symptoms"]) ? (
             <ul className="detail-content" style={{ 
-              paddingLeft: '20px',
-              lineHeight: '1.8',
-              color: '#6c757d'
+              paddingLeft: '20px'
             }}>
               {disease["Symptoms"].map((symptom, index) => (
                 <li key={index} style={{ marginBottom: '8px' }}>
@@ -286,9 +286,7 @@ const DiseaseDetail = () => {
           <h2 className="detail-section-title">{t('causes')}</h2>
           {Array.isArray(disease["Causes"]) ? (
             <ul className="detail-content" style={{ 
-              paddingLeft: '20px',
-              lineHeight: '1.8',
-              color: '#6c757d'
+              paddingLeft: '20px'
             }}>
               {disease["Causes"].map((cause, index) => (
                 <li key={index} style={{ marginBottom: '8px' }}>
@@ -402,38 +400,20 @@ const DiseaseDetail = () => {
                 console.log(`  - Dosage:`, dosage, 'Type:', typeof dosage);
                 
                 return (
-                  <div key={index} className="treatment-item" style={{
-                    marginBottom: '30px',
-                    padding: '20px',
-                    background: '#f8f9fa',
-                    borderRadius: '8px',
-                    borderLeft: '4px solid #28a745'
-                  }}>
+                  <div key={index} className="treatment-item">
                     <div className="treatment-name">
-                      <h3 className="treatment-title" style={{ 
-                        color: '#28a745', 
-                        marginBottom: '15px',
-                        fontSize: '1.3em'
-                      }}>
+                      <h3 className="treatment-title">
                         {treatmentNameArray.length === 1 ? treatmentName : `${t('treatment') || 'Treatment'} ${index + 1}: ${treatmentName}`}
                       </h3>
                     </div>
                     
                     {ingredients && (
-                      <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                        <h4 className="treatment-subtitle" style={{ 
-                          color: '#495057', 
-                          marginBottom: '8px',
-                          fontSize: '1.1em',
-                          fontWeight: '600'
-                        }}>
+                      <div className="treatment-detail">
+                        <h4 className="treatment-subtitle">
                           {t('ingredients') || 'Ingredients'}
                         </h4>
                         {Array.isArray(ingredients) ? (
                           <ul className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.8',
-                            margin: 0,
                             paddingLeft: '20px'
                           }}>
                             {ingredients.map((ingredient, ingIndex) => (
@@ -443,11 +423,7 @@ const DiseaseDetail = () => {
                             ))}
                           </ul>
                         ) : (
-                          <p className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.6',
-                            margin: 0
-                          }}>
+                          <p className="treatment-content">
                             {ingredients}
                           </p>
                         )}
@@ -455,20 +431,12 @@ const DiseaseDetail = () => {
                     )}
                     
                     {preparationMethod && (
-                      <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                        <h4 className="treatment-subtitle" style={{ 
-                          color: '#495057', 
-                          marginBottom: '8px',
-                          fontSize: '1.1em',
-                          fontWeight: '600'
-                        }}>
+                      <div className="treatment-detail">
+                        <h4 className="treatment-subtitle">
                           {t('preparationMethod') || 'Preparation Method'}
                         </h4>
                         {Array.isArray(preparationMethod) ? (
                           <ol className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.8',
-                            margin: 0,
                             paddingLeft: '20px'
                           }}>
                             {preparationMethod.map((method, methodIndex) => (
@@ -478,12 +446,7 @@ const DiseaseDetail = () => {
                             ))}
                           </ol>
                         ) : (
-                          <p className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.6',
-                            margin: 0,
-                            whiteSpace: 'pre-line'
-                          }}>
+                          <p className="treatment-content">
                             {preparationMethod}
                           </p>
                         )}
@@ -491,20 +454,12 @@ const DiseaseDetail = () => {
                     )}
                     
                     {dosage && (
-                      <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                        <h4 className="treatment-subtitle" style={{ 
-                          color: '#495057', 
-                          marginBottom: '8px',
-                          fontSize: '1.1em',
-                          fontWeight: '600'
-                        }}>
+                      <div className="treatment-detail">
+                        <h4 className="treatment-subtitle">
                           {t('dosage') || 'Dosage'}
                         </h4>
                         {Array.isArray(dosage) ? (
                           <ul className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.8',
-                            margin: 0,
                             paddingLeft: '20px'
                           }}>
                             {dosage.map((dosageItem, dosageIndex) => (
@@ -514,12 +469,7 @@ const DiseaseDetail = () => {
                             ))}
                           </ul>
                         ) : (
-                          <p className="treatment-content" style={{ 
-                            color: '#6c757d',
-                            lineHeight: '1.6',
-                            margin: 0,
-                            whiteSpace: 'pre-line'
-                          }}>
+                          <p className="treatment-content">
                             {dosage}
                           </p>
                         )}
@@ -555,36 +505,19 @@ const DiseaseDetail = () => {
       {hasContent(disease["Treatment Name"]) && !Array.isArray(disease["Treatment Name"]) && (
         <div className="detail-section">
           <h2 className="detail-section-title">{t('treatment') || 'Treatment'}</h2>
-          <div className="treatment-item" style={{
-            padding: '20px',
-            background: '#f8f9fa',
-            borderRadius: '8px',
-            borderLeft: '4px solid #28a745'
-          }}>
-            <h3 className="treatment-title" style={{ 
-              color: '#28a745', 
-              marginBottom: '15px',
-              fontSize: '1.3em'
-            }}>
+          <div className="treatment-item">
+            <h3 className="treatment-title">
               {disease["Treatment Name"]}
             </h3>
             
             {/* Handle Ingredients - can be string or array */}
             {hasContent(disease["Ingredients"]) && (
-              <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                <h4 className="treatment-subtitle" style={{ 
-                  color: '#495057', 
-                  marginBottom: '8px',
-                  fontSize: '1.1em',
-                  fontWeight: '600'
-                }}>
+              <div className="treatment-detail">
+                <h4 className="treatment-subtitle">
                   {t('ingredients') || 'Ingredients'}
                 </h4>
                 {Array.isArray(disease["Ingredients"]) ? (
                   <ul className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.8',
-                    margin: 0,
                     paddingLeft: '20px'
                   }}>
                     {disease["Ingredients"].map((ingredient, index) => (
@@ -594,11 +527,7 @@ const DiseaseDetail = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.6',
-                    margin: 0
-                  }}>
+                  <p className="treatment-content">
                     {disease["Ingredients"]}
                   </p>
                 )}
@@ -607,20 +536,12 @@ const DiseaseDetail = () => {
             
             {/* Handle Preparation Method - can be string or array */}
             {hasContent(disease["Preparation Method"]) && (
-              <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                <h4 className="treatment-subtitle" style={{ 
-                  color: '#495057', 
-                  marginBottom: '8px',
-                  fontSize: '1.1em',
-                  fontWeight: '600'
-                }}>
+              <div className="treatment-detail">
+                <h4 className="treatment-subtitle">
                   {t('preparationMethod') || 'Preparation Method'}
                 </h4>
                 {Array.isArray(disease["Preparation Method"]) ? (
                   <ol className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.8',
-                    margin: 0,
                     paddingLeft: '20px'
                   }}>
                     {disease["Preparation Method"].map((method, index) => (
@@ -630,12 +551,7 @@ const DiseaseDetail = () => {
                     ))}
                   </ol>
                 ) : (
-                  <p className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.6',
-                    margin: 0,
-                    whiteSpace: 'pre-line'
-                  }}>
+                  <p className="treatment-content">
                     {disease["Preparation Method"]}
                   </p>
                 )}
@@ -644,20 +560,12 @@ const DiseaseDetail = () => {
             
             {/* Handle Dosage - can be string or array */}
             {hasContent(disease["Dosage"]) && (
-              <div className="treatment-detail" style={{ marginBottom: '15px' }}>
-                <h4 className="treatment-subtitle" style={{ 
-                  color: '#495057', 
-                  marginBottom: '8px',
-                  fontSize: '1.1em',
-                  fontWeight: '600'
-                }}>
+              <div className="treatment-detail">
+                <h4 className="treatment-subtitle">
                   {t('dosage') || 'Dosage'}
                 </h4>
                 {Array.isArray(disease["Dosage"]) ? (
                   <ul className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.8',
-                    margin: 0,
                     paddingLeft: '20px'
                   }}>
                     {disease["Dosage"].map((dosage, index) => (
@@ -667,12 +575,7 @@ const DiseaseDetail = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="treatment-content" style={{ 
-                    color: '#6c757d',
-                    lineHeight: '1.6',
-                    margin: 0,
-                    whiteSpace: 'pre-line'
-                  }}>
+                  <p className="treatment-content">
                     {disease["Dosage"]}
                   </p>
                 )}
@@ -681,6 +584,7 @@ const DiseaseDetail = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
