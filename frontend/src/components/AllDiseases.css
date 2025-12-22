@@ -258,10 +258,42 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Responsive Design */
+/* Responsive Design - Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .all-diseases-container {
+    padding-top: 80px;
+  }
+  
+  .all-diseases-search-section {
+    padding: 1rem 1.5rem;
+  }
+  
+  .all-diseases-search-wrapper {
+    max-width: 700px;
+  }
+  
+  .all-diseases-categories {
+    padding: 2rem 1.5rem;
+  }
+  
+  .all-diseases-category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+/* Responsive Design - Tablets */
 @media (max-width: 768px) {
+  .all-diseases-container {
+    padding-top: 75px;
+  }
+  
   .all-diseases-search-section {
     padding: 1rem;
+  }
+  
+  .all-diseases-search-wrapper {
+    max-width: 100%;
   }
 
   .all-diseases-search-bar {
@@ -269,27 +301,174 @@
     gap: 0.75rem;
   }
 
-  .all-diseases-search-input,
+  .all-diseases-search-input {
+    width: 100%;
+    min-height: 44px;
+  }
+  
   .all-diseases-filter-button {
     width: 100%;
+    min-height: 44px;
+    justify-content: center;
   }
 
   .all-diseases-filter-dropdown {
     left: 0;
+    right: 0;
     transform: none;
     width: 100%;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .filter-option {
+    padding: 1rem;
+    min-height: 48px;
+    font-size: 1rem;
   }
 
   .all-diseases-categories {
-    padding: 1rem;
+    padding: 1.5rem 1rem;
   }
 
   .all-diseases-category-widget {
-    padding: 1.5rem;
+    padding: 1.25rem;
+  }
+  
+  .all-diseases-category-heading {
+    font-size: 1.25rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .all-diseases-category-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  
+  .all-diseases-disease-card {
+    padding: 1.25rem;
+  }
+  
+  .all-diseases-disease-name {
+    font-size: 1.15rem;
+  }
+}
+
+/* Responsive Design - Mobile phones */
+@media (max-width: 480px) {
+  .all-diseases-container {
+    padding-top: 70px;
+  }
+  
+  .all-diseases-search-section {
+    padding: 0.875rem;
+  }
+  
+  .all-diseases-search-input {
+    font-size: 0.9rem;
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .all-diseases-filter-button {
+    font-size: 0.9rem;
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .all-diseases-categories {
+    padding: 1rem 0.75rem;
+  }
+
+  .all-diseases-category-widget {
+    padding: 1rem;
+  }
+  
+  .all-diseases-category-heading {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
   }
 
   .all-diseases-category-grid {
     grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+  
+  .all-diseases-disease-card {
+    padding: 1rem;
+  }
+  
+  .all-diseases-disease-name {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .all-diseases-disease-symptoms {
+    font-size: 0.9rem;
+  }
+  
+  .all-diseases-loading,
+  .all-diseases-error,
+  .all-diseases-no-results {
+    padding: 2rem 1rem;
+  }
+  
+  .all-diseases-no-results p {
+    font-size: 1.1rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .all-diseases-container {
+    padding-top: 65px;
+  }
+  
+  .all-diseases-search-section {
+    padding: 0.75rem;
+  }
+  
+  .all-diseases-search-input {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .all-diseases-filter-button {
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+  }
+  
+  .all-diseases-categories {
+    padding: 0.875rem 0.5rem;
+  }
+  
+  .all-diseases-category-widget {
+    padding: 0.875rem;
+  }
+  
+  .all-diseases-category-heading {
+    font-size: 1.05rem;
+  }
+  
+  .all-diseases-disease-card {
+    padding: 0.875rem;
+  }
+  
+  .all-diseases-disease-name {
+    font-size: 1rem;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .all-diseases-container {
+    padding-top: 70px;
+  }
+  
+  .all-diseases-filter-dropdown {
+    max-height: 60vh;
   }
 }
 

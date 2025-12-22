@@ -284,7 +284,7 @@ const Home = () => {
               className={`get-all-button ${hasSearched ? 'moved-inline' : ''}`}
               onClick={handleGetAllDiseases}
             >
-              {t('getAllDiseases')} <span className="arrow">></span>
+              {t('getAllDiseases')} <span className="arrow">&gt;</span>
             </button>
           </form>
         </div>

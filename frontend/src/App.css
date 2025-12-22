@@ -67,6 +67,9 @@ body {
   left: 0;
   right: 0;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-content-new {
@@ -75,6 +78,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  width: 100%;
 }
 
 .logo-new {
@@ -83,6 +88,8 @@ body {
   text-decoration: none;
   color: #000000;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .logo-new:hover {
@@ -93,7 +100,8 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex-shrink: 0;
 }
 
 .chatbot-button {
@@ -104,12 +112,22 @@ body {
   font-weight: bold;
   cursor: pointer;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 0;
+  padding: 0.5rem 1rem;
   transition: opacity 0.3s ease;
+  white-space: nowrap;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chatbot-button:hover {
   opacity: 0.7;
+}
+
+.chatbot-button:active {
+  opacity: 0.5;
 }
 
 /* Language Selector in Header */
@@ -119,7 +137,7 @@ body {
 }
 
 .header-new .language-select {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
   border: 1px solid #e5e7eb;
   border-radius: 25px;
   background: #ffffff;
@@ -136,7 +154,8 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
-  padding-right: 2.5rem;
+  min-height: 44px;
+  min-width: 80px;
 }
 
 .header-new .language-select:hover {
@@ -173,6 +192,14 @@ body {
 .App.chatbot-open .main-content {
   margin-right: 400px;
   max-width: calc(100% - 400px);
+}
+
+/* Responsive chatbot adjustments */
+@media (max-width: 1024px) {
+  .App.chatbot-open .main-content {
+    margin-right: 350px;
+    max-width: calc(100% - 350px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -437,8 +464,41 @@ body {
   color: white;
 }
 
-/* Responsive Design */
+/* Responsive Design - Tablet and below */
+@media (max-width: 1024px) {
+  .header-content-new {
+    padding: 0 1rem;
+  }
+  
+  .header-actions {
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .header-new {
+    padding: 0.875rem 1rem;
+  }
+  
+  .header-content-new {
+    gap: 0.75rem;
+  }
+  
+  .logo-new {
+    font-size: 1.25rem;
+  }
+  
+  .chatbot-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.875rem;
+  }
+  
+  .header-new .language-select {
+    font-size: 0.9rem;
+    padding: 0.5rem 2rem 0.5rem 0.875rem;
+    min-height: 40px;
+  }
+  
   .header-content {
     flex-direction: column;
     gap: 1rem;
@@ -450,6 +510,7 @@ body {
   
   .search-input {
     min-width: auto;
+    width: 100%;
   }
   
   .disease-grid {
@@ -461,15 +522,44 @@ body {
   }
   
   .search-section {
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
   }
   
   .detail-title {
     font-size: 2rem;
   }
+  
+  .search-title {
+    font-size: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .header-new {
+    padding: 0.75rem 0.875rem;
+  }
+  
+  .logo-new {
+    font-size: 1.125rem;
+  }
+  
+  .chatbot-button {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+    min-width: 80px;
+  }
+  
+  .header-new .language-select {
+    font-size: 0.85rem;
+    padding: 0.5rem 1.75rem 0.5rem 0.75rem;
+    min-width: 70px;
+    min-height: 36px;
+  }
+  
+  .header-actions {
+    gap: 0.5rem;
+  }
+  
   .header {
     padding: 1rem;
   }
@@ -479,7 +569,7 @@ body {
   }
   
   .search-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
   
   .disease-card {
@@ -488,6 +578,33 @@ body {
   
   .disease-detail {
     padding: 1rem;
+  }
+  
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .header-new {
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .logo-new {
+    font-size: 1rem;
+  }
+  
+  .chatbot-button {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.625rem;
+    min-width: 70px;
+  }
+  
+  .header-new .language-select {
+    font-size: 0.8rem;
+    padding: 0.5rem 1.5rem 0.5rem 0.625rem;
+    min-width: 65px;
   }
 }
 
