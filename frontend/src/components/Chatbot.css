@@ -4,7 +4,7 @@
   top: 80px; /* Start below navbar */
   right: 0;
   height: calc(100vh - 80px); /* Full height minus navbar */
-  width: 550px;
+  width: 500px;
   z-index: 999; /* Below navbar (z-index 1000) */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   pointer-events: none;

@@ -18,6 +18,7 @@ export const translations = {
     cowBuffalo: "Cow and Buffalo",
     poultry: "Poultry",
     sheepGoat: "Sheep and Goat",
+    affected: "Affected",
     
     // Filters
     all: "All",
@@ -89,6 +90,7 @@ export const translations = {
     cowBuffalo: "மாடு மற்றும் எருமை",
     poultry: "கோழி",
     sheepGoat: "செம்மறி மற்றும் ஆடு",
+    affected: "பாதிக்கப்பட்ட",
     
     // Filters
     all: "அனைத்தும்",
@@ -207,6 +209,7 @@ export const translations = {
     cowBuffalo: "പശുക്കളും എരുമകളും",
     poultry: "കോഴികൾ",
     sheepGoat: "ആടുകളും ചെമ്മരിയാടുകളും",
+    affected: "പ്രഭാവിതം",
     
     // Filters
     all: "എല്ലാം",
@@ -325,6 +328,7 @@ export const translations = {
     cowBuffalo: "गाय और भैंस",
     poultry: "मुर्गी",
     sheepGoat: "भेड़ और बकरी",
+    affected: "प्रभावित",
     
     // Filters
     all: "सभी",

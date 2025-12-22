@@ -346,29 +346,29 @@ const Home = () => {
                 {(!query || filteredDiseases.length > 0) && (
                   <div className="disease-grid">
                     {filteredDiseases.map((disease, index) => {
-                      // Extract animal category from collection name
+                      // Extract animal category from collection name (translated based on current language)
                       const getAnimalCategory = (collection) => {
                         if (!collection) return '';
                         const collectionLower = collection.toLowerCase();
                         
                         // Check for SheepGoat variations first (to avoid matching "goat" in other names)
                         if (collectionLower.includes('sheepgoat') || collectionLower.includes('sheepandgoat')) {
-                          return 'Sheep and Goat';
+                          return t('sheepGoat');
                         } 
                         // Check for PoultryBirds variations - must check exact match first
                         else if (collectionLower === 'poultrybirds' || 
                                  collectionLower.includes('poultrybirds') || 
                                  collectionLower.startsWith('poultrybirds')) {
-                          return 'Poultry';
+                          return t('poultry');
                         } 
                         // Check for CowAndBuffalo variations
                         else if (collectionLower.includes('cowandbuffalo') || 
                                  collectionLower.includes('cowandbuffalo')) {
-                          return 'Cow and Buffalo';
+                          return t('cowBuffalo');
                         }
                         // Fallback: try to extract from collection name
                         else if (collectionLower.includes('poultry')) {
-                          return 'Poultry';
+                          return t('poultry');
                         }
                         return collection;
                       };
@@ -386,9 +386,14 @@ const Home = () => {
                             }}
                           >
                             <h3 className="disease-name">{disease["Disease Name"]}</h3>
-                            {animalCategory && (
+                            {animalCategory && currentLanguage === 'en' && (
                               <p className="disease-affected">
                                 Affected: <span className="affected-animal">{animalCategory}</span>
+                              </p>
+                            )}
+                            {animalCategory && currentLanguage !== 'en' && (
+                              <p className="disease-affected">
+                                {t('affected')}: <span className="affected-animal">{animalCategory}</span>
                               </p>
                             )}
                             {hasContent(disease["Symptoms"]) && (

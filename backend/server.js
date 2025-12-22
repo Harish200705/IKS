@@ -1299,7 +1299,33 @@ app.get('/api/diseases/:collection', async (req, res) => {
     const { collection } = req.params;
     let DiseaseModel = CowBuffaloDisease; // default
     
-    // Select the appropriate model based on collection
+    // Collections that use raw MongoDB driver (have string _id fields)
+    const collectionsWithStringId = ['SheepGoatHindi', 'PoultryBirdsHindi', 'SheepGoatMalayalam', 'PoultryBirdsMalayalam', 'cowAndBuffaloHindi', 'cowAndBuffaloMalayalam'];
+    
+    let diseases = [];
+    
+    // Use raw MongoDB driver for Hindi and Malayalam collections
+    if (collectionsWithStringId.includes(collection)) {
+      console.log(`[API] Fetching diseases from ${collection} using raw MongoDB driver...`);
+      const db = mongoose.connection.db;
+      if (!db) {
+        return res.status(503).json({ message: 'Database connection unavailable' });
+      }
+      
+      // Fetch ALL diseases (no limit) for these collections
+      diseases = await db.collection(collection).find({}).toArray();
+      
+      // Convert to plain objects with collection field
+      const mappedDiseases = diseases.map(disease => ({
+        ...disease,
+        collection: collection
+      }));
+      
+      console.log(`[API] Retrieved ${mappedDiseases.length} diseases from ${collection} collection`);
+      return res.json(mappedDiseases);
+    }
+    
+    // Select the appropriate Mongoose model based on collection
     switch(collection) {
       case 'cowAndBuffalo':
         DiseaseModel = CowBuffaloDisease;
@@ -1330,7 +1356,8 @@ app.get('/api/diseases/:collection', async (req, res) => {
     }
     
     console.log(`[API] Fetching diseases from ${collection} collection...`);
-    const diseases = await DiseaseModel.find();
+    // Fetch ALL diseases (no limit) using Mongoose
+    diseases = await DiseaseModel.find();
     
     // Convert Mongoose documents to plain objects with all fields
     const mappedDiseases = diseases.map(disease => {

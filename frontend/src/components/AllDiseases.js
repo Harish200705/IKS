@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { detectLanguage } from '../utils/languageDetection';
@@ -14,7 +14,6 @@ const AllDiseases = () => {
   const [error, setError] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const [filterType, setFilterType] = useState('all'); // all, name, symptoms, cowAndBuffalo, sheepGoat, poultry
-  const [detectedLanguage, setDetectedLanguage] = useState('en');
 
   // Fetch all diseases on component mount
   useEffect(() => {
@@ -91,17 +90,9 @@ const AllDiseases = () => {
     setLoading(true);
     setError(null);
     try {
-      // Detect language from search query
-      const detectedLang = detectLanguage(searchQuery);
-      setDetectedLanguage(detectedLang);
-      
-      // Use detected language for filtering collections
-      const searchLanguage = detectedLang || currentLanguage;
-      
-      // Auto-change page language if detected language is different
-      if (detectedLang && detectedLang !== currentLanguage) {
-        changeLanguage(detectedLang);
-      }
+      // Use current language for search (respect user's language selection)
+      // Only detect language if no language is selected or if we want to auto-detect
+      const searchLanguage = currentLanguage;
 
       const response = await axios.get(`${API_BASE_URL}/search?query=${encodeURIComponent(searchQuery)}&language=${searchLanguage}`);
       
@@ -128,6 +119,7 @@ const AllDiseases = () => {
   };
 
   // Handle search input change with debounce
+  // Also re-fetch when language changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (query.trim()) {
@@ -138,7 +130,7 @@ const AllDiseases = () => {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [query]);
+  }, [query, currentLanguage]);
 
   // Helper function to check if a field has content
   const hasContent = (field) => {
@@ -169,23 +161,27 @@ const AllDiseases = () => {
     return String(field);
   };
 
-  // Get collection name for display
+  // Get collection name for display (translated based on current language)
   const getCollectionDisplayName = (collection) => {
-    const collectionMap = {
-      'cowAndBuffalo': 'Cow and Buffalo',
-      'cowAndBuffaloTamil': 'Cow and Buffalo',
-      'cowAndBuffaloHindi': 'Cow and Buffalo',
-      'cowAndBuffaloMalayalam': 'Cow and Buffalo',
-      'PoultryBirds': 'Poultry',
-      'PoultryBirdsTamil': 'Poultry',
-      'PoultryBirdsHindi': 'Poultry',
-      'PoultryBirdsMalayalam': 'Poultry',
-      'SheepGoat': 'Sheep and Goat',
-      'SheepGoatTamil': 'Sheep and Goat',
-      'SheepGoatHindi': 'Sheep and Goat',
-      'SheepGoatMalayalam': 'Sheep and Goat'
-    };
-    return collectionMap[collection] || collection;
+    // Determine category type from collection name (case-insensitive)
+    const collectionLower = collection.toLowerCase();
+    let categoryType = '';
+    
+    if (collectionLower.includes('cowandbuffalo')) {
+      categoryType = 'cowBuffalo';
+    } else if (collectionLower.includes('poultrybirds')) {
+      categoryType = 'poultry';
+    } else if (collectionLower.includes('sheepgoat')) {
+      categoryType = 'sheepGoat';
+    }
+    
+    // Return translated category name
+    if (categoryType) {
+      return t(categoryType);
+    }
+    
+    // Fallback to collection name if category type not found
+    return collection;
   };
 
   // Filter diseases based on filter type
@@ -278,22 +274,34 @@ const AllDiseases = () => {
   // Group diseases by category
   const groupDiseasesByCategory = (diseasesList) => {
     const grouped = {
-      'Cow and Buffalo': [],
-      'Poultry': [],
-      'Sheep and Goat': []
+      'cowBuffalo': [],
+      'poultry': [],
+      'sheepGoat': []
     };
 
     diseasesList.forEach(disease => {
       const collection = disease.collection || '';
-      const categoryName = getCollectionDisplayName(collection);
+      const collectionLower = collection.toLowerCase();
       
-      if (categoryName === 'Cow and Buffalo') {
-        grouped['Cow and Buffalo'].push(disease);
-      } else if (categoryName === 'Poultry') {
-        grouped['Poultry'].push(disease);
-      } else if (categoryName === 'Sheep and Goat') {
-        grouped['Sheep and Goat'].push(disease);
+      // Determine category type from collection name (use keys, not translated values)
+      // Use case-insensitive matching to handle all variations
+      if (collectionLower.includes('cowandbuffalo')) {
+        grouped['cowBuffalo'].push(disease);
+      } else if (collectionLower.includes('poultrybirds')) {
+        grouped['poultry'].push(disease);
+      } else if (collectionLower.includes('sheepgoat')) {
+        grouped['sheepGoat'].push(disease);
+      } else {
+        // Debug: log unmatched collections
+        console.warn('[AllDiseases] Unmatched collection:', collection);
       }
+    });
+
+    console.log('[AllDiseases] Grouping result:', {
+      cowBuffalo: grouped['cowBuffalo'].length,
+      poultry: grouped['poultry'].length,
+      sheepGoat: grouped['sheepGoat'].length,
+      total: diseasesList.length
     });
 
     return grouped;
@@ -414,12 +422,15 @@ const AllDiseases = () => {
       {/* Disease Categories */}
       {!loading && !error && filteredDiseases.length > 0 && (
         <div className="all-diseases-categories">
-          {Object.entries(groupedDiseases).map(([categoryName, categoryDiseases]) => {
+          {Object.entries(groupedDiseases).map(([categoryKey, categoryDiseases]) => {
             if (categoryDiseases.length === 0) return null;
 
+            // Get translated category name for display
+            const categoryDisplayName = t(categoryKey);
+
             return (
-              <div key={categoryName} className="all-diseases-category-widget">
-                <h2 className="all-diseases-category-heading">Category: {categoryName}</h2>
+              <div key={categoryKey} className="all-diseases-category-widget">
+                <h2 className="all-diseases-category-heading">{t('categories')}: {categoryDisplayName}</h2>
                 <div className="all-diseases-category-grid">
                   {categoryDiseases.map((disease) => {
                     const diseaseName = disease["Disease Name"] || disease["Disease name"] || disease.disease_name;
