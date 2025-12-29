@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { detectLanguage } from '../utils/languageDetection';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import useVoiceSearch from '../hooks/useVoiceSearch';
 import './Home.css';
 
 const Home = () => {
@@ -18,6 +19,17 @@ const Home = () => {
   const [filter, setFilter] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('cowAndBuffalo');
   const [detectedLanguage, setDetectedLanguage] = useState('en');
+  
+  // Voice search hook
+  const {
+    isListening,
+    transcript,
+    error: voiceError,
+    isSupported: isVoiceSupported,
+    startListening,
+    stopListening,
+    clearTranscript,
+  } = useVoiceSearch();
 
   // Re-search when language changes (if there's an active search)
   // But don't override if language was auto-detected from search
@@ -32,6 +44,40 @@ const Home = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [currentLanguage]);
+
+  // Handle voice search transcript
+  useEffect(() => {
+    if (transcript) {
+      setQuery(transcript);
+      // Automatically trigger search when transcript is received
+      performSearch(transcript, null, filter, null);
+      setHasSearched(true);
+      clearTranscript();
+    }
+  }, [transcript]);
+
+  // Map language codes to Speech Recognition API language codes
+  const getSpeechRecognitionLanguage = (langCode) => {
+    const languageMap = {
+      'en': 'en-US',
+      'ta': 'ta-IN',
+      'hi': 'hi-IN',
+      'ml': 'ml-IN',
+      'te': 'te-IN',
+      'kn': 'kn-IN',
+    };
+    return languageMap[langCode] || 'en-US';
+  };
+
+  // Handle voice search button click
+  const handleVoiceSearch = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      const speechLang = getSpeechRecognitionLanguage(currentLanguage);
+      startListening(speechLang);
+    }
+  };
 
   // Helper function to check if a field has content
   const hasContent = (field) => {
@@ -277,6 +323,28 @@ const Home = () => {
                   }
                 }}
               />
+              {isVoiceSupported && (
+                <button
+                  type="button"
+                  className={`voice-search-button ${isListening ? 'listening' : ''}`}
+                  onClick={handleVoiceSearch}
+                  title={isListening ? t('stopListening') : t('startVoiceSearch')}
+                  aria-label={isListening ? t('stopListening') : t('startVoiceSearch')}
+                >
+                  {isListening ? (
+                    <svg className="voice-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+                    </svg>
+                  ) : (
+                    <svg className="voice-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 1C10.34 1 9 2.34 9 4V12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12V4C15 2.34 13.66 1 12 1Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M19 10V12C19 15.87 15.87 19 12 19C8.13 19 5 15.87 5 12V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 19V23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M8 23H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </button>
+              )}
             </div>
             
             <button
@@ -288,6 +356,29 @@ const Home = () => {
             </button>
           </form>
         </div>
+
+        {/* Voice Search Error Message */}
+        {voiceError && (
+          <div className="voice-error-message">
+            <span>{voiceError}</span>
+            <button 
+              type="button" 
+              className="voice-error-close"
+              onClick={() => clearTranscript()}
+              aria-label="Close error message"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* Voice Search Status */}
+        {isListening && (
+          <div className="voice-listening-indicator">
+            <div className="voice-listening-pulse"></div>
+            <span>{t('listening')}...</span>
+          </div>
+        )}
 
         {/* Filter Section - only show when searched */}
         {hasSearched && (

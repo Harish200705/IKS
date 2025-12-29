@@ -20,6 +20,11 @@ export const translations = {
     sheepGoat: "Sheep and Goat",
     affected: "Affected",
     
+    // Voice Search
+    startVoiceSearch: "Start voice search",
+    stopListening: "Stop listening",
+    listening: "Listening",
+    
     // Filters
     all: "All",
     diseaseName: "Disease Name",
@@ -91,6 +96,9 @@ export const translations = {
     poultry: "கோழி",
     sheepGoat: "செம்மறி மற்றும் ஆடு",
     affected: "பாதிக்கப்பட்ட",
+    startVoiceSearch: "குரல் தேடலைத் தொடங்கு",
+    stopListening: "கேட்பதை நிறுத்து",
+    listening: "கேட்கிறது",
     
     // Filters
     all: "அனைத்தும்",
@@ -150,6 +158,10 @@ export const translations = {
     cowBuffalo: "ఆవు మరియు ఎద్దు",
     poultry: "కోళ్లు",
     sheepGoat: "గొర్రెలు మరియు మేకలు",
+    affected: "ప్రభావితం",
+    startVoiceSearch: "వాయిస్ శోధనను ప్రారంభించండి",
+    stopListening: "వినడం ఆపండి",
+    listening: "వింటోంది",
     
     // Filters
     all: "అన్నీ",
@@ -210,6 +222,9 @@ export const translations = {
     poultry: "കോഴികൾ",
     sheepGoat: "ആടുകളും ചെമ്മരിയാടുകളും",
     affected: "പ്രഭാവിതം",
+    startVoiceSearch: "വോയിസ് തിരയൽ ആരംഭിക്കുക",
+    stopListening: "കേൾക്കുന്നത് നിർത്തുക",
+    listening: "കേൾക്കുന്നു",
     
     // Filters
     all: "എല്ലാം",
@@ -269,6 +284,10 @@ export const translations = {
     cowBuffalo: "ಹಸು ಮತ್ತು ಎಮ್ಮೆ",
     poultry: "ಕೋಳಿ",
     sheepGoat: "ಕುರಿ ಮತ್ತು ಮೇಕೆ",
+    affected: "ಪ್ರಭಾವಿತ",
+    startVoiceSearch: "ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ",
+    stopListening: "ಕೇಳುವುದನ್ನು ನಿಲ್ಲಿಸಿ",
+    listening: "ಕೇಳುತ್ತಿದೆ",
     
     // Filters
     all: "ಎಲ್ಲಾ",
@@ -329,6 +348,9 @@ export const translations = {
     poultry: "मुर्गी",
     sheepGoat: "भेड़ और बकरी",
     affected: "प्रभावित",
+    startVoiceSearch: "वॉइस खोज शुरू करें",
+    stopListening: "सुनना बंद करें",
+    listening: "सुन रहा है",
     
     // Filters
     all: "सभी",
